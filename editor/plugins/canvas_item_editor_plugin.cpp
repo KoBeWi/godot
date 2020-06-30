@@ -1303,6 +1303,18 @@ bool CanvasItemEditor::_gui_input_zoom_or_pan(const Ref<InputEvent> &p_event, bo
 
 	Ref<InputEventPanGesture> pan_gesture = p_event;
 	if (pan_gesture.is_valid() && !p_already_accepted) {
+		// If control key pressed, then zoom instead of pan
+		if (pan_gesture->get_control()) {
+			const float factor = pan_gesture->get_delta().y;
+			float new_zoom = _get_next_zoom_value(-1);
+
+			if (factor != 1.f) {
+				new_zoom = zoom * ((new_zoom / zoom - 1.f) * factor + 1.f);
+			}
+			_zoom_on_position(new_zoom, pan_gesture->get_position());
+			return true;
+		}
+
 		// Pan gesture
 		const Vector2 delta = (int(EditorSettings::get_singleton()->get("editors/2d/pan_speed")) / zoom) * pan_gesture->get_delta();
 		view_offset.x += delta.x;
@@ -6001,6 +6013,11 @@ bool CanvasItemEditorViewport::_create_instance(Node *parent, String &path, cons
 		Vector2 target_pos = canvas_item_editor->get_canvas_transform().affine_inverse().xform(p_point);
 		target_pos = canvas_item_editor->snap_point(target_pos);
 		target_pos = parent_ci->get_global_transform_with_canvas().affine_inverse().xform(target_pos);
+		// Preserve instance position of the original scene.
+		CanvasItem *instance_ci = Object::cast_to<CanvasItem>(instanced_scene);
+		if (instance_ci) {
+			target_pos += instance_ci->_edit_get_position();
+		}
 		editor_data->get_undo_redo().add_do_method(instanced_scene, "set_position", target_pos);
 	}
 
