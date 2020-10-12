@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="VisualScriptIndexSet" inherits="VisualScriptNode" version="4.0">
 	<brief_description>
+		A Visual Script node for setting a value in an array or a dictionary.
 	</brief_description>
 	<description>
+		[VisualScriptIndexGet] will set the value stored in an array or a dictionary under the given index or key to the provided new value.
 	</description>
 	<tutorials>
 	</tutorials>
