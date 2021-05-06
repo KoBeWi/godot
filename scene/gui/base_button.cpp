@@ -224,6 +224,18 @@ void BaseButton::set_pressed(bool p_pressed) {
 	update();
 }
 
+void BaseButton::set_pressed_visual(bool p_pressed) {
+	if (!toggle_mode) {
+		return;
+	}
+	if (status.pressed == p_pressed) {
+		return;
+	}
+	status.pressed = p_pressed;
+
+	update();
+}
+
 bool BaseButton::is_pressing() const {
 	return status.press_attempt;
 }
@@ -397,6 +409,7 @@ void BaseButton::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_unhandled_key_input"), &BaseButton::_unhandled_key_input);
 	ClassDB::bind_method(D_METHOD("set_pressed", "pressed"), &BaseButton::set_pressed);
 	ClassDB::bind_method(D_METHOD("is_pressed"), &BaseButton::is_pressed);
+	ClassDB::bind_method(D_METHOD("set_pressed_visual", "pressed"), &BaseButton::set_pressed_visual);
 	ClassDB::bind_method(D_METHOD("is_hovered"), &BaseButton::is_hovered);
 	ClassDB::bind_method(D_METHOD("set_toggle_mode", "enabled"), &BaseButton::set_toggle_mode);
 	ClassDB::bind_method(D_METHOD("is_toggle_mode"), &BaseButton::is_toggle_mode);
