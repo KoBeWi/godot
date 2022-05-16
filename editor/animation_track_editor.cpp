@@ -4901,6 +4901,31 @@ int AnimationTrackEditor::_get_track_selected() {
 void AnimationTrackEditor::_insert_key_from_track(float p_ofs, int p_track) {
 	ERR_FAIL_INDEX(p_track, animation->get_track_count());
 
+	bool needs_reset = true;
+
+	if (track_type_is_resettable(animation->track_get_type(p_track))) {
+		AnimationPlayer *player = AnimationPlayerEditor::get_singleton()->get_player();
+		if (player->has_animation(SceneStringNames::get_singleton()->RESET)) {
+			Ref<Animation> reset = player->get_animation(SceneStringNames::get_singleton()->RESET);
+			for (int i = 0; i < reset->get_track_count(); i++) {
+				if (reset->track_get_type(i) == animation->track_get_type(p_track) && reset->track_get_path(i) == animation->track_get_path(p_track)) {
+					has_reset = true;
+					break;
+				}
+			}
+		}
+	} else {
+		needs_reset = false;
+	}
+
+	if (needs_reset) {
+		insert_confirm_text->set_text(TTR("Insert a RESET key?"));
+		insert_confirm_bezier->set_visible(false);
+		insert_confirm_reset->set_visible(false);
+		insert_confirm->popup_centered();
+		return;
+	}
+
 	if (snap->is_pressed() && step->get_value() != 0) {
 		p_ofs = snap_time(p_ofs);
 	}
