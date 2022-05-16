@@ -2478,7 +2478,12 @@ void EditorInspector::update_tree() {
 			// Setup a property group.
 			group = p.name;
 
-			Vector<String> hint_parts = p.hint_string.split(",");
+			String hint = p.hint_string;
+			if (p.usage & PROPERTY_USAGE_CHECKABLE) {
+				hint = hint.get_slice("|", 0);
+			}
+
+			Vector<String> hint_parts = hint.split(",");
 			group_base = hint_parts[0];
 			if (hint_parts.size() > 1) {
 				section_depth = hint_parts[1].to_int();
