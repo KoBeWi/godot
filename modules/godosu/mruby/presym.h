@@ -6,6 +6,7 @@
 
 #ifndef MRUBY_PRESYM_H
 #define MRUBY_PRESYM_H
+#define MRB_NO_PRESYM
 
 #if defined(MRB_NO_PRESYM)
 # include <mruby/presym/disable.h>

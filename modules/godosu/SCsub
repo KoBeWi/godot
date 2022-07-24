@@ -1,11 +1,29 @@
 # SCsub
 
+import os
+import os.path
+
 Import('env')
 Import("env_modules")
 
 env_godosu = env_modules.Clone()
 
+includes = ["."]
+
+def include_recursive(dir):
+	for filename in os.listdir(dir):
+		if os.path.isdir(dir + "/" + filename):
+			include_recursive(dir + "/" + filename)
+			if filename == "include":
+				includes.append(dir + "/" + filename)
+		elif filename.endswith(".c"):
+			env_godosu.add_source_files(env.modules_sources, dir + "/" + "*.c")
+			break
+
 env_godosu.add_source_files(env.modules_sources, "*.cpp") # Add all cpp files to the build
 env_godosu.add_source_files(env.modules_sources, "*.c") # Add all cpp files to the build
-# env_godosu.add_source_files(env.modules_sources, "mrbgems/mruby-compiler/core/*.c") # Add all cpp files to the build
 env_godosu.add_source_files(env.modules_sources, "mruby/*.c") # Add all cpp files to the build
+
+include_recursive("mrbgems")
+
+env_godosu.Append(CPPPATH=includes)

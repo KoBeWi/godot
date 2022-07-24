@@ -1,6 +1,6 @@
 #include "gosu.h"
 
-#include "src/mruby/compile.h"
+#include "mruby/compile.h"
 
 void Gosu::_notification(int p_what) {
     if (Engine::get_singleton()->is_editor_hint()) {
