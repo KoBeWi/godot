@@ -279,76 +279,76 @@ dump_file(mrb_state *mrb, FILE *wfp, const char *outfile, struct RProc *proc, st
   return n;
 }
 
-int
-main(int argc, char **argv)
-{
-  mrb_state *mrb = mrb_open_core(NULL, NULL);
-  int n, result;
-  struct mrbc_args args;
-  FILE *wfp;
-  mrb_value load;
+// int
+// main(int argc, char **argv)
+// {
+//   mrb_state *mrb = mrb_open_core(NULL, NULL);
+//   int n, result;
+//   struct mrbc_args args;
+//   FILE *wfp;
+//   mrb_value load;
 
-  if (mrb == NULL) {
-    fputs("Invalid mrb_state, exiting mrbc\n", stderr);
-    return EXIT_FAILURE;
-  }
+//   if (mrb == NULL) {
+//     fputs("Invalid mrb_state, exiting mrbc\n", stderr);
+//     return EXIT_FAILURE;
+//   }
 
-  n = parse_args(mrb, argc, argv, &args);
-  if (n < 0) {
-    cleanup(mrb, &args);
-    usage(argv[0]);
-    return EXIT_FAILURE;
-  }
-  if (n == argc) {
-    fprintf(stderr, "%s: no program file given\n", args.prog);
-    return EXIT_FAILURE;
-  }
-  if (args.outfile == NULL && !args.check_syntax) {
-    if (n + 1 == argc) {
-      args.outfile = get_outfilename(mrb, argv[n], args.initname ? C_EXT : RITEBIN_EXT);
-    }
-    else {
-      fprintf(stderr, "%s: output file should be specified to compile multiple files\n", args.prog);
-      return EXIT_FAILURE;
-    }
-  }
+//   n = parse_args(mrb, argc, argv, &args);
+//   if (n < 0) {
+//     cleanup(mrb, &args);
+//     usage(argv[0]);
+//     return EXIT_FAILURE;
+//   }
+//   if (n == argc) {
+//     fprintf(stderr, "%s: no program file given\n", args.prog);
+//     return EXIT_FAILURE;
+//   }
+//   if (args.outfile == NULL && !args.check_syntax) {
+//     if (n + 1 == argc) {
+//       args.outfile = get_outfilename(mrb, argv[n], args.initname ? C_EXT : RITEBIN_EXT);
+//     }
+//     else {
+//       fprintf(stderr, "%s: output file should be specified to compile multiple files\n", args.prog);
+//       return EXIT_FAILURE;
+//     }
+//   }
 
-  args.idx = n;
-  load = load_file(mrb, &args);
-  if (mrb_nil_p(load)) {
-    cleanup(mrb, &args);
-    return EXIT_FAILURE;
-  }
-  if (args.check_syntax) {
-    printf("%s:%s:Syntax OK\n", args.prog, argv[n]);
-  }
+//   args.idx = n;
+//   load = load_file(mrb, &args);
+//   if (mrb_nil_p(load)) {
+//     cleanup(mrb, &args);
+//     return EXIT_FAILURE;
+//   }
+//   if (args.check_syntax) {
+//     printf("%s:%s:Syntax OK\n", args.prog, argv[n]);
+//   }
 
-  if (args.check_syntax) {
-    cleanup(mrb, &args);
-    return EXIT_SUCCESS;
-  }
+//   if (args.check_syntax) {
+//     cleanup(mrb, &args);
+//     return EXIT_SUCCESS;
+//   }
 
-  if (args.outfile) {
-    if (strcmp("-", args.outfile) == 0) {
-      wfp = stdout;
-    }
-    else if ((wfp = fopen(args.outfile, "wb")) == NULL) {
-      fprintf(stderr, "%s: cannot open output file:(%s)\n", args.prog, args.outfile);
-      return EXIT_FAILURE;
-    }
-  }
-  else {
-    fprintf(stderr, "Output file is required\n");
-    return EXIT_FAILURE;
-  }
-  result = dump_file(mrb, wfp, args.outfile, mrb_proc_ptr(load), &args);
-  fclose(wfp);
-  cleanup(mrb, &args);
-  if (result != MRB_DUMP_OK) {
-    return EXIT_FAILURE;
-  }
-  return EXIT_SUCCESS;
-}
+//   if (args.outfile) {
+//     if (strcmp("-", args.outfile) == 0) {
+//       wfp = stdout;
+//     }
+//     else if ((wfp = fopen(args.outfile, "wb")) == NULL) {
+//       fprintf(stderr, "%s: cannot open output file:(%s)\n", args.prog, args.outfile);
+//       return EXIT_FAILURE;
+//     }
+//   }
+//   else {
+//     fprintf(stderr, "Output file is required\n");
+//     return EXIT_FAILURE;
+//   }
+//   result = dump_file(mrb, wfp, args.outfile, mrb_proc_ptr(load), &args);
+//   fclose(wfp);
+//   cleanup(mrb, &args);
+//   if (result != MRB_DUMP_OK) {
+//     return EXIT_FAILURE;
+//   }
+//   return EXIT_SUCCESS;
+// }
 
 void
 mrb_init_mrblib(mrb_state *mrb)
