@@ -4,14 +4,14 @@
 ** See Copyright Notice in mruby.h
 */
 
-#include <mruby.h>
-#include <mruby/class.h>
-#include <mruby/proc.h>
-#include <mruby/opcode.h>
-#include <mruby/data.h>
-#include <mruby/presym.h>
-#include <mruby/array.h>
-#include <mruby/hash.h>
+#include "mruby.h"
+#include "mruby/class.h"
+#include "mruby/proc.h"
+#include "mruby/opcode.h"
+#include "mruby/data.h"
+#include "mruby/presym.h"
+#include "mruby/array.h"
+#include "mruby/hash.h"
 
 static const mrb_code call_iseq[] = {
   OP_CALL,

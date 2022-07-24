@@ -5,13 +5,13 @@
 
 #include <string.h>
 #include "mrdb.h"
-#include <mruby/value.h>
-#include <mruby/class.h>
-#include <mruby/compile.h>
-#include <mruby/error.h>
-#include <mruby/numeric.h>
-#include <mruby/string.h>
-#include <mruby/presym.h>
+#include "mruby/value.h"
+#include "mruby/class.h"
+#include "mruby/compile.h"
+#include "mruby/error.h"
+#include "mruby/numeric.h"
+#include "mruby/string.h"
+#include "mruby/presym.h"
 #include "apiprint.h"
 
 static void

@@ -1,4 +1,4 @@
-#include <mruby.h>
+#include "mruby.h"
 #include <string.h>
 
 #ifndef MRB_NO_FLOAT

@@ -8,13 +8,13 @@
 # define _CRT_NONSTDC_NO_DEPRECATE
 #endif
 
-#include <mruby.h>
-#include <mruby/array.h>
-#include <mruby/class.h>
-#include <mruby/range.h>
-#include <mruby/string.h>
-#include <mruby/numeric.h>
-#include <mruby/presym.h>
+#include "mruby.h"
+#include "mruby/array.h"
+#include "mruby/class.h"
+#include "mruby/range.h"
+#include "mruby/string.h"
+#include "mruby/numeric.h"
+#include "mruby/presym.h"
 #include <string.h>
 
 typedef struct mrb_shared_string {

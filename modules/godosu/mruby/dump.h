@@ -7,8 +7,8 @@
 #ifndef MRUBY_DUMP_H
 #define MRUBY_DUMP_H
 
-#include <mruby.h>
-#include <mruby/irep.h>
+#include "mruby.h"
+#include "mruby/irep.h"
 #include "common.h"
 
 /**

@@ -6,19 +6,19 @@
 ** immediately. It's a REPL...
 */
 
-#include <mruby.h>
+#include "mruby.h"
 
 #ifdef MRB_NO_STDIO
 # error mruby-bin-mirb conflicts 'MRB_NO_STDIO' in your build configuration
 #endif
 
-#include <mruby/array.h>
-#include <mruby/proc.h>
-#include <mruby/compile.h>
-#include <mruby/dump.h>
-#include <mruby/string.h>
-#include <mruby/variable.h>
-#include <mruby/presym.h>
+#include "mruby/array.h"
+#include "mruby/proc.h"
+#include "mruby/compile.h"
+#include "mruby/dump.h"
+#include "mruby/string.h"
+#include "mruby/variable.h"
+#include "mruby/presym.h"
 
 #include <stdlib.h>
 #include <string.h>

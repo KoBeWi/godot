@@ -4,15 +4,15 @@
 ** See Copyright Notice in mruby.h
 */
 
-#include <mruby.h>
-#include <mruby/dump.h>
-#include <mruby/irep.h>
-#include <mruby/proc.h>
-#include <mruby/string.h>
-#include <mruby/debug.h>
-#include <mruby/error.h>
-#include <mruby/data.h>
-#include <mruby/endian.h>
+#include "mruby.h"
+#include "mruby/dump.h"
+#include "mruby/irep.h"
+#include "mruby/proc.h"
+#include "mruby/string.h"
+#include "mruby/debug.h"
+#include "mruby/error.h"
+#include "mruby/data.h"
+#include "mruby/endian.h"
 #include <string.h>
 
 #if SIZE_MAX < UINT32_MAX

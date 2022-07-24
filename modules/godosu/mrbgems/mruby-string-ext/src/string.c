@@ -1,9 +1,9 @@
 #include <string.h>
-#include <mruby.h>
-#include <mruby/array.h>
-#include <mruby/class.h>
-#include <mruby/string.h>
-#include <mruby/range.h>
+#include "mruby.h"
+#include "mruby/array.h"
+#include "mruby/class.h"
+#include "mruby/string.h"
+#include "mruby/range.h"
 
 #define ENC_ASCII_8BIT "ASCII-8BIT"
 #define ENC_BINARY     "BINARY"

@@ -6,16 +6,16 @@
 
 #include <errno.h>
 #include <stdlib.h>
-#include <mruby.h>
-#include <mruby/array.h>
-#include <mruby/irep.h>
-#include <mruby/proc.h>
-#include <mruby/string.h>
-#include <mruby/variable.h>
-#include <mruby/error.h>
-#include <mruby/class.h>
-#include <mruby/throw.h>
-#include <mruby/presym.h>
+#include "mruby.h"
+#include "mruby/array.h"
+#include "mruby/irep.h"
+#include "mruby/proc.h"
+#include "mruby/string.h"
+#include "mruby/variable.h"
+#include "mruby/error.h"
+#include "mruby/class.h"
+#include "mruby/throw.h"
+#include "mruby/presym.h"
 
 static void
 exc_mesg_set(mrb_state *mrb, struct RException *exc, mrb_value mesg)

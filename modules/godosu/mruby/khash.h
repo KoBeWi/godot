@@ -9,7 +9,7 @@
 
 #include <string.h>
 
-#include <mruby.h>
+#include "mruby.h"
 #include "common.h"
 
 /**

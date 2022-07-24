@@ -1,5 +1,5 @@
-#include <mruby.h>
-#include <mruby/numeric.h>
+#include "mruby.h"
+#include "mruby/numeric.h"
 #include <errno.h>
 
 /* mrb_int_read(): read mrb_int from a string (base 10 only) */

@@ -4,14 +4,14 @@
 ** See Copyright Notice in mruby.h
 */
 
-#include <mruby.h>
+#include "mruby.h"
 
 #ifdef MRB_NO_FLOAT
 # error Math conflicts with 'MRB_NO_FLOAT' configuration
 #endif
 
-#include <mruby/array.h>
-#include <mruby/presym.h>
+#include "mruby/array.h"
+#include "mruby/presym.h"
 
 static void
 domain_error(mrb_state *mrb, const char *func)

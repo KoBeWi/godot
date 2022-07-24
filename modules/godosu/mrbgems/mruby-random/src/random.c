@@ -4,14 +4,14 @@
 ** See Copyright Notice in mruby.h
 */
 
-#include <mruby.h>
-#include <mruby/variable.h>
-#include <mruby/class.h>
-#include <mruby/data.h>
-#include <mruby/array.h>
-#include <mruby/istruct.h>
-#include <mruby/presym.h>
-#include <mruby/string.h>
+#include "mruby.h"
+#include "mruby/variable.h"
+#include "mruby/class.h"
+#include "mruby/data.h"
+#include "mruby/array.h"
+#include "mruby/istruct.h"
+#include "mruby/presym.h"
+#include "mruby/string.h"
 
 #include <time.h>
 

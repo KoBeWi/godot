@@ -1,8 +1,8 @@
 #include <string.h>
-#include <mruby.h>
-#include <mruby/class.h>
-#include <mruby/data.h>
-#include <mruby/string.h>
+#include "mruby.h"
+#include "mruby/class.h"
+#include "mruby/data.h"
+#include "mruby/string.h"
 
 /* no argument */
 static mrb_value

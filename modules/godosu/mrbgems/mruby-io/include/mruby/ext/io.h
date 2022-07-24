@@ -5,7 +5,7 @@
 #ifndef MRUBY_IO_H
 #define MRUBY_IO_H
 
-#include <mruby.h>
+#include "mruby.h"
 
 #ifdef MRB_NO_STDIO
 # error IO and File conflicts 'MRB_NO_STDIO' in your build configuration

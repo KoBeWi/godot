@@ -1,4 +1,4 @@
-#include <mruby.h>
+#include "mruby.h"
 
 #ifdef MRB_NO_STDIO
 # error mruby-bin-mrbc conflicts 'MRB_NO_STDIO' in your build configuration
@@ -6,9 +6,9 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <mruby/compile.h>
-#include <mruby/dump.h>
-#include <mruby/proc.h>
+#include "mruby/compile.h"
+#include "mruby/dump.h"
+#include "mruby/proc.h"
 
 #define RITEBIN_EXT ".mrb"
 #define C_EXT       ".c"

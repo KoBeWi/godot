@@ -4,8 +4,8 @@
 ** See Copyright Notice in mruby.h
 */
 
-#include <mruby.h>
-#include <mruby/proc.h>
+#include "mruby.h"
+#include "mruby/proc.h"
 
 /* internal method `__update_hash(oldhash, index, itemhash)` */
 static mrb_value

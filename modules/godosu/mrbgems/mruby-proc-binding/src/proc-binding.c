@@ -1,7 +1,7 @@
-#include <mruby.h>
-#include <mruby/presym.h>
-#include <mruby/proc.h>
-#include <mruby/variable.h>
+#include "mruby.h"
+#include "mruby/presym.h"
+#include "mruby/proc.h"
+#include "mruby/variable.h"
 
 /* provided by mruby-proc-ext */
 mrb_value mrb_proc_source_location(mrb_state *mrb, struct RProc *p);

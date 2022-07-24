@@ -14,7 +14,7 @@
  */
 MRB_BEGIN_DECL
 
-#include <mruby.h>
+#include "mruby.h"
 
 struct mrb_parser_state;
 /* load context */

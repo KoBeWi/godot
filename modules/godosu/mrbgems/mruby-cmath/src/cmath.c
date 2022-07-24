@@ -9,7 +9,7 @@
 ** You need C compiler that support C99+
 */
 
-#include <mruby.h>
+#include "mruby.h"
 
 #ifdef MRB_NO_FLOAT
 # error CMath conflicts with 'MRB_NO_FLOAT' configuration

@@ -113,10 +113,10 @@
 
 #include "mrbconf.h"
 
-#include <mruby/common.h>
-#include <mruby/value.h>
-#include <mruby/gc.h>
-#include <mruby/version.h>
+#include "mruby/common.h"
+#include "mruby/value.h"
+#include "mruby/gc.h"
+#include "mruby/version.h"
 
 #ifndef MRB_NO_FLOAT
 #include <math.h>

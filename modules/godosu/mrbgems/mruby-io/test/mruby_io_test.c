@@ -1,4 +1,4 @@
-#include <mruby/common.h>
+#include "mruby/common.h"
 #include <sys/types.h>
 #include <errno.h>
 #include <string.h>
@@ -65,7 +65,7 @@ mkdtemp(char *temp)
 #include "mruby/error.h"
 #include "mruby/string.h"
 #include "mruby/variable.h"
-#include <mruby/ext/io.h>
+#include "mruby/ext/io.h"
 
 static mrb_value
 mrb_io_test_io_setup(mrb_state *mrb, mrb_value self)

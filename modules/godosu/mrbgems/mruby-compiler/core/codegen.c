@@ -4,18 +4,18 @@
 ** See Copyright Notice in mruby.h
 */
 
-#include <mruby.h>
-#include <mruby/compile.h>
-#include <mruby/proc.h>
-#include <mruby/dump.h>
-#include <mruby/numeric.h>
-#include <mruby/string.h>
-#include <mruby/debug.h>
-#include <mruby/presym.h>
+#include "mruby.h"
+#include "mruby/compile.h"
+#include "mruby/proc.h"
+#include "mruby/dump.h"
+#include "mruby/numeric.h"
+#include "mruby/string.h"
+#include "mruby/debug.h"
+#include "mruby/presym.h"
 #include "node.h"
-#include <mruby/opcode.h>
-#include <mruby/re.h>
-#include <mruby/throw.h>
+#include "mruby/opcode.h"
+#include "mruby/re.h"
+#include "mruby/throw.h"
 #include <ctype.h>
 #include <string.h>
 

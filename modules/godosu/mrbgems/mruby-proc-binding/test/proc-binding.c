@@ -1,5 +1,5 @@
-#include <mruby.h>
-#include <mruby/compile.h>
+#include "mruby.h"
+#include "mruby/compile.h"
 
 static mrb_value
 proc_in_c(mrb_state *mrb, mrb_value self)

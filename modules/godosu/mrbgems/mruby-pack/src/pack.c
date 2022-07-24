@@ -2,7 +2,7 @@
  ** pack.c - Array#pack, String#unpack
  */
 
-#include <mruby.h>
+#include "mruby.h"
 #include "mruby/error.h"
 #include "mruby/array.h"
 #include "mruby/class.h"

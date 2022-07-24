@@ -1,11 +1,11 @@
-#include <mruby.h>
-#include <mruby/array.h>
-#include <mruby/hash.h>
-#include <mruby/proc.h>
-#include <mruby/variable.h>
-#include <mruby/presym.h>
-#include <mruby/opcode.h>
-#include <mruby/debug.h>
+#include "mruby.h"
+#include "mruby/array.h"
+#include "mruby/hash.h"
+#include "mruby/proc.h"
+#include "mruby/variable.h"
+#include "mruby/presym.h"
+#include "mruby/opcode.h"
+#include "mruby/debug.h"
 
 void mrb_proc_merge_lvar(mrb_state *mrb, mrb_irep *irep, struct REnv *env, int num, const mrb_sym *lv, const mrb_value *stack);
 mrb_value mrb_proc_local_variables(mrb_state *mrb, const struct RProc *proc);

@@ -4,22 +4,22 @@
 ** See Copyright Notice in mruby.h
 */
 
-#include <mruby.h>
-#include <mruby/array.h>
-#include <mruby/class.h>
-#include <mruby/hash.h>
-#include <mruby/irep.h>
-#include <mruby/numeric.h>
-#include <mruby/proc.h>
-#include <mruby/range.h>
-#include <mruby/string.h>
-#include <mruby/variable.h>
-#include <mruby/error.h>
-#include <mruby/opcode.h>
+#include "mruby.h"
+#include "mruby/array.h"
+#include "mruby/class.h"
+#include "mruby/hash.h"
+#include "mruby/irep.h"
+#include "mruby/numeric.h"
+#include "mruby/proc.h"
+#include "mruby/range.h"
+#include "mruby/string.h"
+#include "mruby/variable.h"
+#include "mruby/error.h"
+#include "mruby/opcode.h"
 #include "value_array.h"
-#include <mruby/throw.h>
-#include <mruby/dump.h>
-#include <mruby/presym.h>
+#include "mruby/throw.h"
+#include "mruby/dump.h"
+#include "mruby/presym.h"
 
 #ifdef MRB_NO_STDIO
 #if defined(__cplusplus)

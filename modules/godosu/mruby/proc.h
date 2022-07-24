@@ -8,7 +8,7 @@
 #define MRUBY_PROC_H
 
 #include "common.h"
-#include <mruby/irep.h>
+#include "mruby/irep.h"
 
 /**
  * Proc class
@@ -134,7 +134,7 @@ MRB_API mrb_value mrb_proc_cfunc_env_get(mrb_state *mrb, mrb_int idx);
 #define MRB_METHOD_CFUNC(m) (MRB_METHOD_FUNC_P(m)?MRB_METHOD_FUNC(m):((MRB_METHOD_PROC(m)&&MRB_PROC_CFUNC_P(MRB_METHOD_PROC(m)))?MRB_PROC_CFUNC(MRB_METHOD_PROC(m)):NULL))
 
 
-#include <mruby/khash.h>
+#include "mruby/khash.h"
 
 MRB_API mrb_value mrb_load_proc(mrb_state *mrb, const struct RProc *proc);
 

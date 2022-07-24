@@ -1,4 +1,4 @@
-#include <mruby.h>
+#include "mruby.h"
 
 #ifdef MRB_NO_STDIO
 # error mruby-bin-mruby conflicts 'MRB_NO_STDIO' in your build configuration
@@ -6,11 +6,11 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <mruby/array.h>
-#include <mruby/compile.h>
-#include <mruby/dump.h>
-#include <mruby/variable.h>
-#include <mruby/proc.h>
+#include "mruby/array.h"
+#include "mruby/compile.h"
+#include "mruby/dump.h"
+#include "mruby/variable.h"
+#include "mruby/proc.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 # include <io.h> /* for setmode */

@@ -4,13 +4,13 @@
 ** See Copyright Notice in mruby.h
 */
 
-#include <mruby.h>
-#include <mruby/class.h>
-#include <mruby/data.h>
-#include <mruby/numeric.h>
-#include <mruby/time.h>
-#include <mruby/string.h>
-#include <mruby/presym.h>
+#include "mruby.h"
+#include "mruby/class.h"
+#include "mruby/data.h"
+#include "mruby/numeric.h"
+#include "mruby/time.h"
+#include "mruby/string.h"
+#include "mruby/presym.h"
 
 #ifdef MRB_NO_STDIO
 #include <string.h>

@@ -172,7 +172,7 @@ MRB_VTYPE_FOREACH(MRB_VTYPE_TYPEDEF)
 /* for compatibility */
 #define MRB_TT_FIXNUM MRB_TT_INTEGER
 
-#include <mruby/object.h>
+#include "mruby/object.h"
 
 #ifdef MRB_DOCUMENTATION_BLOCK
 

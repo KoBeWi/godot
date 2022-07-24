@@ -7,7 +7,7 @@
 #ifndef MRUBY_PRESYM_ENABLE_H
 #define MRUBY_PRESYM_ENABLE_H
 
-#include <mruby/presym/id.h>
+#include "mruby/presym/id.h"
 
 #define MRB_OPSYM(name) MRB_OPSYM__##name
 #define MRB_CVSYM(name) MRB_CVSYM__##name

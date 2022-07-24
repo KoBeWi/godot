@@ -1,5 +1,5 @@
-#include <mruby.h>
-#include <mruby/error.h>
+#include "mruby.h"
+#include "mruby/error.h"
 
 struct protect_data {
   mrb_func_t body;

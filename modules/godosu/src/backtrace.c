@@ -4,17 +4,17 @@
 ** See Copyright Notice in mruby.h
 */
 
-#include <mruby.h>
-#include <mruby/variable.h>
-#include <mruby/proc.h>
-#include <mruby/array.h>
-#include <mruby/string.h>
-#include <mruby/class.h>
-#include <mruby/debug.h>
-#include <mruby/error.h>
-#include <mruby/numeric.h>
-#include <mruby/data.h>
-#include <mruby/presym.h>
+#include "mruby.h"
+#include "mruby/variable.h"
+#include "mruby/proc.h"
+#include "mruby/array.h"
+#include "mruby/string.h"
+#include "mruby/class.h"
+#include "mruby/debug.h"
+#include "mruby/error.h"
+#include "mruby/numeric.h"
+#include "mruby/data.h"
+#include "mruby/presym.h"
 
 struct backtrace_location {
   int32_t lineno;

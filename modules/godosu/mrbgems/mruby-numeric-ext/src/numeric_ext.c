@@ -1,6 +1,6 @@
-#include <mruby.h>
-#include <mruby/numeric.h>
-#include <mruby/presym.h>
+#include "mruby.h"
+#include "mruby/numeric.h"
+#include "mruby/presym.h"
 
 /*
  *  call-seq:

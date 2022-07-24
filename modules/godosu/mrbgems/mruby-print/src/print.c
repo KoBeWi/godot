@@ -1,10 +1,10 @@
-#include <mruby.h>
+#include "mruby.h"
 
 #ifdef MRB_NO_STDIO
 # error print conflicts 'MRB_NO_STDIO' in your build configuration
 #endif
 
-#include <mruby/string.h>
+#include "mruby/string.h"
 #include <string.h>
 #if defined(_WIN32)
 # include <windows.h>

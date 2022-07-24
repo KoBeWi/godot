@@ -4,12 +4,12 @@
 ** See Copyright Notice in mruby.h
 */
 
-#include <mruby.h>
-#include <mruby/array.h>
-#include <mruby/numeric.h>
-#include <mruby/string.h>
-#include <mruby/class.h>
-#include <mruby/presym.h>
+#include "mruby.h"
+#include "mruby/array.h"
+#include "mruby/numeric.h"
+#include "mruby/string.h"
+#include "mruby/class.h"
+#include "mruby/presym.h"
 #include <string.h>
 
 #ifndef MRB_NO_FLOAT

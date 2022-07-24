@@ -8,20 +8,20 @@
 #ifdef MRB_USE_MALLOC_TRIM
 #include <malloc.h>
 #endif
-#include <mruby.h>
-#include <mruby/array.h>
-#include <mruby/class.h>
-#include <mruby/data.h>
-#include <mruby/istruct.h>
-#include <mruby/hash.h>
-#include <mruby/proc.h>
-#include <mruby/range.h>
-#include <mruby/string.h>
-#include <mruby/variable.h>
-#include <mruby/gc.h>
-#include <mruby/error.h>
-#include <mruby/throw.h>
-#include <mruby/presym.h>
+#include "mruby.h"
+#include "mruby/array.h"
+#include "mruby/class.h"
+#include "mruby/data.h"
+#include "mruby/istruct.h"
+#include "mruby/hash.h"
+#include "mruby/proc.h"
+#include "mruby/range.h"
+#include "mruby/string.h"
+#include "mruby/variable.h"
+#include "mruby/gc.h"
+#include "mruby/error.h"
+#include "mruby/throw.h"
+#include "mruby/presym.h"
 
 #ifdef MRB_GC_STRESS
 #include <stdlib.h>

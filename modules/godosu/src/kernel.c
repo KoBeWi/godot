@@ -4,16 +4,16 @@
 ** See Copyright Notice in mruby.h
 */
 
-#include <mruby.h>
-#include <mruby/array.h>
-#include <mruby/hash.h>
-#include <mruby/class.h>
-#include <mruby/proc.h>
-#include <mruby/string.h>
-#include <mruby/variable.h>
-#include <mruby/error.h>
-#include <mruby/istruct.h>
-#include <mruby/presym.h>
+#include "mruby.h"
+#include "mruby/array.h"
+#include "mruby/hash.h"
+#include "mruby/class.h"
+#include "mruby/proc.h"
+#include "mruby/string.h"
+#include "mruby/variable.h"
+#include "mruby/error.h"
+#include "mruby/istruct.h"
+#include "mruby/presym.h"
 
 MRB_API mrb_bool
 mrb_func_basic_p(mrb_state *mrb, mrb_value obj, mrb_sym mid, mrb_func_t func)

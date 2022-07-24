@@ -1,7 +1,7 @@
-#include <mruby.h>
-#include <mruby/class.h>
-#include <mruby/string.h>
-#include <mruby/istruct.h>
+#include "mruby.h"
+#include "mruby/class.h"
+#include "mruby/string.h"
+#include "mruby/istruct.h"
 
 static mrb_value
 istruct_test_initialize(mrb_state *mrb, mrb_value self)

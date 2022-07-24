@@ -4,18 +4,18 @@
 ** See Copyright Notice in mruby.h
 */
 
-#include <mruby.h>
-#include <mruby/string.h>
-#include <mruby/dump.h>
-#include <mruby/irep.h>
-#include <mruby/debug.h>
+#include "mruby.h"
+#include "mruby/string.h"
+#include "mruby/dump.h"
+#include "mruby/irep.h"
+#include "mruby/debug.h"
 
 #include <string.h>
 
 #ifndef MRB_NO_STDIO
 
 #ifndef MRB_NO_FLOAT
-#include <mruby/endian.h>
+#include "mruby/endian.h"
 #define MRB_FLOAT_FMT "%.17g"
 #endif
 

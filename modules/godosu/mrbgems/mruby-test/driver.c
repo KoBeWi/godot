@@ -10,13 +10,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <mruby.h>
-#include <mruby/proc.h>
-#include <mruby/data.h>
-#include <mruby/compile.h>
-#include <mruby/string.h>
-#include <mruby/variable.h>
-#include <mruby/array.h>
+#include "mruby.h"
+#include "mruby/proc.h"
+#include "mruby/data.h"
+#include "mruby/compile.h"
+#include "mruby/string.h"
+#include "mruby/variable.h"
+#include "mruby/array.h"
 
 extern const uint8_t mrbtest_assert_irep[];
 

@@ -4,15 +4,15 @@
 ** See Copyright Notice in mruby.h
 */
 
-#include <mruby.h>
-#include <mruby/dump.h>
-#include <mruby/string.h>
-#include <mruby/irep.h>
-#include <mruby/debug.h>
+#include "mruby.h"
+#include "mruby/dump.h"
+#include "mruby/string.h"
+#include "mruby/irep.h"
+#include "mruby/debug.h"
 #include <string.h>
 
 #ifndef MRB_NO_FLOAT
-#include <mruby/endian.h>
+#include "mruby/endian.h"
 #endif
 
 static size_t get_irep_record_size_1(mrb_state *mrb, const mrb_irep *irep);

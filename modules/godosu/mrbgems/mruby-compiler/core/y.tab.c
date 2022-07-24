@@ -77,14 +77,14 @@
 #include <ctype.h>
 #include <errno.h>
 #include <string.h>
-#include <mruby.h>
-#include <mruby/compile.h>
-#include <mruby/proc.h>
-#include <mruby/error.h>
-#include <mruby/throw.h>
-#include <mruby/string.h>
-#include <mruby/dump.h>
-#include <mruby/presym.h>
+#include "mruby.h"
+#include "mruby/compile.h"
+#include "mruby/proc.h"
+#include "mruby/error.h"
+#include "mruby/throw.h"
+#include "mruby/string.h"
+#include "mruby/dump.h"
+#include "mruby/presym.h"
 #include "node.h"
 
 #define YYLEX_PARAM p
