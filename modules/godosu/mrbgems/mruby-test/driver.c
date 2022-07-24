@@ -278,32 +278,32 @@ mrb_t_pass_result(mrb_state *mrb_dst, mrb_state *mrb_src)
   }
 }
 
-int
-main(int argc, char **argv)
-{
-  mrb_state *mrb;
-  int ret;
-  mrb_bool verbose = FALSE;
+// int
+// main(int argc, char **argv)
+// {
+//   mrb_state *mrb;
+//   int ret;
+//   mrb_bool verbose = FALSE;
 
-  print_hint();
+//   print_hint();
 
-  /* new interpreter instance */
-  mrb = mrb_open();
-  if (mrb == NULL) {
-    fprintf(stderr, "Invalid mrb_state, exiting test driver");
-    return EXIT_FAILURE;
-  }
+//   /* new interpreter instance */
+//   mrb = mrb_open();
+//   if (mrb == NULL) {
+//     fprintf(stderr, "Invalid mrb_state, exiting test driver");
+//     return EXIT_FAILURE;
+//   }
 
-  if (argc == 2 && argv[1][0] == '-' && argv[1][1] == 'v') {
-    printf("verbose mode: enable\n\n");
-    verbose = TRUE;
-  }
+//   if (argc == 2 && argv[1][0] == '-' && argv[1][1] == 'v') {
+//     printf("verbose mode: enable\n\n");
+//     verbose = TRUE;
+//   }
 
-  mrb_init_test_driver(mrb, verbose);
-  mrb_load_irep(mrb, mrbtest_assert_irep);
-  mrbgemtest_init(mrb);
-  ret = eval_test(mrb);
-  mrb_close(mrb);
+//   mrb_init_test_driver(mrb, verbose);
+//   mrb_load_irep(mrb, mrbtest_assert_irep);
+//   mrbgemtest_init(mrb);
+//   ret = eval_test(mrb);
+//   mrb_close(mrb);
 
-  return ret;
-}
+//   return ret;
+// }
