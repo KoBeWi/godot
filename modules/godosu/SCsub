@@ -1,0 +1,10 @@
+# SCsub
+
+Import('env')
+Import("env_modules")
+
+env_godosu = env_modules.Clone()
+
+env_godosu.add_source_files(env.modules_sources, "*.cpp") # Add all cpp files to the build
+env_godosu.add_source_files(env.modules_sources, "src/*.c") # Add all cpp files to the build
+env_godosu.add_source_files(env.modules_sources, "src/mruby/*.c") # Add all cpp files to the build
