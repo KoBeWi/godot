@@ -128,7 +128,7 @@ protected:
 	static void _bind_methods();
 
 public:
-	void config(const String &p_base_name, const String &p_base_path, bool p_built_in_enabled = true, bool p_load_enabled = true);
+	void config(const String &p_base_name, const String &p_base_path, const String &p_built_in_name = "", bool p_load_enabled = true);
 	void set_inheritance_base_type(const String &p_base);
 	ScriptCreateDialog();
 };

@@ -161,7 +161,7 @@ bool ScriptCreateDialog::_can_be_built_in() {
 	return (supports_built_in && built_in_enabled);
 }
 
-void ScriptCreateDialog::config(const String &p_base_name, const String &p_base_path, bool p_built_in_enabled, bool p_load_enabled) {
+void ScriptCreateDialog::config(const String &p_base_name, const String &p_base_path, const String &p_built_in_name, bool p_load_enabled) {
 	class_name->set_text("");
 	class_name->deselect();
 	parent_name->set_text(p_base_name);
@@ -177,7 +177,8 @@ void ScriptCreateDialog::config(const String &p_base_name, const String &p_base_
 	}
 	file_path->deselect();
 
-	built_in_enabled = p_built_in_enabled;
+	built_in_enabled = !p_built_in_name.is_empty();
+	internal_name->set_text(p_built_in_name);
 	load_enabled = p_load_enabled;
 
 	_language_changed(current_language);
@@ -916,7 +917,7 @@ String ScriptCreateDialog::_get_script_origin_label(const ScriptLanguage::Templa
 }
 
 void ScriptCreateDialog::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("config", "inherits", "path", "built_in_enabled", "load_enabled"), &ScriptCreateDialog::config, DEFVAL(true), DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("config", "inherits", "path", "built_in_name", "load_enabled"), &ScriptCreateDialog::config, DEFVAL(""), DEFVAL(true));
 
 	ADD_SIGNAL(MethodInfo("script_created", PropertyInfo(Variant::OBJECT, "script", PROPERTY_HINT_RESOURCE_TYPE, "Script")));
 }
