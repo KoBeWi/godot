@@ -4,17 +4,23 @@
 
 static Gosu *global_gosu;
 
-mrb_value ruby_method(mrb_state *mrb, mrb_value self) {
-    global_gosu->draw_sth();
+mrb_value f_success(mrb_state *mrb, mrb_value self) {
+    print_line("OK");
     return mrb_nil_value();
 }
 
-void Gosu::draw_sth() {
-    print_line("draw");
+mrb_value f_draw_rect(mrb_state *mrb, mrb_value self) {
+    mrb_int x;
+    mrb_int y;
+    mrb_int w;
+    mrb_int h;
+    mrb_get_args(mrb, "iiii", &x, &y, &w, &h);
+    global_gosu->draw_rect(Rect2(x, y, w, h), Color(1, 0, 0));
+    return mrb_nil_value();
 }
 
-String Gosu::get_file_source(const String &p_path) {
-    Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ);
+String Gosu::get_file_source(const String &p_path, const String &p_base) {
+    Ref<FileAccess> f = FileAccess::open(p_base.is_empty() ? p_path : p_base.plus_file(p_path), FileAccess::READ);
     PackedStringArray lines = f->get_as_utf8_string().split("\n");
     for (int i = 0; i < lines.size(); i++) {
         const String &line = lines[i];
@@ -23,7 +29,7 @@ String Gosu::get_file_source(const String &p_path) {
             int end = line.find("\"", start + 1);
 
             String next_file = line.substr(start + 1, end - start - 1);
-            lines.write[i] = get_file_source(next_file);
+            lines.write[i] = get_file_source(p_base + next_file, p_base.is_empty() ? p_path.get_base_dir() : p_base);
         }
     }
     return String("\n").join(lines);
@@ -36,11 +42,18 @@ void Gosu::_notification(int p_what) {
 
     switch (p_what) {
         case NOTIFICATION_READY: {
-            // mrb_value obj = mrb_load_string(mrb, "def dupa;ruby_method;end");
-
             String source = get_file_source(main_file_path);
-            mrb_value obj = mrb_load_string(mrb, source.utf8().get_data());
-            mrb_funcall(mrb, obj, "dupa", 0);
+            main = mrb_load_string(mrb, source.utf8().get_data());
+            set_process_internal(true);
+        } break;
+
+        case NOTIFICATION_INTERNAL_PROCESS: {
+            mrb_funcall(mrb, main, "update", 0);
+            update();
+        } break;
+
+        case NOTIFICATION_DRAW: {
+            mrb_funcall(mrb, main, "draw", 0);
         } break;
     }
 }
@@ -59,11 +72,8 @@ Gosu::Gosu() {
     global_gosu = this;
     mrb = mrb_open();
 
-    auto gosu_module = mrb_define_module(mrb, "Gosu");
-    // mrb_define_module_function(mrb, gosu_module, "ruby_method", &Gosu::draw_sth, MRB_ARGS_NONE());
-    mrb_define_method(mrb, mrb->object_class, "ruby_method", ruby_method, MRB_ARGS_NONE());
-
-    // mrb_funcall_id(
+    mrb_define_method(mrb, mrb->object_class, "success", f_success, MRB_ARGS_NONE());
+    mrb_define_method(mrb, mrb->object_class, "draw_rect", f_draw_rect, MRB_ARGS_REQ(4));
 }
 
 Gosu::~Gosu() {
