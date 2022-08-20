@@ -4,18 +4,21 @@
 
 static Gosu *global_gosu;
 
-mrb_value f_success(mrb_state *mrb, mrb_value self) {
-    print_line("OK");
+mrb_value f_print(mrb_state *mrb, mrb_value self) {
+    char *string;
+    mrb_get_args(mrb, "z", &string);
+    print_line(string);
     return mrb_nil_value();
 }
 
 mrb_value f_draw_rect(mrb_state *mrb, mrb_value self) {
-    mrb_int x;
-    mrb_int y;
-    mrb_int w;
-    mrb_int h;
-    mrb_get_args(mrb, "iiii", &x, &y, &w, &h);
-    global_gosu->draw_rect(Rect2(x, y, w, h), Color(1, 0, 0));
+    mrb_float x;
+    mrb_float y;
+    mrb_float w;
+    mrb_float h;
+    char *color;
+    mrb_get_args(mrb, "ffffz", &x, &y, &w, &h, &color);
+    global_gosu->draw_rect(Rect2(x, y, w, h), Color(color));
     return mrb_nil_value();
 }
 
@@ -50,6 +53,12 @@ void Gosu::_notification(int p_what) {
         case NOTIFICATION_INTERNAL_PROCESS: {
             mrb_funcall(mrb, main, "update", 0);
             update();
+
+            if (mrb->exc) {
+                mrb_print_error(mrb);
+                mrb_print_backtrace(mrb);
+                queue_delete();
+            }
         } break;
 
         case NOTIFICATION_DRAW: {
@@ -72,8 +81,9 @@ Gosu::Gosu() {
     global_gosu = this;
     mrb = mrb_open();
 
-    mrb_define_method(mrb, mrb->object_class, "success", f_success, MRB_ARGS_NONE());
-    mrb_define_method(mrb, mrb->object_class, "draw_rect", f_draw_rect, MRB_ARGS_REQ(4));
+    mrb_define_method(mrb, mrb->object_class, "gd_print", f_print, MRB_ARGS_REQ(1));
+
+    mrb_define_method(mrb, mrb->object_class, "gd_draw_rect", f_draw_rect, MRB_ARGS_REQ(5));
 }
 
 Gosu::~Gosu() {
