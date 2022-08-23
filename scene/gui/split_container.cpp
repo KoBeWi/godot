@@ -61,7 +61,7 @@ void SplitContainer::_resort() {
 	Control *first = _getch(0);
 	Control *second = _getch(1);
 
-	// If we have only one element
+	// If we have only one element.
 	if (!first || !second) {
 		if (first) {
 			fit_child_in_rect(first, Rect2(Point2(), get_size()));
@@ -71,35 +71,21 @@ void SplitContainer::_resort() {
 		return;
 	}
 
-	// Determine expanded children
-	bool first_expanded = (vertical ? first->get_v_size_flags() : first->get_h_size_flags()) & SIZE_EXPAND;
-	bool second_expanded = (vertical ? second->get_v_size_flags() : second->get_h_size_flags()) & SIZE_EXPAND;
-
-	// Determine the separation between items
+	// Determine the separation between items.
 	Ref<Texture2D> g = get_theme_icon(SNAME("grabber"));
 	int sep = get_theme_constant(SNAME("separation"));
 	sep = (dragger_visibility != DRAGGER_HIDDEN_COLLAPSED) ? MAX(sep, vertical ? g->get_height() : g->get_width()) : 0;
 
-	// Compute the minimum size
+	// Compute the minimum size.
 	Size2 ms_first = first->get_combined_minimum_size();
 	Size2 ms_second = second->get_combined_minimum_size();
 
-	// Compute the separator position without the split offset
-	float ratio = first->get_stretch_ratio() / (first->get_stretch_ratio() + second->get_stretch_ratio());
-	int no_offset_middle_sep = 0;
-	if (first_expanded && second_expanded) {
-		no_offset_middle_sep = get_size()[axis] * ratio - sep / 2;
-	} else if (first_expanded) {
-		no_offset_middle_sep = get_size()[axis] - ms_second[axis] - sep;
-	} else {
-		no_offset_middle_sep = ms_first[axis];
-	}
+	// Compute the final middle separation.
+	middle_sep = get_size()[axis] / 2;
+	if (!collapsed || collapsed) {
+		int clamped_split_offset = CLAMP(split_offset, ms_first[axis], get_size()[axis] - ms_second[axis]);
+		middle_sep = clamped_split_offset;
 
-	// Compute the final middle separation
-	middle_sep = no_offset_middle_sep;
-	if (!collapsed) {
-		int clamped_split_offset = CLAMP(split_offset, ms_first[axis] - no_offset_middle_sep, get_size()[axis] - ms_second[axis] - sep);
-		middle_sep = MAX(middle_sep, clamped_split_offset);
 		if (should_clamp_split_offset) {
 			split_offset = clamped_split_offset;
 			should_clamp_split_offset = false;
@@ -127,15 +113,14 @@ void SplitContainer::_resort() {
 }
 
 Size2 SplitContainer::get_minimum_size() const {
-	/* Calculate MINIMUM SIZE */
-
 	Size2i minimum;
 	Ref<Texture2D> g = get_theme_icon(SNAME("grabber"));
 	int sep = get_theme_constant(SNAME("separation"));
 	sep = (dragger_visibility != DRAGGER_HIDDEN_COLLAPSED) ? MAX(sep, vertical ? g->get_height() : g->get_width()) : 0;
 
 	for (int i = 0; i < 2; i++) {
-		if (!_getch(i)) {
+		Control *c = _getch(i);
+		if (!c) {
 			break;
 		}
 
@@ -147,7 +132,7 @@ Size2 SplitContainer::get_minimum_size() const {
 			}
 		}
 
-		Size2 ms = _getch(i)->get_combined_minimum_size();
+		Size2 ms = c->get_combined_minimum_size();
 
 		if (vertical) {
 			minimum.height += ms.height;
@@ -342,21 +327,16 @@ bool SplitContainer::is_collapsed() const {
 Vector<int> SplitContainer::get_allowed_size_flags_horizontal() const {
 	Vector<int> flags;
 	flags.append(SIZE_FILL);
-	if (!vertical) {
-		flags.append(SIZE_EXPAND);
-	}
 	flags.append(SIZE_SHRINK_BEGIN);
 	flags.append(SIZE_SHRINK_CENTER);
 	flags.append(SIZE_SHRINK_END);
+	print_line(flags);
 	return flags;
 }
 
 Vector<int> SplitContainer::get_allowed_size_flags_vertical() const {
 	Vector<int> flags;
 	flags.append(SIZE_FILL);
-	if (vertical) {
-		flags.append(SIZE_EXPAND);
-	}
 	flags.append(SIZE_SHRINK_BEGIN);
 	flags.append(SIZE_SHRINK_CENTER);
 	flags.append(SIZE_SHRINK_END);
