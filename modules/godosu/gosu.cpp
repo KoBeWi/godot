@@ -51,14 +51,14 @@ mrb_value f_load_texture(mrb_state *mrb, mrb_value self) {
 
     Ref<Image> image;
     image.instantiate();
-    image->load(global_gosu->get_main_file_path().get_base_dir().plus_file(path));
+    image->load(global_gosu->get_main_file_path().get_base_dir().path_join(path));
     global_gosu->image_cache[path] = ImageTexture::create_from_image(image);
 
 	return mrb_nil_value();
 }
 
 String Gosu::get_file_source(const String &p_path, const String &p_base) {
-	Ref<FileAccess> f = FileAccess::open(p_base.is_empty() ? p_path : p_base.plus_file(p_path), FileAccess::READ);
+	Ref<FileAccess> f = FileAccess::open(p_base.is_empty() ? p_path : p_base.path_join(p_path), FileAccess::READ);
 	PackedStringArray lines = f->get_as_utf8_string().split("\n");
 	for (int i = 0; i < lines.size(); i++) {
 		const String &line = lines[i];
@@ -88,7 +88,7 @@ void Gosu::_notification(int p_what) {
 
 		case NOTIFICATION_INTERNAL_PROCESS: {
 			mrb_funcall(mrb, main, "update", 0);
-			update();
+			queue_redraw();
 
 			if (mrb->exc) {
 				mrb_print_error(mrb);
