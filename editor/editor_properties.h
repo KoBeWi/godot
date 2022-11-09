@@ -41,6 +41,8 @@
 #include "scene/gui/color_picker.h"
 #include "scene/gui/line_edit.h"
 
+class CheckButton;
+
 class EditorPropertyNil : public EditorProperty {
 	GDCLASS(EditorPropertyNil, EditorProperty);
 	LineEdit *text = nullptr;
@@ -235,7 +237,7 @@ public:
 
 class EditorPropertyCheck : public EditorProperty {
 	GDCLASS(EditorPropertyCheck, EditorProperty);
-	CheckBox *checkbox = nullptr;
+	CheckButton *checkbox = nullptr;
 
 	void _checkbox_pressed();
 
