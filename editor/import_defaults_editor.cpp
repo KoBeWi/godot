@@ -84,7 +84,9 @@ void ImportDefaultsEditor::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
-			inspector->set_property_name_style(EditorPropertyNameProcessor::get_settings_style());
+			if (EditorSettings::get_singleton()->check_changed_settings_in_group("interface/editor/localize_settings")) {
+				inspector->set_property_name_style(EditorPropertyNameProcessor::get_settings_style());
+			}
 		} break;
 
 		case NOTIFICATION_PREDELETE: {

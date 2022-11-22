@@ -441,38 +441,42 @@ void FileSystemDock::_notification(int p_what) {
 
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
 			// Update icons.
-			button_reload->set_icon(get_theme_icon(SNAME("Reload"), SNAME("EditorIcons")));
-			button_toggle_display_mode->set_icon(get_theme_icon(SNAME("Panels2"), SNAME("EditorIcons")));
-			if (is_layout_rtl()) {
-				button_hist_next->set_icon(get_theme_icon(SNAME("Back"), SNAME("EditorIcons")));
-				button_hist_prev->set_icon(get_theme_icon(SNAME("Forward"), SNAME("EditorIcons")));
-			} else {
-				button_hist_next->set_icon(get_theme_icon(SNAME("Forward"), SNAME("EditorIcons")));
-				button_hist_prev->set_icon(get_theme_icon(SNAME("Back"), SNAME("EditorIcons")));
-			}
-			if (file_list_display_mode == FILE_LIST_DISPLAY_LIST) {
-				button_file_list_display_mode->set_icon(get_theme_icon(SNAME("FileThumbnail"), SNAME("EditorIcons")));
-			} else {
-				button_file_list_display_mode->set_icon(get_theme_icon(SNAME("FileList"), SNAME("EditorIcons")));
-			}
+			if (EditorSettings::get_singleton()->check_changed_settings_in_group("interface/theme")) {
+				button_reload->set_icon(get_theme_icon(SNAME("Reload"), SNAME("EditorIcons")));
+				button_toggle_display_mode->set_icon(get_theme_icon(SNAME("Panels2"), SNAME("EditorIcons")));
+				if (is_layout_rtl()) {
+					button_hist_next->set_icon(get_theme_icon(SNAME("Back"), SNAME("EditorIcons")));
+					button_hist_prev->set_icon(get_theme_icon(SNAME("Forward"), SNAME("EditorIcons")));
+				} else {
+					button_hist_next->set_icon(get_theme_icon(SNAME("Forward"), SNAME("EditorIcons")));
+					button_hist_prev->set_icon(get_theme_icon(SNAME("Back"), SNAME("EditorIcons")));
+				}
+				if (file_list_display_mode == FILE_LIST_DISPLAY_LIST) {
+					button_file_list_display_mode->set_icon(get_theme_icon(SNAME("FileThumbnail"), SNAME("EditorIcons")));
+				} else {
+					button_file_list_display_mode->set_icon(get_theme_icon(SNAME("FileList"), SNAME("EditorIcons")));
+				}
 
-			tree_search_box->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
-			tree_search_box->set_clear_button_enabled(true);
-			tree_button_sort->set_icon(get_theme_icon(SNAME("Sort"), SNAME("EditorIcons")));
+				tree_search_box->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
+				tree_search_box->set_clear_button_enabled(true);
+				tree_button_sort->set_icon(get_theme_icon(SNAME("Sort"), SNAME("EditorIcons")));
 
-			file_list_search_box->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
-			file_list_search_box->set_clear_button_enabled(true);
-			file_list_button_sort->set_icon(get_theme_icon(SNAME("Sort"), SNAME("EditorIcons")));
+				file_list_search_box->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
+				file_list_search_box->set_clear_button_enabled(true);
+				file_list_button_sort->set_icon(get_theme_icon(SNAME("Sort"), SNAME("EditorIcons")));
+			}
 
 			// Update always show folders.
-			bool new_always_show_folders = bool(EDITOR_GET("docks/filesystem/always_show_folders"));
-			if (new_always_show_folders != always_show_folders) {
-				always_show_folders = new_always_show_folders;
-				_update_file_list(true);
-			}
+			if (EditorSettings::get_singleton()->check_changed_settings_in_group("docks/filesystem")) {
+				bool new_always_show_folders = bool(EDITOR_GET("docks/filesystem/always_show_folders"));
+				if (new_always_show_folders != always_show_folders) {
+					always_show_folders = new_always_show_folders;
+					_update_file_list(true);
+				}
 
-			// Change full tree mode.
-			_update_display_mode();
+				// Change full tree mode.
+				_update_display_mode();
+			}
 		} break;
 	}
 }

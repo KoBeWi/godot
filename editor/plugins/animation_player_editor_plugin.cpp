@@ -111,7 +111,9 @@ void AnimationPlayerEditor::_notification(int p_what) {
 		} break;
 
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
-			add_theme_style_override("panel", EditorNode::get_singleton()->get_gui_base()->get_theme_stylebox(SNAME("panel"), SNAME("Panel")));
+			if (EditorSettings::get_singleton()->check_changed_settings_in_group("interface/theme")) {
+				add_theme_style_override("panel", EditorNode::get_singleton()->get_gui_base()->get_theme_stylebox(SNAME("panel"), SNAME("Panel")));
+			}
 		} break;
 
 		case NOTIFICATION_TRANSLATION_CHANGED:

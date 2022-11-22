@@ -131,14 +131,16 @@ void EditorFileDialog::_notification(int p_what) {
 		} break;
 
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
-			bool is_showing_hidden = EDITOR_GET("filesystem/file_dialog/show_hidden_files");
-			if (show_hidden_files != is_showing_hidden) {
-				set_show_hidden_files(is_showing_hidden);
-			}
-			set_display_mode((DisplayMode)EDITOR_GET("filesystem/file_dialog/display_mode").operator int());
+			if (EditorSettings::get_singleton()->check_changed_settings_in_group("filesystem/file_dialog")) {
+				bool is_showing_hidden = EDITOR_GET("filesystem/file_dialog/show_hidden_files");
+				if (show_hidden_files != is_showing_hidden) {
+					set_show_hidden_files(is_showing_hidden);
+				}
+				set_display_mode((DisplayMode)EDITOR_GET("filesystem/file_dialog/display_mode").operator int());
 
-			// DO NOT CALL UPDATE FILE LIST HERE, ALL HUNDREDS OF HIDDEN DIALOGS WILL RESPOND, CALL INVALIDATE INSTEAD
-			invalidate();
+				// DO NOT CALL UPDATE FILE LIST HERE, ALL HUNDREDS OF HIDDEN DIALOGS WILL RESPOND, CALL INVALIDATE INSTEAD
+				invalidate();
+			}
 		} break;
 
 		case NOTIFICATION_VISIBILITY_CHANGED: {

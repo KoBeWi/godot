@@ -143,7 +143,9 @@ void EditorSettingsDialog::_notification(int p_what) {
 		} break;
 
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
-			_update_icons();
+			if (EditorSettings::get_singleton()->check_changed_settings_in_group("interface/theme")) {
+				_update_icons();
+			}
 
 			bool update_shortcuts_tab =
 					EditorSettings::get_singleton()->check_changed_settings_in_group("shortcuts") ||

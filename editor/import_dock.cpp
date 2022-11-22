@@ -564,8 +564,12 @@ void ImportDock::_reimport() {
 void ImportDock::_notification(int p_what) {
 	switch (p_what) {
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
-			imported->add_theme_style_override("normal", get_theme_stylebox(SNAME("normal"), SNAME("LineEdit")));
-			import_opts->set_property_name_style(EditorPropertyNameProcessor::get_settings_style());
+			if (EditorSettings::get_singleton()->check_changed_settings_in_group("interface/theme")) {
+				imported->add_theme_style_override("normal", get_theme_stylebox(SNAME("normal"), SNAME("LineEdit")));
+			}
+			if (EditorSettings::get_singleton()->check_changed_settings_in_group("interface/editor/localize_settings")) {
+				import_opts->set_property_name_style(EditorPropertyNameProcessor::get_settings_style());
+			}
 		} break;
 
 		case NOTIFICATION_ENTER_TREE: {

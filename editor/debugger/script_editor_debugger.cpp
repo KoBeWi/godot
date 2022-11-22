@@ -837,18 +837,20 @@ void ScriptEditorDebugger::_notification(int p_what) {
 		} break;
 
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
-			if (tabs->has_theme_stylebox_override("panel")) {
-				tabs->add_theme_style_override("panel", EditorNode::get_singleton()->get_gui_base()->get_theme_stylebox(SNAME("DebuggerPanel"), SNAME("EditorStyles")));
-			}
+			if (EditorSettings::get_singleton()->check_changed_settings_in_group("interface/theme")) {
+				if (tabs->has_theme_stylebox_override("panel")) {
+					tabs->add_theme_style_override("panel", EditorNode::get_singleton()->get_gui_base()->get_theme_stylebox(SNAME("DebuggerPanel"), SNAME("EditorStyles")));
+				}
 
-			copy->set_icon(get_theme_icon(SNAME("ActionCopy"), SNAME("EditorIcons")));
-			step->set_icon(get_theme_icon(SNAME("DebugStep"), SNAME("EditorIcons")));
-			next->set_icon(get_theme_icon(SNAME("DebugNext"), SNAME("EditorIcons")));
-			dobreak->set_icon(get_theme_icon(SNAME("Pause"), SNAME("EditorIcons")));
-			docontinue->set_icon(get_theme_icon(SNAME("DebugContinue"), SNAME("EditorIcons")));
-			vmem_refresh->set_icon(get_theme_icon(SNAME("Reload"), SNAME("EditorIcons")));
-			vmem_export->set_icon(get_theme_icon(SNAME("Save"), SNAME("EditorIcons")));
-			search->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
+				copy->set_icon(get_theme_icon(SNAME("ActionCopy"), SNAME("EditorIcons")));
+				step->set_icon(get_theme_icon(SNAME("DebugStep"), SNAME("EditorIcons")));
+				next->set_icon(get_theme_icon(SNAME("DebugNext"), SNAME("EditorIcons")));
+				dobreak->set_icon(get_theme_icon(SNAME("Pause"), SNAME("EditorIcons")));
+				docontinue->set_icon(get_theme_icon(SNAME("DebugContinue"), SNAME("EditorIcons")));
+				vmem_refresh->set_icon(get_theme_icon(SNAME("Reload"), SNAME("EditorIcons")));
+				vmem_export->set_icon(get_theme_icon(SNAME("Save"), SNAME("EditorIcons")));
+				search->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
+			}
 		} break;
 	}
 }

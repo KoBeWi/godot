@@ -63,7 +63,9 @@ void ProjectExportDialog::_notification(int p_what) {
 		} break;
 
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
-			parameters->set_property_name_style(EditorPropertyNameProcessor::get_settings_style());
+			if (EditorSettings::get_singleton()->check_changed_settings_in_group("interface/editor/localize_settings")) {
+				parameters->set_property_name_style(EditorPropertyNameProcessor::get_settings_style());
+			}
 		} break;
 	}
 }

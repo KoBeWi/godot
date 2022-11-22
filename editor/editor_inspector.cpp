@@ -3911,7 +3911,9 @@ void EditorInspector::_notification(int p_what) {
 		} break;
 
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
-			_update_inspector_bg();
+			if (EditorSettings::get_singleton()->check_changed_settings_in_group("interface/theme")) {
+				_update_inspector_bg();
+			}
 
 			if (EditorSettings::get_singleton()->check_changed_settings_in_group("interface/inspector")) {
 				update_tree();

@@ -2165,8 +2165,10 @@ void EditorHelp::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_READY:
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
-			_wait_for_thread();
-			_update_doc();
+			if (EditorSettings::get_singleton()->check_changed_settings_in_group("text_editor/help")) {
+				_wait_for_thread();
+				_update_doc();
+			}
 		} break;
 
 		case NOTIFICATION_THEME_CHANGED: {

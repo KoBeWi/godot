@@ -422,35 +422,37 @@ void InspectorDock::_notification(int p_what) {
 		case NOTIFICATION_TRANSLATION_CHANGED:
 		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED:
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
-			set_theme(EditorNode::get_singleton()->get_gui_base()->get_theme());
+			if (EditorSettings::get_singleton()->check_changed_settings_in_group("interface/theme")) {
+				set_theme(EditorNode::get_singleton()->get_gui_base()->get_theme());
 
-			resource_new_button->set_icon(get_theme_icon(SNAME("New"), SNAME("EditorIcons")));
-			resource_load_button->set_icon(get_theme_icon(SNAME("Load"), SNAME("EditorIcons")));
-			resource_save_button->set_icon(get_theme_icon(SNAME("Save"), SNAME("EditorIcons")));
-			resource_extra_button->set_icon(get_theme_icon(SNAME("GuiTabMenuHl"), SNAME("EditorIcons")));
-			open_docs_button->set_icon(get_theme_icon(SNAME("HelpSearch"), SNAME("EditorIcons")));
+				resource_new_button->set_icon(get_theme_icon(SNAME("New"), SNAME("EditorIcons")));
+				resource_load_button->set_icon(get_theme_icon(SNAME("Load"), SNAME("EditorIcons")));
+				resource_save_button->set_icon(get_theme_icon(SNAME("Save"), SNAME("EditorIcons")));
+				resource_extra_button->set_icon(get_theme_icon(SNAME("GuiTabMenuHl"), SNAME("EditorIcons")));
+				open_docs_button->set_icon(get_theme_icon(SNAME("HelpSearch"), SNAME("EditorIcons")));
 
-			PopupMenu *resource_extra_popup = resource_extra_button->get_popup();
-			resource_extra_popup->set_item_icon(resource_extra_popup->get_item_index(RESOURCE_EDIT_CLIPBOARD), get_theme_icon(SNAME("ActionPaste"), SNAME("EditorIcons")));
-			resource_extra_popup->set_item_icon(resource_extra_popup->get_item_index(RESOURCE_COPY), get_theme_icon(SNAME("ActionCopy"), SNAME("EditorIcons")));
+				PopupMenu *resource_extra_popup = resource_extra_button->get_popup();
+				resource_extra_popup->set_item_icon(resource_extra_popup->get_item_index(RESOURCE_EDIT_CLIPBOARD), get_theme_icon(SNAME("ActionPaste"), SNAME("EditorIcons")));
+				resource_extra_popup->set_item_icon(resource_extra_popup->get_item_index(RESOURCE_COPY), get_theme_icon(SNAME("ActionCopy"), SNAME("EditorIcons")));
 
-			if (is_layout_rtl()) {
-				backward_button->set_icon(get_theme_icon(SNAME("Forward"), SNAME("EditorIcons")));
-				forward_button->set_icon(get_theme_icon(SNAME("Back"), SNAME("EditorIcons")));
-			} else {
-				backward_button->set_icon(get_theme_icon(SNAME("Back"), SNAME("EditorIcons")));
-				forward_button->set_icon(get_theme_icon(SNAME("Forward"), SNAME("EditorIcons")));
-			}
+				if (is_layout_rtl()) {
+					backward_button->set_icon(get_theme_icon(SNAME("Forward"), SNAME("EditorIcons")));
+					forward_button->set_icon(get_theme_icon(SNAME("Back"), SNAME("EditorIcons")));
+				} else {
+					backward_button->set_icon(get_theme_icon(SNAME("Back"), SNAME("EditorIcons")));
+					forward_button->set_icon(get_theme_icon(SNAME("Forward"), SNAME("EditorIcons")));
+				}
 
-			history_menu->set_icon(get_theme_icon(SNAME("History"), SNAME("EditorIcons")));
-			object_menu->set_icon(get_theme_icon(SNAME("Tools"), SNAME("EditorIcons")));
-			search->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
-			if (info_is_warning) {
-				info->set_icon(get_theme_icon(SNAME("NodeWarning"), SNAME("EditorIcons")));
-				info->add_theme_color_override("font_color", get_theme_color(SNAME("warning_color"), SNAME("Editor")));
-			} else {
-				info->set_icon(get_theme_icon(SNAME("NodeInfo"), SNAME("EditorIcons")));
-				info->add_theme_color_override("font_color", get_theme_color(SNAME("font_color"), SNAME("Editor")));
+				history_menu->set_icon(get_theme_icon(SNAME("History"), SNAME("EditorIcons")));
+				object_menu->set_icon(get_theme_icon(SNAME("Tools"), SNAME("EditorIcons")));
+				search->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
+				if (info_is_warning) {
+					info->set_icon(get_theme_icon(SNAME("NodeWarning"), SNAME("EditorIcons")));
+					info->add_theme_color_override("font_color", get_theme_color(SNAME("warning_color"), SNAME("Editor")));
+				} else {
+					info->set_icon(get_theme_icon(SNAME("NodeInfo"), SNAME("EditorIcons")));
+					info->add_theme_color_override("font_color", get_theme_color(SNAME("font_color"), SNAME("Editor")));
+				}
 			}
 		} break;
 	}
