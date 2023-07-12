@@ -138,6 +138,7 @@ void TileAtlasView::_update_zoom_and_panning(bool p_zoom_on_mouse_pos) {
 	button_center_view->set_disabled(panning.is_zero_approx());
 
 	previous_zoom = zoom;
+	print_line(">>", panning);
 
 	center_container->set_begin(panning - center_container->get_minimum_size() / 2);
 	center_container->set_size(center_container->get_minimum_size());
@@ -435,6 +436,12 @@ void TileAtlasView::_draw_background_right() {
 }
 
 void TileAtlasView::set_atlas_source(TileSet *p_tile_set, TileSetAtlasSource *p_tile_set_atlas_source, int p_source_id) {
+	if (p_tile_set && p_tile_set != tile_set) {
+		view_cache.clear(); // Clear source view position cache if new TileSet.
+	} else if (tile_set_atlas_source && p_tile_set_atlas_source != tile_set_atlas_source) {
+		view_cache[tile_set_atlas_source] = Transform2D(0, Vector2(1, 1) * zoom_widget->get_zoom(), 0, panning);
+	}
+
 	tile_set = p_tile_set;
 	tile_set_atlas_source = p_tile_set_atlas_source;
 
@@ -446,6 +453,13 @@ void TileAtlasView::set_atlas_source(TileSet *p_tile_set, TileSetAtlasSource *p_
 
 	ERR_FAIL_COND(p_source_id < 0);
 	ERR_FAIL_COND(p_tile_set->get_source(p_source_id) != p_tile_set_atlas_source);
+
+	if (tile_set_atlas_source) {
+		HashMap<TileSetAtlasSource *, Transform2D>::Iterator E = view_cache.find(tile_set_atlas_source);
+		if (E) {
+			callable_mp(this, &TileAtlasView::set_transform).call_deferred(E->value.get_scale().x, E->value.get_origin());
+		}
+	}
 
 	source_id = p_source_id;
 
