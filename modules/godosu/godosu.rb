@@ -1,0 +1,275 @@
+module Gosu
+    def default_font_name
+        "Fonot"
+    end
+
+    def enable_undocumented_retrofication
+        godot_retrofication
+    end
+
+    def draw_rect(x, y, width, height, c, z = 0, mode = :default)
+        godot_draw_rect($_translate_x + x.to_f, $_translate_y + y.to_f, width.to_f, height.to_f, c.to_i, $_base_z_index + z.to_i, mode)
+    end
+
+    def draw_quad(x1, y1, c1, x2, y2, c2, x3, y3, c3, x4, y4, c4, z = 0, mode = :default)
+        godot_draw_quad($_translate_x + x1.to_f, $_translate_y + y1.to_f, c1.to_i, $_translate_x + x2.to_f, $_translate_y + y2.to_f, c2.to_i, $_translate_x + x3.to_f, $_translate_y + y3.to_f, c3.to_i, $_translate_x + x4.to_f, $_translate_y + y4.to_f, c4.to_i, $_base_z_index + z.to_i, mode)
+    end
+
+    def button_down?(id)
+        return $__gosu_window.__keys.include?(id)
+    end
+
+    def offset_x(theta, r)
+        return Math::sin(theta * (Math::PI / 180.0)) * r
+    end
+
+    def offset_y(theta, r)
+        return -Math::cos(theta * (Math::PI / 180.0)) * r
+    end
+
+    class Window
+        attr_accessor :caption, :text_input # TODO
+        attr_reader :mouse_x, :mouse_y, :width, :height, :__keys
+
+        def initialize(w, h, fullscreen)
+            # TODO fullscreen
+            @width, @height = w.to_i, h.to_i
+            godot_setup_window(self, @width, @height)
+            @__keys = []
+        end
+
+        def show
+            $__gosu_window = self
+            # TODO
+        end
+
+        def flush
+            $_base_z_index += 1000
+        end
+
+        def translate(x, y)
+            # TODO
+            $_translate_x = x
+            $_translate_y = y
+            yield
+            $_translate_x = 0
+            $_translate_y = 0
+        end
+
+        def update
+        end
+
+        def draw
+        end
+  
+        def button_down(id)
+        end
+        
+        def button_up(id)
+        end
+
+        def godot_callback(method, data = nil)
+            begin
+                if data
+                    send(method, data)
+                else
+                    send(method)
+                end
+            rescue Exception => e
+                puts e
+                puts e.backtrace
+            end
+        end
+
+        def godot_button_down(id)
+            @__keys << id
+            button_down(id)
+        end
+        
+        def godot_button_up(id)
+            @__keys.delete(id)
+            button_up(id)
+        end
+
+        def godot_draw
+            $_base_z_index = 0
+            draw
+        end
+
+        def godot_update_mouse(x, y)
+            @mouse_x = x
+            @mouse_y = y
+        end
+    end
+
+    class Image
+        attr_reader :width, :height
+
+        def initialize(screen, source, tileable = false, x = 0, y = 0, w = 0, h = 0)
+            # TODO tileable
+            if w * h == 0
+                godot_load_image(self, source)
+            else
+                godot_load_atlas(self, source, x.to_i, y.to_i, w.to_i, h.to_i)
+                @width = w
+                @height = h
+            end
+        end
+
+        def Image.load_tiles(screen, source, tile_width, tile_height, options = {})
+            base = Image.new(screen, source)
+
+            if tile_width < 0
+                tile_width = base.width / -tile_width
+            end
+
+            if tile_height < 0
+                tile_height = base.height / -tile_height
+            end
+
+            ret = []
+
+            y = 0
+            while y < base.height
+                x = 0
+                while x < base.width
+                    ret << Image.new(screen, base, true, x, y, tile_width, tile_height)
+                    x += tile_width
+                end
+                y += tile_height
+            end
+
+            ret
+        end
+
+        def draw(x, y, z = 0, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)
+            godot_draw_texture(self, $_translate_x + x.to_f, $_translate_y + y.to_f, $_base_z_index + z.to_i, scale_x.to_f, scale_y.to_f, color.to_i);
+        end
+
+        def draw_rot(x, y, z, angle = 0, center_x = 0.5, center_y = 0.5, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)
+            godot_draw_texture_rotated(self, $_translate_x + x.to_f, $_translate_y + y.to_f, z.to_i, angle.to_f * (Math::PI / 180.0), center_x.to_f, center_y.to_f, scale_x.to_f, scale_y.to_f, color.to_i)
+        end
+
+        def godot_set_size(w, h)
+            @width = w
+            @height = h
+        end
+    end
+
+    class Song
+        def initialize(screen, filename)
+            godot_load_audio(self, filename)
+        end
+
+        def play(loop)
+            return if Song.current_song == self
+            # TODO loop
+            godot_play_song(self)
+            @@current_song = self
+        end
+
+        def stop
+            godot_stop_song
+            @@curent_song = nil
+        end
+
+        def playing?
+            return Song.current_song == self
+        end
+
+        def Song.current_song
+            @@current_song if defined? @@current_song
+        end
+    end
+
+    class Sample
+        def initialize(screen, filename)
+            godot_load_audio(self, filename)
+        end
+
+        def play
+            godot_play_sample(self)
+        end
+    end
+
+    class TextInput
+        # TODO
+        attr_accessor :text, :caret_pos
+
+        def initialize
+            @text = ""
+            @caret_pos = 0
+        end
+
+        def text=(val)
+            @text = val.to_s
+        end
+    end
+
+    class Font
+        def initialize(screen, name, size)
+            godot_load_font(self, name, size)
+        end
+
+        def draw_rel(text, x, y, z, rel_x, rel_y, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)
+            # TODO rel
+            godot_draw_string(self, x.to_f, y.to_f, text.to_s, $_base_z_index + z.to_i)
+        end
+
+        def draw(text, x, y, z, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)
+            godot_draw_string(self, x.to_f, y.to_f, text.to_s, $_base_z_index + z.to_i)
+        end
+
+        def text_width(text)
+            # TODO
+            return text.length * 10
+        end
+    end
+
+    class Color
+        attr_accessor :a, :r, :g, :b
+
+        def initialize(a, r, g, b)
+            @a, @r, @g, @b = a, r, g, b
+        end
+
+        def Color.argb(a, r, g, b)
+            color = Color.new(a, r, g, b)
+        end
+
+        def Color.from_ahsv(a, h, s, v)
+            # TODO
+        end
+
+        def Color.from_hsv(h, s, v)
+            # TODO
+        end
+
+        def Color.rgba(r, g, b, a)
+            Color.new(a, r, g, b)
+        end
+
+        BLACK = Color.argb(255, 0, 0, 0)
+        GRAY = Color.argb(255, 128, 128, 128)
+        WHITE = Color.argb(255, 255, 255, 255)
+        AQUA = Color.argb(255, 0, 255, 255)
+        RED = Color.argb(255, 255, 0, 0)
+        GREEN = Color.argb(255, 0, 255, 0)
+        BLUE = Color.argb(255, 0, 0, 255)
+        YELLOW = Color.argb(255, 255, 255, 0)
+        FUCHSIA = Color.argb(255, 255, 0, 255)
+        CYAN = Color.argb(255, 0, 255, 255)
+
+        def to_i
+            ("0x" + a.clamp(0, 255).to_s(16) + r.clamp(0, 255).to_s(16) + g.clamp(0, 255).to_s(16) + b.clamp(0, 255).to_s(16)).to_i(16)
+        end
+    end
+end
+
+def puts(string)
+    gd_print(string.to_s)
+end
+
+$_base_z_index = 0
+$_translate_x = 0
+$_translate_y = 0

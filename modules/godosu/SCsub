@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+
+Import("env")
+Import("env_modules")
+
+env_godosu = env_modules.Clone()
+
+includes = [".", "X:/Sandbox/Ruby/ruby-3_2_2/include", "X:/Sandbox/Ruby/ruby-3_2_2/.ext/include/x64-mswin64_140"]
+
+env_godosu.Append(CPPPATH=includes)
+env_godosu.add_source_files(env.modules_sources, "*.cpp")
+
+env.Append(LINKFLAGS=["x64-vcruntime140-ruby320.lib"])
+env.Append(LIBPATH=["X:/Sandbox/Ruby/ruby-3_2_2"])
