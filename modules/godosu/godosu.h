@@ -15,7 +15,7 @@ class Godosu : public Node2D {
 	int ruby_state = -1;
 
 	HashMap<int, CanvasItem *> ci_map;
-	HashMap<CanvasItem *, Array> draw_queue;
+	HashMap<CanvasItem *, Vector<Vector<Variant>>> draw_queue;
 
 	String main_script;
 
@@ -52,7 +52,7 @@ public:
 
 	void setup_window(VALUE p_window);
 	CanvasItem *get_ci(int p_z_index);
-	void add_to_queue(CanvasItem *p_item, Array p_data);
+	void add_to_queue(CanvasItem *p_item, const Vector<Variant> &p_data);
 
 	Godosu();
 	~Godosu();
