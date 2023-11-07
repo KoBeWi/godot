@@ -70,9 +70,10 @@ VALUE gd_load_font(VALUE self, VALUE instance, VALUE source, VALUE size) {
 }
 
 VALUE gd_draw_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height, VALUE c, VALUE z, VALUE mode) {
-	Array draw_data;
-	draw_data.append("draw_rect");
-	draw_data.append(Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(width), RFLOAT_VALUE(height)));
+	Vector<Variant> draw_data = varray(
+		"draw_rect",
+		Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(width), RFLOAT_VALUE(height))
+	);
 
 	int _z = FIX2LONG(z);
 	CanvasItem *ci = Godosu::singleton->get_ci(_z);
@@ -82,7 +83,7 @@ VALUE gd_draw_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height, VALU
 }
 
 VALUE gd_draw_quad(VALUE self, VALUE x1, VALUE y1, VALUE c1, VALUE x2, VALUE y2, VALUE c2, VALUE x3, VALUE y3, VALUE c3, VALUE x4, VALUE y4, VALUE c4, VALUE z, VALUE mode) {
-	Array draw_data;
+	Vector<Variant> draw_data;
 	draw_data.append("draw_quad");
 	draw_data.append(Vector2(RFLOAT_VALUE(x1), RFLOAT_VALUE(y1)));
 	draw_data.append(Vector2(RFLOAT_VALUE(x2), RFLOAT_VALUE(y2)));
@@ -101,7 +102,7 @@ VALUE gd_draw_quad(VALUE self, VALUE x1, VALUE y1, VALUE c1, VALUE x2, VALUE y2,
 }
 
 VALUE gd_draw_texture(VALUE self, VALUE texture, VALUE x, VALUE y, VALUE z, VALUE scale_x, VALUE scale_y, VALUE color) {
-	Array draw_data;
+	Vector<Variant> draw_data;
 	draw_data.append("draw_texture");
 	draw_data.append(Godosu::singleton->data.texture_cache[texture]);
 	draw_data.append(Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)));
@@ -116,7 +117,7 @@ VALUE gd_draw_texture(VALUE self, VALUE texture, VALUE x, VALUE y, VALUE z, VALU
 }
 
 VALUE gd_draw_texture_rotated(VALUE self, VALUE texture, VALUE x, VALUE y, VALUE z, VALUE angle, VALUE center_x, VALUE center_y, VALUE scale_x, VALUE scale_y, VALUE color) {
-	Array draw_data;
+	Vector<Variant> draw_data;
 	draw_data.append("draw_texture_rotated");
 	draw_data.append(Godosu::singleton->data.texture_cache[texture]);
 	draw_data.append(Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)));
@@ -133,7 +134,7 @@ VALUE gd_draw_texture_rotated(VALUE self, VALUE texture, VALUE x, VALUE y, VALUE
 }
 
 VALUE gd_draw_string(VALUE self, VALUE font, VALUE x, VALUE y, VALUE text, VALUE z) {
-	Array draw_data;
+	Vector<Variant> draw_data;
 	draw_data.append("draw_string");
 	draw_data.append(Godosu::singleton->data.font_cache[font]);
 	draw_data.append(Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)));
@@ -170,10 +171,9 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 		return; // TODO: czyścić nieużywane
 	}
 
-	Array &draw_data = draw_queue[p_item];
+	const Vector<Vector<Variant>> &draw_data = draw_queue[p_item];
 
-	for (int i = 0; i < draw_data.size(); i++) {
-		Array draw_command = draw_data[i];
+	for (const Vector<Variant> &draw_command : draw_data) {
 		String command = draw_command[0];
 
 		if (command == "draw_rect") {
@@ -356,7 +356,7 @@ CanvasItem *Godosu::get_ci(int p_z_index) {
 	return ci_map[p_z_index];
 }
 
-void Godosu::add_to_queue(CanvasItem *p_item, Array p_data) {
+void Godosu::add_to_queue(CanvasItem *p_item, const Vector<Variant> &p_data) {
 	draw_queue[p_item].append(p_data);
 	// p_item->queue_redraw();
 }
