@@ -8,8 +8,8 @@
 #include "scene/resources/atlas_texture.h"
 #include "scene/resources/texture.h"
 
-Color convert_color(long from) {
-	Color c = Color::hex(from);
+Color convert_color(VALUE from) {
+	Color c = Color::hex(rb_big2ll(from));
 	Color ret;
 	ret.r = c.g;
 	ret.g = c.b;
@@ -84,10 +84,10 @@ VALUE gd_draw_quad(VALUE self, VALUE x1, VALUE y1, VALUE c1, VALUE x2, VALUE y2,
 	draw_data.arguments.append(Vector2(RFLOAT_VALUE(x2), RFLOAT_VALUE(y2)));
 	draw_data.arguments.append(Vector2(RFLOAT_VALUE(x3), RFLOAT_VALUE(y3)));
 	draw_data.arguments.append(Vector2(RFLOAT_VALUE(x4), RFLOAT_VALUE(y4)));
-	draw_data.arguments.append(convert_color(FIX2LONG(c1)));
-	draw_data.arguments.append(convert_color(FIX2LONG(c2)));
-	draw_data.arguments.append(convert_color(FIX2LONG(c3)));
-	draw_data.arguments.append(convert_color(FIX2LONG(c4)));
+	draw_data.arguments.append(convert_color(c1));
+	draw_data.arguments.append(convert_color(c2));
+	draw_data.arguments.append(convert_color(c3));
+	draw_data.arguments.append(convert_color(c4));
 
 	Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
 	return OK;
@@ -100,7 +100,7 @@ VALUE gd_draw_texture(VALUE self, VALUE texture, VALUE x, VALUE y, VALUE z, VALU
 			Godosu::singleton->data.texture_cache[texture],
 			Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)),
 			Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)),
-			convert_color(FIX2LONG(color)));
+			convert_color(color));
 
 	Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
 	return OK;
@@ -114,7 +114,7 @@ VALUE gd_draw_texture_rotated(VALUE self, VALUE texture, VALUE x, VALUE y, VALUE
 	draw_data.arguments.append(RFLOAT_VALUE(angle));
 	draw_data.arguments.append(Vector2(RFLOAT_VALUE(center_x), RFLOAT_VALUE(center_y)));
 	draw_data.arguments.append(Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)));
-	draw_data.arguments.append(convert_color(FIX2LONG(color)));
+	draw_data.arguments.append(FIX2LONG(color));
 
 	Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
 	return OK;
