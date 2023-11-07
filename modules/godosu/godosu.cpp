@@ -70,80 +70,65 @@ VALUE gd_load_font(VALUE self, VALUE instance, VALUE source, VALUE size) {
 }
 
 VALUE gd_draw_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height, VALUE c, VALUE z, VALUE mode) {
-	Vector<Variant> draw_data = varray(
-		"draw_rect",
-		Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(width), RFLOAT_VALUE(height))
-	);
-
-	int _z = FIX2LONG(z);
-	CanvasItem *ci = Godosu::singleton->get_ci(_z);
-
-	Godosu::singleton->add_to_queue(ci, draw_data);
+	Godosu::DrawCommand draw_data;
+	draw_data.type = Godosu::DrawCommand::DRAW_RECT;
+	draw_data.arguments = varray(Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(width), RFLOAT_VALUE(height)));
+	Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
 	return OK;
 }
 
 VALUE gd_draw_quad(VALUE self, VALUE x1, VALUE y1, VALUE c1, VALUE x2, VALUE y2, VALUE c2, VALUE x3, VALUE y3, VALUE c3, VALUE x4, VALUE y4, VALUE c4, VALUE z, VALUE mode) {
-	Vector<Variant> draw_data;
-	draw_data.append("draw_quad");
-	draw_data.append(Vector2(RFLOAT_VALUE(x1), RFLOAT_VALUE(y1)));
-	draw_data.append(Vector2(RFLOAT_VALUE(x2), RFLOAT_VALUE(y2)));
-	draw_data.append(Vector2(RFLOAT_VALUE(x3), RFLOAT_VALUE(y3)));
-	draw_data.append(Vector2(RFLOAT_VALUE(x4), RFLOAT_VALUE(y4)));
-	draw_data.append(convert_color(FIX2LONG(c1)));
-	draw_data.append(convert_color(FIX2LONG(c2)));
-	draw_data.append(convert_color(FIX2LONG(c3)));
-	draw_data.append(convert_color(FIX2LONG(c4)));
+	Godosu::DrawCommand draw_data;
+	draw_data.type = Godosu::DrawCommand::DRAW_QUAD;
+	draw_data.arguments.append(Vector2(RFLOAT_VALUE(x1), RFLOAT_VALUE(y1)));
+	draw_data.arguments.append(Vector2(RFLOAT_VALUE(x2), RFLOAT_VALUE(y2)));
+	draw_data.arguments.append(Vector2(RFLOAT_VALUE(x3), RFLOAT_VALUE(y3)));
+	draw_data.arguments.append(Vector2(RFLOAT_VALUE(x4), RFLOAT_VALUE(y4)));
+	draw_data.arguments.append(convert_color(FIX2LONG(c1)));
+	draw_data.arguments.append(convert_color(FIX2LONG(c2)));
+	draw_data.arguments.append(convert_color(FIX2LONG(c3)));
+	draw_data.arguments.append(convert_color(FIX2LONG(c4)));
 
-	int _z = FIX2LONG(z);
-	CanvasItem *ci = Godosu::singleton->get_ci(_z);
-
-	Godosu::singleton->add_to_queue(ci, draw_data);
+	Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
 	return OK;
 }
 
 VALUE gd_draw_texture(VALUE self, VALUE texture, VALUE x, VALUE y, VALUE z, VALUE scale_x, VALUE scale_y, VALUE color) {
-	Vector<Variant> draw_data;
-	draw_data.append("draw_texture");
-	draw_data.append(Godosu::singleton->data.texture_cache[texture]);
-	draw_data.append(Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)));
-	draw_data.append(Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)));
-	draw_data.append(convert_color(FIX2LONG(color)));
+	Godosu::DrawCommand draw_data;
+	draw_data.type = Godosu::DrawCommand::DRAW_TEXTURE;
+	draw_data.arguments = varray(
+			Godosu::singleton->data.texture_cache[texture],
+			Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)),
+			Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)),
+			convert_color(FIX2LONG(color)));
 
-	int _z = FIX2LONG(z);
-	CanvasItem *ci = Godosu::singleton->get_ci(_z);
-
-	Godosu::singleton->add_to_queue(ci, draw_data);
+	Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
 	return OK;
 }
 
 VALUE gd_draw_texture_rotated(VALUE self, VALUE texture, VALUE x, VALUE y, VALUE z, VALUE angle, VALUE center_x, VALUE center_y, VALUE scale_x, VALUE scale_y, VALUE color) {
-	Vector<Variant> draw_data;
-	draw_data.append("draw_texture_rotated");
-	draw_data.append(Godosu::singleton->data.texture_cache[texture]);
-	draw_data.append(Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)));
-	draw_data.append(RFLOAT_VALUE(angle));
-	draw_data.append(Vector2(RFLOAT_VALUE(center_x), RFLOAT_VALUE(center_y)));
-	draw_data.append(Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)));
-	draw_data.append(convert_color(FIX2LONG(color)));
+	Godosu::DrawCommand draw_data;
+	draw_data.type = Godosu::DrawCommand::DRAW_TEXTURE_ROTATED;
+	draw_data.arguments.append(Godosu::singleton->data.texture_cache[texture]);
+	draw_data.arguments.append(Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)));
+	draw_data.arguments.append(RFLOAT_VALUE(angle));
+	draw_data.arguments.append(Vector2(RFLOAT_VALUE(center_x), RFLOAT_VALUE(center_y)));
+	draw_data.arguments.append(Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)));
+	draw_data.arguments.append(convert_color(FIX2LONG(color)));
 
-	int _z = FIX2LONG(z);
-	CanvasItem *ci = Godosu::singleton->get_ci(_z);
-
-	Godosu::singleton->add_to_queue(ci, draw_data);
+	Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
 	return OK;
 }
 
 VALUE gd_draw_string(VALUE self, VALUE font, VALUE x, VALUE y, VALUE text, VALUE z) {
-	Vector<Variant> draw_data;
-	draw_data.append("draw_string");
-	draw_data.append(Godosu::singleton->data.font_cache[font]);
-	draw_data.append(Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)));
-	draw_data.append(StringValueCStr(text));
+	Godosu::DrawCommand draw_data;
+	draw_data.type = Godosu::DrawCommand::DRAW_STRING;
+	draw_data.arguments = varray(
+			Godosu::singleton->data.font_cache[font],
+			Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)),
+			StringValueCStr(text));
 
-	int _z = FIX2LONG(z);
-	CanvasItem *ci = Godosu::singleton->get_ci(_z);
-
-	Godosu::singleton->add_to_queue(ci, draw_data);
+	Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
 	return OK;
 }
 
@@ -171,43 +156,51 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 		return; // TODO: czyścić nieużywane
 	}
 
-	const Vector<Vector<Variant>> &draw_data = draw_queue[p_item];
+	const Vector<DrawCommand> &draw_data = draw_queue[p_item];
 
-	for (const Vector<Variant> &draw_command : draw_data) {
-		String command = draw_command[0];
+	for (const DrawCommand &draw_command : draw_data) {
+		switch (draw_command.type) {
+			case DrawCommand::DRAW_RECT: {
+				p_item->draw_rect(draw_command.arguments[0], Color(1, 1, 1), true);
+			} break;
 
-		if (command == "draw_rect") {
-			p_item->draw_rect(draw_command[1], Color(1, 1, 1), true);
-		} else if (command == "draw_texture") {
-			Ref<Texture2D> texture = draw_command[1];
-			Vector2 pos = draw_command[2];
-			Vector2 draw_scale = draw_command[3];
-			p_item->draw_texture_rect(texture, Rect2(pos, texture->get_size() * draw_scale), false, draw_command[4]);
-		} else if (command == "draw_texture_rotated") {
-			Ref<Texture2D> texture = draw_command[1];
-			Vector2 pos = draw_command[2];
-			float angle = draw_command[3];
-			Vector2 center = draw_command[4];
-			Vector2 draw_scale = draw_command[5];
-			p_item->draw_set_transform(pos, angle, Vector2(1, 1));
-			p_item->draw_texture_rect(texture, Rect2(-texture->get_size() * center * draw_scale, texture->get_size() * draw_scale), false, draw_command[6]);
-			p_item->draw_set_transform_matrix(Transform2D());
-		} else if (command == "draw_quad") {
-			PackedVector2Array points;
-			points.append(draw_command[1]);
-			points.append(draw_command[2]);
-			points.append(draw_command[3]);
-			points.append(draw_command[4]);
+			case DrawCommand::DRAW_TEXTURE: {
+				Ref<Texture2D> texture = draw_command.arguments[0];
+				Vector2 pos = draw_command.arguments[1];
+				Vector2 draw_scale = draw_command.arguments[2];
+				p_item->draw_texture_rect(texture, Rect2(pos, texture->get_size() * draw_scale), false, draw_command.arguments[3]);
+			} break;
 
-			PackedColorArray colors;
-			colors.append(draw_command[5]);
-			colors.append(draw_command[6]);
-			colors.append(draw_command[7]);
-			colors.append(draw_command[8]);
+			case DrawCommand::DRAW_TEXTURE_ROTATED: {
+				Ref<Texture2D> texture = draw_command.arguments[0];
+				Vector2 pos = draw_command.arguments[1];
+				float angle = draw_command.arguments[2];
+				Vector2 center = draw_command.arguments[3];
+				Vector2 draw_scale = draw_command.arguments[4];
+				p_item->draw_set_transform(pos, angle, Vector2(1, 1));
+				p_item->draw_texture_rect(texture, Rect2(-texture->get_size() * center * draw_scale, texture->get_size() * draw_scale), false, draw_command.arguments[5]);
+				p_item->draw_set_transform_matrix(Transform2D());
+			} break;
 
-			p_item->draw_polygon(points, colors);
-		} else if (command == "draw_string") {
-			p_item->draw_string(draw_command[1], draw_command[2], draw_command[3]);
+			case DrawCommand::DRAW_QUAD: {
+				PackedVector2Array points;
+				points.append(draw_command.arguments[0]);
+				points.append(draw_command.arguments[1]);
+				points.append(draw_command.arguments[2]);
+				points.append(draw_command.arguments[3]);
+
+				PackedColorArray colors;
+				colors.append(draw_command.arguments[4]);
+				colors.append(draw_command.arguments[5]);
+				colors.append(draw_command.arguments[6]);
+				colors.append(draw_command.arguments[7]);
+
+				p_item->draw_polygon(points, colors);
+			} break;
+
+			case DrawCommand::DRAW_STRING: {
+				p_item->draw_string(draw_command.arguments[0], draw_command.arguments[1], draw_command.arguments[2]);
+			} break;
 		}
 	}
 }
@@ -356,8 +349,9 @@ CanvasItem *Godosu::get_ci(int p_z_index) {
 	return ci_map[p_z_index];
 }
 
-void Godosu::add_to_queue(CanvasItem *p_item, const Vector<Variant> &p_data) {
-	draw_queue[p_item].append(p_data);
+void Godosu::add_to_queue(int p_z, const DrawCommand &p_data) {
+	CanvasItem *ci = get_ci(p_z);
+	draw_queue[ci].append(p_data);
 	// p_item->queue_redraw();
 }
 
