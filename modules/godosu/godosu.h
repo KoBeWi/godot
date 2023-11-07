@@ -12,10 +12,19 @@ class AudioStreamPlayer;
 class Godosu : public Node2D {
 	GDCLASS(Godosu, Node2D);
 
+public:
+	struct DrawCommand {
+		enum Type { DRAW_RECT, DRAW_TEXTURE, DRAW_TEXTURE_ROTATED, DRAW_QUAD, DRAW_STRING };
+		
+		Type type;
+		Vector<Variant> arguments;
+	};
+
+private:
 	int ruby_state = -1;
 
 	HashMap<int, CanvasItem *> ci_map;
-	HashMap<CanvasItem *, Vector<Vector<Variant>>> draw_queue;
+	HashMap<CanvasItem *, Vector<DrawCommand>> draw_queue; // TODO: Można zmienić klucz na int, wtedy szybciej.
 
 	String main_script;
 
@@ -52,7 +61,7 @@ public:
 
 	void setup_window(VALUE p_window);
 	CanvasItem *get_ci(int p_z_index);
-	void add_to_queue(CanvasItem *p_item, const Vector<Variant> &p_data);
+	void add_to_queue(int p_z, const DrawCommand &p_data);
 
 	Godosu();
 	~Godosu();
