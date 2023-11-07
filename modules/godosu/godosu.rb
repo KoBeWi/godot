@@ -267,7 +267,7 @@ module Gosu
 end
 
 def puts(string)
-    gd_print(string.to_s)
+    godot_print(string.to_s)
 end
 
 $_base_z_index = 0
