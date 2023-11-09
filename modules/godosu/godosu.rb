@@ -27,6 +27,27 @@ module Gosu
         return -Math::cos(theta * (Math::PI / 180.0)) * r
     end
 
+    def distance(x1, y1, x2, y2)
+        dist_x = (x2 - x1).to_f
+        dist_y = (y2 - y1).to_f
+        return Math.sqrt(dist_x * dist_x + dist_y * dist_y)
+    end
+
+    def wrap(value, min, max)
+        result = (value - min).to_f % (max - min).to_f
+        return result < 0 ? result + max : result + min
+    end
+
+    def normalize_angle(angle)
+        return wrap(angle, 0.0, 360.0)
+    end
+
+    def angle(x1, y1, x2, y2)
+        dist_x = (x2 - x1).to_f
+        dist_y = (y2 - y1).to_f
+        return normalize_angle(Math.atan2(dist_y, dist_x) * (180.0 / Math::PI))
+    end
+
     class Window
         attr_accessor :caption, :text_input # TODO
         attr_reader :mouse_x, :mouse_y, :width, :height, :__keys
