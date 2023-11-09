@@ -58,9 +58,6 @@ void Godosu::_notification(int p_what) {
 
 			data.song_player = memnew(AudioStreamPlayer);
 			add_child(data.song_player);
-			data.sample_player = memnew(AudioStreamPlayer);
-			data.sample_player->set_max_polyphony(1024);
-			add_child(data.sample_player);
 
 			// Initialize Ruby.
 

@@ -7,7 +7,8 @@
 #include "scene/resources/atlas_texture.h"
 
 Color gd_convert_color(VALUE from) {
-	Color c = Color::hex(rb_big2ll(from));
+	const String color_string = StringValueCStr(from);
+	Color c = Color::html(color_string);
 	Color ret;
 	ret.r = c.g;
 	ret.g = c.b;
@@ -113,7 +114,7 @@ VALUE godosu_draw_texture_rotated(VALUE self, VALUE texture, VALUE x, VALUE y, V
 	draw_data.arguments.append(RFLOAT_VALUE(angle));
 	draw_data.arguments.append(Vector2(RFLOAT_VALUE(center_x), RFLOAT_VALUE(center_y)));
 	draw_data.arguments.append(Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)));
-	draw_data.arguments.append(FIX2LONG(color));
+	draw_data.arguments.append(gd_convert_color(color));
 
 	Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
 	return OK;
@@ -144,9 +145,12 @@ VALUE godosu_stop_song(VALUE self) {
 }
 
 VALUE godosu_play_sample(VALUE self, VALUE instance) {
-	AudioStreamPlayer *sample_player = Godosu::singleton->data.sample_player;
+	// TODO: tu można jakiś pool albo polifonia dla tego samego dźwięku itp.
+	AudioStreamPlayer *sample_player = memnew(AudioStreamPlayer);
 	sample_player->set_stream(Godosu::singleton->data.audio_cache[instance]);
-	sample_player->play();
+	sample_player->set_autoplay(true);
+	sample_player->connect(SNAME("finished"), callable_mp((Node *)sample_player, &Node::queue_free));
+	Godosu::singleton->add_child(sample_player);
 	return OK;
 }
 

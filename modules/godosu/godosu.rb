@@ -8,11 +8,11 @@ module Gosu
     end
 
     def draw_rect(x, y, width, height, c, z = 0, mode = :default)
-        godot_draw_rect($_translate_x + x.to_f, $_translate_y + y.to_f, width.to_f, height.to_f, c.to_i, $_base_z_index + z.to_i, mode)
+        godot_draw_rect($_translate_x + x.to_f, $_translate_y + y.to_f, width.to_f, height.to_f, _colorize(c), $_base_z_index + z.to_i, mode)
     end
 
     def draw_quad(x1, y1, c1, x2, y2, c2, x3, y3, c3, x4, y4, c4, z = 0, mode = :default)
-        godot_draw_quad($_translate_x + x1.to_f, $_translate_y + y1.to_f, c1.to_i, $_translate_x + x2.to_f, $_translate_y + y2.to_f, c2.to_i, $_translate_x + x3.to_f, $_translate_y + y3.to_f, c3.to_i, $_translate_x + x4.to_f, $_translate_y + y4.to_f, c4.to_i, $_base_z_index + z.to_i, mode)
+        godot_draw_quad($_translate_x + x1.to_f, $_translate_y + y1.to_f, _colorize(c1), $_translate_x + x2.to_f, $_translate_y + y2.to_f, _colorize(c2), $_translate_x + x3.to_f, $_translate_y + y3.to_f, _colorize(c3), $_translate_x + x4.to_f, $_translate_y + y4.to_f, _colorize(c4), $_base_z_index + z.to_i, mode)
     end
 
     def button_down?(id)
@@ -45,7 +45,7 @@ module Gosu
     def angle(x1, y1, x2, y2)
         dist_x = (x2 - x1).to_f
         dist_y = (y2 - y1).to_f
-        return normalize_angle(Math.atan2(dist_y, dist_x) * (180.0 / Math::PI))
+        return normalize_angle(Math.atan2(dist_y, dist_x) * (180.0 / Math::PI) + 90)
     end
 
     class Window
@@ -164,11 +164,11 @@ module Gosu
         end
 
         def draw(x, y, z = 0, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)
-            godot_draw_texture(self, $_translate_x + x.to_f, $_translate_y + y.to_f, $_base_z_index + z.to_i, scale_x.to_f, scale_y.to_f, color.to_i);
+            godot_draw_texture(self, $_translate_x + x.to_f, $_translate_y + y.to_f, $_base_z_index + z.to_i, scale_x.to_f, scale_y.to_f, _colorize(color));
         end
 
         def draw_rot(x, y, z, angle = 0, center_x = 0.5, center_y = 0.5, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)
-            godot_draw_texture_rotated(self, $_translate_x + x.to_f, $_translate_y + y.to_f, z.to_i, angle.to_f * (Math::PI / 180.0), center_x.to_f, center_y.to_f, scale_x.to_f, scale_y.to_f, color.to_i)
+            godot_draw_texture_rotated(self, $_translate_x + x.to_f, $_translate_y + y.to_f, z.to_i, angle.to_f * (Math::PI / 180.0), center_x.to_f, center_y.to_f, scale_x.to_f, scale_y.to_f, _colorize(color))
         end
 
         def godot_set_size(w, h)
@@ -281,14 +281,22 @@ module Gosu
         FUCHSIA = Color.argb(255, 255, 0, 255)
         CYAN = Color.argb(255, 0, 255, 255)
 
+        def gl
+            return @a << 24 | @b << 16 | @g << 8 | @r
+        end
+
         def to_i
-            ("0x" + a.clamp(0, 255).to_s(16) + r.clamp(0, 255).to_s(16) + g.clamp(0, 255).to_s(16) + b.clamp(0, 255).to_s(16)).to_i(16)
+            gl
         end
     end
 end
 
 def puts(string)
     godot_print(string.to_s)
+end
+
+def _colorize(color)
+    color.to_i.to_s(16).rjust(8, "0")
 end
 
 $_base_z_index = 0
