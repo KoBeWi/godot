@@ -46,7 +46,6 @@ public:
 		HashMap<VALUE, Ref<Font>> font_cache;
 
 		AudioStreamPlayer *song_player = nullptr;
-		AudioStreamPlayer *sample_player = nullptr;
 
 		VALUE callback_base = 0;
 		VALUE callback_update_mouse = 0;
