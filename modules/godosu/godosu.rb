@@ -229,16 +229,16 @@ module Gosu
 
     class Font
         def initialize(screen, name, size)
-            godot_load_font(self, name, size)
+            @size = size.to_i
+            godot_load_font(self, name)
         end
 
         def draw_rel(text, x, y, z, rel_x, rel_y, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)
-            # TODO rel
-            godot_draw_string(self, x.to_f, y.to_f, text.to_s, $_base_z_index + z.to_i)
+            godot_draw_string(self, @size, text.to_s, x.to_f, y.to_f, $_base_z_index + z.to_i, scale_x.to_f, scale_y.to_f, rel_x, rel_y, _colorize(color))
         end
 
-        def draw(text, x, y, z, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)
-            godot_draw_string(self, x.to_f, y.to_f, text.to_s, $_base_z_index + z.to_i)
+        def draw(text, x, y, z, scale_x = 1.0, scale_y = 1.0, color = 0xff_ffffff, mode = :default)
+            godot_draw_string(self, @size, text.to_s, x.to_f, y.to_f, $_base_z_index + z.to_i, scale_x.to_f, scale_y.to_f, 0.0, 0.0, _colorize(color))
         end
 
         def text_width(text)
