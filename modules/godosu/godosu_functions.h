@@ -3,6 +3,7 @@
 
 #include "godosu.h"
 
+#include "core/config/project_settings.h"
 #include "scene/audio/audio_stream_player.h"
 #include "scene/resources/atlas_texture.h"
 
@@ -24,10 +25,9 @@ VALUE godosu_print(VALUE self, VALUE string) {
 }
 
 VALUE godosu_setup_window(VALUE self, VALUE window, VALUE width, VALUE height) {
-	Godosu::singleton->setup_window(window);
-	Input::get_singleton()->set_mouse_mode(Input::MOUSE_MODE_HIDDEN);
 	Vector2i size(FIX2INT(width), FIX2INT(height));
-	DisplayServer::get_singleton()->window_set_size(size);
+	Godosu::singleton->setup_window(window, size);
+	Input::get_singleton()->set_mouse_mode(Input::MOUSE_MODE_HIDDEN);
 	return OK;
 }
 

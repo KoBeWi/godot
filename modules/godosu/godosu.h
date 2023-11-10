@@ -14,8 +14,14 @@ class Godosu : public Node2D {
 
 public:
 	struct DrawCommand {
-		enum Type { DRAW_RECT, DRAW_TEXTURE, DRAW_TEXTURE_ROTATED, DRAW_QUAD, DRAW_STRING };
-		
+		enum Type {
+			DRAW_RECT,
+			DRAW_TEXTURE,
+			DRAW_TEXTURE_ROTATED,
+			DRAW_QUAD,
+			DRAW_STRING
+		};
+
 		Type type;
 		Vector<Variant> arguments;
 	};
@@ -58,7 +64,7 @@ public:
 	void set_main_script(const String &p_main);
 	String get_main_script() const;
 
-	void setup_window(VALUE p_window);
+	void setup_window(VALUE p_window, const Vector2i &p_size);
 	CanvasItem *get_ci(int p_z_index);
 	void add_to_queue(int p_z, const DrawCommand &p_data);
 

@@ -4,7 +4,7 @@
 #include "core/config/project_settings.h"
 #include "core/io/file_access.h"
 #include "scene/audio/audio_stream_player.h"
-#include "scene/main/viewport.h"
+#include "scene/main/window.h"
 #include "scene/resources/texture.h"
 
 void Godosu::_draw_canvas_item(CanvasItem *p_item) {
@@ -178,11 +178,14 @@ String Godosu::get_main_script() const {
 	return main_script;
 }
 
-void Godosu::setup_window(VALUE p_window) {
+void Godosu::setup_window(VALUE p_window, const Vector2i &p_size) {
 	data.window = p_window;
 	set_process_internal(true);
 	set_physics_process_internal(true);
 	set_process_input(true);
+
+	get_window()->set_size(p_size * GLOBAL_GET("display/window/stretch/scale").operator real_t());
+	get_window()->move_to_center();
 }
 
 CanvasItem *Godosu::get_ci(int p_z_index) {
