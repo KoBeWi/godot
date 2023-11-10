@@ -43,7 +43,7 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 			} break;
 
 			case DrawCommand::DRAW_STRING: {
-				p_item->draw_string(draw_command.arguments[0], draw_command.arguments[1], draw_command.arguments[2]);
+				p_item->draw_string(draw_command.arguments[0], draw_command.arguments[1], draw_command.arguments[2], HORIZONTAL_ALIGNMENT_LEFT, -1, draw_command.arguments[3], draw_command.arguments[4]);
 			} break;
 		}
 	}
@@ -88,13 +88,13 @@ void Godosu::_notification(int p_what) {
 			DEFINE_FUNCTION(load_image, 2);
 			DEFINE_FUNCTION(load_atlas, 6);
 			DEFINE_FUNCTION(load_audio, 2);
-			DEFINE_FUNCTION(load_font, 3);
+			DEFINE_FUNCTION(load_font, 2);
 
 			DEFINE_FUNCTION(draw_rect, 7);
 			DEFINE_FUNCTION(draw_quad, 14);
 			DEFINE_FUNCTION(draw_texture, 7);
 			DEFINE_FUNCTION(draw_texture_rotated, 10);
-			DEFINE_FUNCTION(draw_string, 5);
+			DEFINE_FUNCTION(draw_string, 11);
 
 			DEFINE_FUNCTION(play_song, 1);
 			DEFINE_FUNCTION(stop_song, 0);

@@ -63,7 +63,7 @@ VALUE godosu_load_audio(VALUE self, VALUE instance, VALUE source) {
 	return OK;
 }
 
-VALUE godosu_load_font(VALUE self, VALUE instance, VALUE source, VALUE size) {
+VALUE godosu_load_font(VALUE self, VALUE instance, VALUE source) {
 	String path = StringValueCStr(source);
 	// Ref<Font> font = ResourceLoader::load(path, "Font");
 	Ref<SystemFont> font;
@@ -120,13 +120,16 @@ VALUE godosu_draw_texture_rotated(VALUE self, VALUE texture, VALUE x, VALUE y, V
 	return OK;
 }
 
-VALUE godosu_draw_string(VALUE self, VALUE font, VALUE x, VALUE y, VALUE text, VALUE z) {
+VALUE godosu_draw_string(VALUE self, VALUE font, VALUE size, VALUE text, VALUE x, VALUE y, VALUE z, VALUE scale_x, VALUE scale_y, VALUE rel_x, VALUE rel_y, VALUE color) {
 	Godosu::DrawCommand draw_data;
 	draw_data.type = Godosu::DrawCommand::DRAW_STRING;
-	draw_data.arguments = varray(
-			Godosu::singleton->data.font_cache[font],
-			Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)),
-			StringValueCStr(text));
+	draw_data.arguments.append(Godosu::singleton->data.font_cache[font]);
+	draw_data.arguments.append(Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)));
+	draw_data.arguments.append(StringValueCStr(text));
+	draw_data.arguments.append(FIX2LONG(size));
+	draw_data.arguments.append(gd_convert_color(color));
+	draw_data.arguments.append(Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)));
+	draw_data.arguments.append(Vector2(RFLOAT_VALUE(rel_x), RFLOAT_VALUE(rel_y)));
 
 	Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
 	return OK;
