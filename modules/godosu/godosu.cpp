@@ -43,7 +43,22 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 			} break;
 
 			case DrawCommand::DRAW_STRING: {
-				p_item->draw_string(draw_command.arguments[0], draw_command.arguments[1], draw_command.arguments[2], HORIZONTAL_ALIGNMENT_LEFT, -1, draw_command.arguments[3], draw_command.arguments[4]);
+				const Vector2 &rel = draw_command.arguments[6];
+
+				if (rel.is_zero_approx()) {
+					p_item->draw_string(draw_command.arguments[0], draw_command.arguments[1], draw_command.arguments[2], HORIZONTAL_ALIGNMENT_LEFT, -1, draw_command.arguments[3], draw_command.arguments[4]);
+				} else {
+					// FIXME: niedokładne to
+					const Ref<Font> &font = draw_command.arguments[0];
+					const String &text = draw_command.arguments[2];
+					int text_size = draw_command.arguments[3];
+
+					const Vector2 size(text.size() * 10 * (text_size / 16.0), font->get_height(text_size));
+					Vector2 pos = draw_command.arguments[1];
+					pos -= size * rel;
+
+					p_item->draw_string(font, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, text_size, draw_command.arguments[4]);
+				}
 			} break;
 		}
 	}
