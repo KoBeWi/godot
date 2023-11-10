@@ -38,7 +38,7 @@ VALUE godosu_retrofication(VALUE self) {
 
 VALUE godosu_load_image(VALUE self, VALUE instance, VALUE source) {
 	String path = StringValueCStr(source);
-	Ref<Texture2D> texture = ResourceLoader::load(path, "Texture2D");
+	Ref<Texture2D> texture = ResourceLoader::load("res://" + path, "Texture2D");
 	rb_funcall(instance, rb_intern("godot_set_size"), 2, INT2NUM(texture->get_width()), INT2NUM(texture->get_height()));
 
 	Godosu::singleton->data.texture_cache[instance] = texture;
@@ -57,7 +57,7 @@ VALUE godosu_load_atlas(VALUE self, VALUE instance, VALUE base, VALUE x, VALUE y
 
 VALUE godosu_load_audio(VALUE self, VALUE instance, VALUE source) {
 	String path = StringValueCStr(source);
-	Ref<AudioStream> audio = ResourceLoader::load(path, "AudioStream");
+	Ref<AudioStream> audio = ResourceLoader::load("res://" + path, "AudioStream");
 
 	Godosu::singleton->data.audio_cache[instance] = audio;
 	return OK;
