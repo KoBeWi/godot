@@ -234,7 +234,7 @@ module Gosu
         end
 
         def draw_rel(text, x, y, z, rel_x, rel_y, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)
-            godot_draw_string(self, @size, text.to_s, x.to_f, y.to_f, $_base_z_index + z.to_i, scale_x.to_f, scale_y.to_f, rel_x, rel_y, _colorize(color))
+            godot_draw_string(self, @size, text.to_s, x.to_f, y.to_f, $_base_z_index + z.to_i, scale_x.to_f, scale_y.to_f, rel_x.to_f, rel_y.to_f, _colorize(color))
         end
 
         def draw(text, x, y, z, scale_x = 1.0, scale_y = 1.0, color = 0xff_ffffff, mode = :default)
