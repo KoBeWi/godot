@@ -67,6 +67,7 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 void Godosu::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_READY: {
+			print_verbose("Starting...");
 			if (Engine::get_singleton()->is_editor_hint()) {
 				return;
 			}
@@ -84,9 +85,12 @@ void Godosu::_notification(int p_what) {
 				rb_w32_sysinit(&argc, &argv1);
 			}
 #endif
+			print_verbose("Initializing Ruby");
 			ruby_init();
+			print_verbose("Initializing Ruby loadpath");
 			ruby_init_loadpath();
 
+			print_verbose("Creating callbacks");
 			data.callback_base = rb_intern("godot_callback");
 			data.callback_update_mouse = rb_intern("godot_update_mouse");
 			data.callback_update = ID2SYM(rb_intern("update"));
@@ -96,6 +100,7 @@ void Godosu::_notification(int p_what) {
 
 #define DEFINE_FUNCTION(function, argc) rb_define_global_function("godot_" #function, godosu_##function, argc)
 
+			print_verbose("Defining functions");
 			DEFINE_FUNCTION(print, 1);
 			DEFINE_FUNCTION(setup_window, 3);
 			DEFINE_FUNCTION(retrofication, 0);
@@ -117,6 +122,7 @@ void Godosu::_notification(int p_what) {
 
 			// Input constants.
 
+			print_verbose("Defining constants");
 			VALUE GosuModule = rb_define_module("Gosu");
 			rb_define_const(GosuModule, "KbLeft", LONG2NUM(int(Key::LEFT)));
 			rb_define_const(GosuModule, "KbRight", LONG2NUM(int(Key::RIGHT)));
@@ -136,14 +142,22 @@ void Godosu::_notification(int p_what) {
 
 			// Run.
 
+			print_verbose("Configuring exec");
+#ifdef TOOLS_ENABLED
 			const String main_script_path = ProjectSettings::get_singleton()->globalize_path(main_script);
+#else
+			const String main_script_path = OS::get_singleton()->get_executable_path().get_base_dir().path_join(ProjectSettings::get_singleton()->globalize_path(main_script));
+#endif
 			const String exec = vformat(R"(-e require "%s" )", main_script_path);
 
 			char *options[] = { "-v", const_cast<char *>(exec.ascii().get_data()) };
 			void *node = ruby_options(2, options);
 
+			print_verbose("Starting application");
 			if (ruby_executable_node(node, &ruby_state)) {
+				print_verbose("Any moment now");
 				ruby_state = ruby_exec_node(node);
+				print_verbose("Started: " + itos(ruby_state));
 			}
 		} break;
 
