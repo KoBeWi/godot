@@ -48,6 +48,10 @@ module Gosu
         return normalize_angle(Math.atan2(dist_y, dist_x) * (180.0 / Math::PI) + 90)
     end
 
+    def button_id_to_char(id)
+        return "O" # TODO
+    end
+
     class Window
         attr_accessor :caption, :text_input # TODO
         attr_reader :mouse_x, :mouse_y, :width, :height, :__keys
@@ -69,12 +73,16 @@ module Gosu
         end
 
         def translate(x, y)
-            # TODO
             $_translate_x = x
             $_translate_y = y
             yield
             $_translate_x = 0
             $_translate_y = 0
+        end
+
+        def clip_to(x, y, w, h)
+            # TODO
+            yield
         end
 
         def update
@@ -208,7 +216,7 @@ module Gosu
             godot_load_audio(self, filename)
         end
 
-        def play
+        def play(volume = 1.0, speed = 1.0) # TODO
             godot_play_sample(self)
         end
     end
@@ -243,7 +251,7 @@ module Gosu
 
         def text_width(text)
             # TODO
-            return text.length * 10
+            return text.to_s.length * 10
         end
     end
 
@@ -255,15 +263,16 @@ module Gosu
         end
 
         def Color.argb(a, r, g, b)
-            color = Color.new(a, r, g, b)
+            Color.new(a, r, g, b)
         end
 
         def Color.from_ahsv(a, h, s, v)
             # TODO
+            Color.argb(a, h, s, v)
         end
 
         def Color.from_hsv(h, s, v)
-            # TODO
+            Color.from_ahsv(1.0, h, s, v)
         end
 
         def Color.rgba(r, g, b, a)
