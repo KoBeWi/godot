@@ -262,7 +262,11 @@ module Gosu
     class Color
         attr_accessor :a, :r, :g, :b
 
-        def initialize(a, r, g, b)
+        def initialize(a, r = nil, g = nil, b = nil)
+            if not r
+                # TODO from integer
+                return
+            end
             @a, @r, @g, @b = a, r, g, b
         end
 
@@ -300,8 +304,7 @@ module Gosu
         CYAN = Color.argb(255, 0, 255, 255)
 
         def gl
-            ## FIXME: jednak źle :D (jak jest bezpośredni integer)
-            return @r << 24 | @g << 16 | @b << 8 | @a
+            return @a << 24 | @r << 16 | @g << 8 | @b
         end
 
         def to_i
