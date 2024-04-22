@@ -48,6 +48,10 @@ module Gosu
         return normalize_angle(Math.atan2(dist_y, dist_x) * (180.0 / Math::PI) + 90)
     end
 
+    def angle_diff(angle1, angle2)
+        normalize_angle(angle2 - angle1 + 180) - 180
+    end
+
     def button_id_to_char(id)
         return "O" # TODO
     end
@@ -296,6 +300,7 @@ module Gosu
         CYAN = Color.argb(255, 0, 255, 255)
 
         def gl
+            ## FIXME: jednak źle :D (jak jest bezpośredni integer)
             return @r << 24 | @g << 16 | @b << 8 | @a
         end
 
