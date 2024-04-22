@@ -12,7 +12,7 @@ module Gosu
     end
 
     def draw_quad(x1, y1, c1, x2, y2, c2, x3, y3, c3, x4, y4, c4, z = 0, mode = :default)
-        godot_draw_quad($_translate_x + x1.to_f, $_translate_y + y1.to_f, _colorize(c1), $_translate_x + x2.to_f, $_translate_y + y2.to_f, _colorize(c2), $_translate_x + x3.to_f, $_translate_y + y3.to_f, _colorize(c3), $_translate_x + x4.to_f, $_translate_y + y4.to_f, _colorize(c4), _sanitize_z(z), mode)
+        godot_draw_quad($_translate_x + x1.to_f, $_translate_y + y1.to_f, _colorize(c1), $_translate_x + x2.to_f, $_translate_y + y2.to_f, _colorize(c2), $_translate_x + x3.to_f, $_translate_y + y3.to_f, _colorize(c3), $_translate_x + x4.to_f, $_translate_y + y4.to_f, _colorize(c4), _sanitize_z(z), mode == :additive)
     end
 
     def button_down?(id)
@@ -176,7 +176,7 @@ module Gosu
         end
 
         def draw(x, y, z = 0, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)
-            godot_draw_texture(self, $_translate_x + x.to_f, $_translate_y + y.to_f, _sanitize_z(z), scale_x.to_f, scale_y.to_f, _colorize(color));
+            godot_draw_texture(self, $_translate_x + x.to_f, $_translate_y + y.to_f, _sanitize_z(z), scale_x.to_f, scale_y.to_f, _colorize(color), mode == :additive);
         end
 
         def draw_rot(x, y, z, angle = 0, center_x = 0.5, center_y = 0.5, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)

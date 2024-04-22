@@ -92,18 +92,22 @@ VALUE godosu_draw_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height, 
 	return OK;
 }
 
-VALUE godosu_draw_quad(VALUE self, VALUE x1, VALUE y1, VALUE c1, VALUE x2, VALUE y2, VALUE c2, VALUE x3, VALUE y3, VALUE c3, VALUE x4, VALUE y4, VALUE c4, VALUE z, VALUE mode) {
+VALUE godosu_draw_quad(VALUE self, VALUE x1, VALUE y1, VALUE c1, VALUE x2, VALUE y2, VALUE c2, VALUE x3, VALUE y3, VALUE c3, VALUE x4, VALUE y4, VALUE c4, VALUE z, VALUE additive) {
 	Godosu::DrawCommand draw_data;
 	draw_data.type = Godosu::DrawCommand::DRAW_QUAD;
 	draw_data.arguments = varray(
 			PackedVector2Array{ Vector2(RFLOAT_VALUE(x1), RFLOAT_VALUE(y1)), Vector2(RFLOAT_VALUE(x2), RFLOAT_VALUE(y2)), Vector2(RFLOAT_VALUE(x3), RFLOAT_VALUE(y3)), Vector2(RFLOAT_VALUE(x4), RFLOAT_VALUE(y4)) },
 			PackedColorArray{ gd_convert_color(c1), gd_convert_color(c2), gd_convert_color(c3), gd_convert_color(c4) });
 
-	Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
+	if (RTEST(additive)) {
+		Godosu::singleton->add_to_queue(FIX2LONG(z), Godosu::singleton->data.additive_material, draw_data);
+	} else {
+		Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
+	}
 	return OK;
 }
 
-VALUE godosu_draw_texture(VALUE self, VALUE texture, VALUE x, VALUE y, VALUE z, VALUE scale_x, VALUE scale_y, VALUE color) {
+VALUE godosu_draw_texture(VALUE self, VALUE texture, VALUE x, VALUE y, VALUE z, VALUE scale_x, VALUE scale_y, VALUE color, VALUE additive) {
 	Godosu::DrawCommand draw_data;
 	draw_data.type = Godosu::DrawCommand::DRAW_TEXTURE;
 	draw_data.arguments = varray(
@@ -112,7 +116,11 @@ VALUE godosu_draw_texture(VALUE self, VALUE texture, VALUE x, VALUE y, VALUE z, 
 			Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)),
 			gd_convert_color(color));
 
-	Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
+	if (RTEST(additive)) {
+		Godosu::singleton->add_to_queue(FIX2LONG(z), Godosu::singleton->data.additive_material, draw_data);
+	} else {
+		Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
+	}
 	return OK;
 }
 
