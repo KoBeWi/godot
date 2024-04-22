@@ -24,7 +24,7 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 				Ref<Texture2D> texture = draw_command.arguments[0];
 				Vector2 pos = draw_command.arguments[1];
 				Vector2 draw_scale = draw_command.arguments[2];
-				p_item->draw_texture_rect(texture, Rect2(pos, texture->get_size() * draw_scale), false, draw_command.arguments[3]);
+				p_item->draw_texture_rect(texture, Rect2(pos + texture->get_size() * draw_scale.min(Vector2()), texture->get_size() * draw_scale), false, draw_command.arguments[3]);
 			} break;
 
 			case DrawCommand::DRAW_TEXTURE_ROTATED: {
