@@ -9,7 +9,13 @@
 
 Color gd_convert_color(VALUE from) {
 	const String color_string = StringValueCStr(from);
-	return Color::html(color_string);
+	const Color c = Color::html(color_string);
+	Color ret;
+	ret.r = c.g;
+	ret.g = c.b;
+	ret.b = c.a;
+	ret.a = c.r;
+	return ret;
 }
 
 VALUE godosu_hsv_to_rgb(VALUE self, VALUE h, VALUE s, VALUE v) {

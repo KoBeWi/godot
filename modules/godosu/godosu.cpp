@@ -187,6 +187,10 @@ void Godosu::_bind_methods() {
 }
 
 void Godosu::input(const Ref<InputEvent> &p_event) {
+	if (p_event->is_echo()) {
+		return;
+	}
+
 	Ref<InputEventMouseButton> mb = p_event;
 	if (mb.is_valid()) {
 		godosu_window_callback(2, mb->is_pressed() ? data.callback_button_down : data.callback_button_up, LONG2NUM(long(mb->get_button_index())));
