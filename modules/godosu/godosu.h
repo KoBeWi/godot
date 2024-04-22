@@ -29,8 +29,8 @@ public:
 private:
 	int ruby_state = -1;
 
-	HashMap<int, CanvasItem *> ci_map;
-	HashMap<CanvasItem *, Vector<DrawCommand>> draw_queue; // TODO: Można zmienić klucz na int, wtedy szybciej.
+	HashMap<Pair<int, Ref<Material>>, CanvasItem *, PairHash<int, Ref<Material>>> ci_map;
+	HashMap<CanvasItem *, Vector<DrawCommand>> draw_queue;
 
 	String main_script;
 
@@ -52,6 +52,7 @@ public:
 		HashMap<VALUE, Ref<Font>> font_cache;
 
 		AudioStreamPlayer *song_player = nullptr;
+		Ref<Material> additive_material;
 
 		VALUE callback_base = 0;
 		VALUE callback_update_mouse = 0;
@@ -65,8 +66,9 @@ public:
 	String get_main_script() const;
 
 	void setup_window(VALUE p_window, const Vector2i &p_size);
-	CanvasItem *get_ci(int p_z_index);
+	CanvasItem *get_ci(int p_z_index, const Ref<Material> &p_material);
 	void add_to_queue(int p_z, const DrawCommand &p_data);
+	void add_to_queue(int p_z, const Ref<Material> &p_material, const DrawCommand &p_data);
 
 	Godosu();
 	~Godosu();

@@ -75,6 +75,13 @@ void Godosu::_notification(int p_what) {
 			data.song_player = memnew(AudioStreamPlayer);
 			add_child(data.song_player);
 
+			{
+				Ref<CanvasItemMaterial> mat;
+				mat.instantiate();
+				mat->set_blend_mode(CanvasItemMaterial::BLEND_MODE_ADD);
+				data.additive_material = mat;
+			}
+
 			// Initialize Ruby.
 
 #ifdef WINDOWS_ENABLED
@@ -113,7 +120,7 @@ void Godosu::_notification(int p_what) {
 
 			DEFINE_FUNCTION(draw_rect, 7);
 			DEFINE_FUNCTION(draw_quad, 14);
-			DEFINE_FUNCTION(draw_texture, 7);
+			DEFINE_FUNCTION(draw_texture, 8);
 			DEFINE_FUNCTION(draw_texture_rotated, 10);
 			DEFINE_FUNCTION(draw_string, 11);
 
@@ -222,21 +229,30 @@ void Godosu::setup_window(VALUE p_window, const Vector2i &p_size) {
 	get_window()->move_to_center();
 }
 
-CanvasItem *Godosu::get_ci(int p_z_index) {
-	if (!ci_map.has(p_z_index)) {
+CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material) {
+	Pair<int, Ref<Material>> key(p_z_index, p_material);
+	auto I = ci_map.find(key);
+	if (!I) {
 		CanvasItem *ci = memnew(Node2D);
 		add_child(ci);
 		RenderingServer::get_singleton()->canvas_item_set_z_index(ci->get_canvas_item(), p_z_index);
+		if (p_material.is_valid()) {
+			RenderingServer::get_singleton()->canvas_item_set_material(ci->get_canvas_item(), p_material->get_rid());
+		}
 		ci->connect(SNAME("draw"), callable_mp(this, &Godosu::_draw_canvas_item).bind(ci));
-		ci_map[p_z_index] = ci;
+		ci_map[key] = ci;
+		return ci;
 	}
-	return ci_map[p_z_index];
+	return I->value;
 }
 
 void Godosu::add_to_queue(int p_z, const DrawCommand &p_data) {
-	CanvasItem *ci = get_ci(p_z);
+	add_to_queue(p_z, Ref<Material>(), p_data);
+}
+
+void Godosu::add_to_queue(int p_z, const Ref<Material> &p_material, const DrawCommand &p_data) {
+	CanvasItem *ci = get_ci(p_z, p_material);
 	draw_queue[ci].append(p_data);
-	// p_item->queue_redraw();
 }
 
 Godosu::Godosu() {
