@@ -267,8 +267,13 @@ module Gosu
         end
 
         def Color.from_ahsv(a, h, s, v)
-            # TODO
-            Color.argb(a, h, s, v)
+            h = h % 360.0 / 360.0
+            s = s.clamp(0.0, 1.0).to_f
+            v = v.clamp(0.0, 1.0).to_f
+
+            rgb = godot_hsv_to_rgb(h, s, v)
+
+            Color.argb(a, *rgb)
         end
 
         def Color.from_hsv(h, s, v)
@@ -291,7 +296,7 @@ module Gosu
         CYAN = Color.argb(255, 0, 255, 255)
 
         def gl
-            return @a << 24 | @b << 16 | @g << 8 | @r
+            return @r << 24 | @g << 16 | @b << 8 | @a
         end
 
         def to_i

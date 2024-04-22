@@ -104,6 +104,7 @@ void Godosu::_notification(int p_what) {
 			DEFINE_FUNCTION(print, 1);
 			DEFINE_FUNCTION(setup_window, 3);
 			DEFINE_FUNCTION(retrofication, 0);
+			DEFINE_FUNCTION(hsv_to_rgb, 3);
 
 			DEFINE_FUNCTION(load_image, 2);
 			DEFINE_FUNCTION(load_atlas, 6);

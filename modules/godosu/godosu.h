@@ -2,11 +2,11 @@
 #define GOSU_H
 
 #include "scene/2d/node_2d.h"
+#include "servers/audio/audio_stream.h"
 
 #include <ruby.h>
 
 class Texture2D;
-class AudioStream;
 class AudioStreamPlayer;
 
 class Godosu : public Node2D {

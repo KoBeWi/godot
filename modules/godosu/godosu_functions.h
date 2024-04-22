@@ -9,13 +9,17 @@
 
 Color gd_convert_color(VALUE from) {
 	const String color_string = StringValueCStr(from);
-	Color c = Color::html(color_string);
-	Color ret;
-	ret.r = c.g;
-	ret.g = c.b;
-	ret.b = c.a;
-	ret.a = c.r;
-	return ret;
+	return Color::html(color_string);
+}
+
+VALUE godosu_hsv_to_rgb(VALUE self, VALUE h, VALUE s, VALUE v) {
+	const Color c = Color::from_hsv(RFLOAT_VALUE(h), RFLOAT_VALUE(s), RFLOAT_VALUE(v));
+	VALUE *components = (VALUE *)alloca(sizeof(VALUE) * 3);
+	components[0] = INT2NUM(int(c.r * 255));
+	components[1] = INT2NUM(int(c.g * 255));
+	components[2] = INT2NUM(int(c.b * 255));
+	VALUE array = rb_ary_new4(3, components);
+	return array;
 }
 
 VALUE godosu_print(VALUE self, VALUE string) {
