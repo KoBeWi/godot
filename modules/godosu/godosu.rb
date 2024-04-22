@@ -194,7 +194,7 @@ module Gosu
             godot_load_audio(self, filename)
         end
 
-        def play(loop)
+        def play(loop = false)
             return if Song.current_song == self
             # TODO loop
             godot_play_song(self)
@@ -262,10 +262,21 @@ module Gosu
     class Color
         attr_accessor :a, :r, :g, :b
 
+        alias_method :alpha, :a
+        alias_method :alpha=, :a=
+        alias_method :red, :r
+        alias_method :red=, :r=
+        alias_method :green, :g
+        alias_method :green=, :g=
+        alias_method :blue, :b
+        alias_method :blue=, :b=
+
         def initialize(a, r = nil, g = nil, b = nil)
             if not r
-                # TODO from integer
-                return
+                r = a >> 16 & 255
+                g = a >> 8 & 255
+                b = a & 255
+                a = a >> 24 & 255
             end
             @a, @r, @g, @b = a, r, g, b
         end
