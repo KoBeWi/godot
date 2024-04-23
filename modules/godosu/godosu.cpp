@@ -4,6 +4,7 @@
 #include "core/config/project_settings.h"
 #include "core/io/file_access.h"
 #include "scene/audio/audio_stream_player.h"
+#include "scene/gui/control.h"
 #include "scene/main/window.h"
 #include "scene/resources/texture.h"
 
@@ -111,6 +112,7 @@ void Godosu::_notification(int p_what) {
 			DEFINE_FUNCTION(print, 1);
 			DEFINE_FUNCTION(setup_window, 3);
 			DEFINE_FUNCTION(retrofication, 0);
+			DEFINE_FUNCTION(set_clip, 4);
 			DEFINE_FUNCTION(hsv_to_rgb, 3);
 
 			DEFINE_FUNCTION(load_image, 2);
@@ -229,12 +231,29 @@ void Godosu::setup_window(VALUE p_window, const Vector2i &p_size) {
 	get_window()->move_to_center();
 }
 
-CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material) {
-	Pair<int, Ref<Material>> key(p_z_index, p_material);
+CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const Rect2 &p_clip_rect) {
+	uint32_t key;
+	{
+		Array arr;
+		arr.append(p_z_index);
+		arr.append(p_material);
+		arr.append(p_clip_rect);
+		key = arr.hash();
+	}
+
 	auto I = ci_map.find(key);
 	if (!I) {
+		CanvasItem *parent = this;
+		if (p_clip_rect.has_area()) {
+			Control *clipper = memnew(Control);
+			clipper->set_clip_contents(true);
+			clipper->set_rect(p_clip_rect);
+			add_child(clipper);
+			parent = clipper;
+		}
+
 		CanvasItem *ci = memnew(Node2D);
-		add_child(ci);
+		parent->add_child(ci);
 		RenderingServer::get_singleton()->canvas_item_set_z_index(ci->get_canvas_item(), p_z_index);
 		if (p_material.is_valid()) {
 			RenderingServer::get_singleton()->canvas_item_set_material(ci->get_canvas_item(), p_material->get_rid());
@@ -246,12 +265,8 @@ CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material) {
 	return I->value;
 }
 
-void Godosu::add_to_queue(int p_z, const DrawCommand &p_data) {
-	add_to_queue(p_z, Ref<Material>(), p_data);
-}
-
-void Godosu::add_to_queue(int p_z, const Ref<Material> &p_material, const DrawCommand &p_data) {
-	CanvasItem *ci = get_ci(p_z, p_material);
+void Godosu::add_to_queue(const DrawCommand &p_data, int p_z, const Ref<Material> &p_material) {
+	CanvasItem *ci = get_ci(p_z, p_material, data.clip_rect);
 	draw_queue[ci].append(p_data);
 }
 

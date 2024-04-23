@@ -46,6 +46,11 @@ VALUE godosu_retrofication(VALUE self) {
 	return OK;
 }
 
+VALUE godosu_set_clip(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h) {
+	Godosu::singleton->data.clip_rect = Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(w), RFLOAT_VALUE(h));
+	return OK;
+}
+
 VALUE godosu_load_image(VALUE self, VALUE instance, VALUE source) {
 	String path = StringValueCStr(source);
 	Ref<Texture2D> texture = ResourceLoader::load("res://" + path, "Texture2D");
@@ -88,7 +93,7 @@ VALUE godosu_draw_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height, 
 	Godosu::DrawCommand draw_data;
 	draw_data.type = Godosu::DrawCommand::DRAW_RECT;
 	draw_data.arguments = varray(Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(width), RFLOAT_VALUE(height)));
-	Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
+	Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z));
 	return OK;
 }
 
@@ -100,9 +105,9 @@ VALUE godosu_draw_quad(VALUE self, VALUE x1, VALUE y1, VALUE c1, VALUE x2, VALUE
 			PackedColorArray{ gd_convert_color(c1), gd_convert_color(c2), gd_convert_color(c3), gd_convert_color(c4) });
 
 	if (RTEST(additive)) {
-		Godosu::singleton->add_to_queue(FIX2LONG(z), Godosu::singleton->data.additive_material, draw_data);
+		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), Godosu::singleton->data.additive_material);
 	} else {
-		Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
+		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z));
 	}
 	return OK;
 }
@@ -117,9 +122,9 @@ VALUE godosu_draw_texture(VALUE self, VALUE texture, VALUE x, VALUE y, VALUE z, 
 			gd_convert_color(color));
 
 	if (RTEST(additive)) {
-		Godosu::singleton->add_to_queue(FIX2LONG(z), Godosu::singleton->data.additive_material, draw_data);
+		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), Godosu::singleton->data.additive_material);
 	} else {
-		Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
+		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z));
 	}
 	return OK;
 }
@@ -134,7 +139,7 @@ VALUE godosu_draw_texture_rotated(VALUE self, VALUE texture, VALUE x, VALUE y, V
 	draw_data.arguments.append(Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)));
 	draw_data.arguments.append(gd_convert_color(color));
 
-	Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
+	Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z));
 	return OK;
 }
 
@@ -149,7 +154,7 @@ VALUE godosu_draw_string(VALUE self, VALUE font, VALUE size, VALUE text, VALUE x
 	draw_data.arguments.append(Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)));
 	draw_data.arguments.append(Vector2(RFLOAT_VALUE(rel_x), RFLOAT_VALUE(rel_y)));
 
-	Godosu::singleton->add_to_queue(FIX2LONG(z), draw_data);
+	Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z));
 	return OK;
 }
 
