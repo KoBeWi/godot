@@ -85,8 +85,9 @@ module Gosu
         end
 
         def clip_to(x, y, w, h)
-            # TODO
+            godot_set_clip(x.to_f, y.to_f, w.to_f, h.to_f)
             yield
+            godot_set_clip(0.0, 0.0, 0.0, 0.0)
         end
 
         def update
