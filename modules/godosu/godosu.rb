@@ -195,10 +195,9 @@ module Gosu
             godot_load_audio(self, filename)
         end
 
-        def play(loop = false)
+        def play(lp = false)
             return if Song.current_song == self
-            # TODO loop
-            godot_play_song(self)
+            godot_play_song(self, lp)
             @@current_song = self
         end
 
