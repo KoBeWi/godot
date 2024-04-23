@@ -6,8 +6,9 @@
 
 #include <ruby.h>
 
-class Texture2D;
 class AudioStreamPlayer;
+class LineEdit;
+class Texture2D;
 
 class Godosu : public Node2D {
 	GDCLASS(Godosu, Node2D);
@@ -50,6 +51,7 @@ public:
 		HashMap<VALUE, Ref<Texture2D>> texture_cache;
 		HashMap<VALUE, Ref<AudioStream>> audio_cache;
 		HashMap<VALUE, Ref<Font>> font_cache;
+		Vector<LineEdit *> text_inputs;
 
 		AudioStreamPlayer *song_player = nullptr;
 		Ref<Material> additive_material;
@@ -69,6 +71,9 @@ public:
 	void setup_window(VALUE p_window, const Vector2i &p_size);
 	CanvasItem *get_ci(int p_z_index, const Ref<Material> &p_material, const Rect2 &p_clip_rect);
 	void add_to_queue(const DrawCommand &p_data, int p_z, const Ref<Material> &p_material = Ref<Material>());
+
+	VALUE create_line_edit();
+	LineEdit *get_line_edit(VALUE id);
 
 	Godosu();
 	~Godosu();

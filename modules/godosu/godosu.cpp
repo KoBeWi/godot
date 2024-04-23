@@ -4,7 +4,6 @@
 #include "core/config/project_settings.h"
 #include "core/io/file_access.h"
 #include "scene/audio/audio_stream_player.h"
-#include "scene/gui/control.h"
 #include "scene/main/window.h"
 #include "scene/resources/texture.h"
 
@@ -111,11 +110,23 @@ void Godosu::_notification(int p_what) {
 #define DEFINE_FUNCTION(function, argc) rb_define_global_function("godot_" #function, godosu_##function, argc)
 
 			print_verbose("Defining functions");
+
 			DEFINE_FUNCTION(print, 1);
 			DEFINE_FUNCTION(setup_window, 3);
 			DEFINE_FUNCTION(retrofication, 0);
 			DEFINE_FUNCTION(set_clip, 4);
 			DEFINE_FUNCTION(hsv_to_rgb, 3);
+
+			DEFINE_FUNCTION(create_text_input, 0);
+			DEFINE_FUNCTION(destroy_text_input, 1);
+			DEFINE_FUNCTION(focus_text_input, 1);
+			DEFINE_FUNCTION(unfocus_text_input, 0);
+			DEFINE_FUNCTION(set_text_input_text, 2);
+			DEFINE_FUNCTION(get_text_input_text, 1);
+			DEFINE_FUNCTION(set_text_input_caret, 2);
+			DEFINE_FUNCTION(get_text_input_caret, 1);
+			DEFINE_FUNCTION(set_text_input_selection_start, 2);
+			DEFINE_FUNCTION(get_text_input_selection_start, 1);
 
 			DEFINE_FUNCTION(load_image, 2);
 			DEFINE_FUNCTION(load_atlas, 6);
@@ -270,6 +281,20 @@ CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const
 void Godosu::add_to_queue(const DrawCommand &p_data, int p_z, const Ref<Material> &p_material) {
 	CanvasItem *ci = get_ci(p_z, p_material, data.clip_rect);
 	draw_queue[ci].append(p_data);
+}
+
+VALUE Godosu::create_line_edit() {
+	LineEdit *edit = memnew(LineEdit);
+	edit->set_modulate(Color(0, 0, 0, 0));
+	edit->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
+	add_child(edit);
+	data.text_inputs.append(edit);
+	return INT2NUM(data.text_inputs.size() - 1);
+}
+
+LineEdit *Godosu::get_line_edit(VALUE id) {
+	int index = FIX2INT(id);
+	return data.text_inputs[index];
 }
 
 Godosu::Godosu() {

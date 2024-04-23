@@ -5,6 +5,7 @@
 
 #include "core/config/project_settings.h"
 #include "scene/audio/audio_stream_player.h"
+#include "scene/gui/line_edit.h"
 #include "scene/resources/atlas_texture.h"
 
 Color gd_convert_color(VALUE from) {
@@ -44,6 +45,67 @@ VALUE godosu_setup_window(VALUE self, VALUE window, VALUE width, VALUE height) {
 VALUE godosu_retrofication(VALUE self) {
 	Godosu::singleton->set_texture_filter(CanvasItem::TEXTURE_FILTER_NEAREST);
 	return OK;
+}
+
+VALUE godosu_create_text_input(VALUE self) {
+	return Godosu::singleton->create_line_edit();
+}
+
+VALUE godosu_destroy_text_input(VALUE self, VALUE id) {
+	LineEdit *edit = Godosu::singleton->get_line_edit(id);
+	memdelete(edit);
+	return OK;
+}
+
+VALUE godosu_focus_text_input(VALUE self, VALUE id) {
+	LineEdit *edit = Godosu::singleton->get_line_edit(id);
+	edit->grab_focus();
+	return OK;
+}
+
+VALUE godosu_unfocus_text_input(VALUE self) {
+	Godosu::singleton->get_viewport()->gui_release_focus();
+	return OK;
+}
+
+VALUE godosu_set_text_input_text(VALUE self, VALUE id, VALUE text) {
+	const String string = StringValueCStr(text);
+	LineEdit *edit = Godosu::singleton->get_line_edit(id);
+	edit->set_text(string);
+	return OK;
+}
+
+VALUE godosu_get_text_input_text(VALUE self, VALUE id) {
+	LineEdit *edit = Godosu::singleton->get_line_edit(id);
+	return rb_str_new_cstr(edit->get_text().ascii().get_data());
+}
+
+VALUE godosu_set_text_input_caret(VALUE self, VALUE id, VALUE caret) {
+	const int caret_pos = FIX2INT(caret);
+	LineEdit *edit = Godosu::singleton->get_line_edit(id);
+	edit->set_caret_column(caret_pos);
+	return OK;
+}
+
+VALUE godosu_get_text_input_caret(VALUE self, VALUE id) {
+	LineEdit *edit = Godosu::singleton->get_line_edit(id);
+	return INT2NUM(edit->get_caret_column());
+}
+
+VALUE godosu_set_text_input_selection_start(VALUE self, VALUE id, VALUE start) {
+	const int start_pos = FIX2INT(start);
+	LineEdit *edit = Godosu::singleton->get_line_edit(id);
+	edit->select(start, edit->get_caret_column());
+	return OK;
+}
+
+VALUE godosu_get_text_input_selection_start(VALUE self, VALUE id) {
+	LineEdit *edit = Godosu::singleton->get_line_edit(id);
+	if (edit->has_selection()) {
+		return INT2NUM(edit->get_selection_from_column());
+	} else {
+		return INT2NUM(edit->get_caret_column());
+	}
 }
 
 VALUE godosu_set_clip(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h) {
@@ -89,11 +151,16 @@ VALUE godosu_load_font(VALUE self, VALUE instance, VALUE source) {
 	return OK;
 }
 
-VALUE godosu_draw_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height, VALUE c, VALUE z, VALUE mode) {
+VALUE godosu_draw_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height, VALUE c, VALUE z, VALUE additive) {
 	Godosu::DrawCommand draw_data;
 	draw_data.type = Godosu::DrawCommand::DRAW_RECT;
 	draw_data.arguments = varray(Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(width), RFLOAT_VALUE(height)));
-	Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z));
+
+	if (RTEST(additive)) {
+		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), Godosu::singleton->data.additive_material);
+	} else {
+		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z));
+	}
 	return OK;
 }
 

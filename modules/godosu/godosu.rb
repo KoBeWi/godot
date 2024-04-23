@@ -8,7 +8,12 @@ module Gosu
     end
 
     def draw_rect(x, y, width, height, c, z = 0, mode = :default)
-        godot_draw_rect($_translate_x + x.to_f, $_translate_y + y.to_f, width.to_f, height.to_f, _colorize(c), _sanitize_z(z), mode)
+        godot_draw_rect($_translate_x + x.to_f, $_translate_y + y.to_f, width.to_f, height.to_f, _colorize(c), _sanitize_z(z), mode == :additive)
+    end
+
+    def draw_line(x1, y1, c1, x2, y2, c2, z = 0, mode = :default)
+        # TODO
+        draw_quad(x1, y1, c1, x1 + 1, y1 - 1, c1, x2 + 1, y2 + 1, c2, x2, y2, c2, z, mode)
     end
 
     def draw_quad(x1, y1, c1, x2, y2, c2, x3, y3, c3, x4, y4, c4, z = 0, mode = :default)
@@ -57,7 +62,7 @@ module Gosu
     end
 
     class Window
-        attr_accessor :caption, :text_input # TODO
+        attr_accessor :caption # TODO
         attr_reader :mouse_x, :mouse_y, :width, :height, :__keys
 
         def initialize(w, h, fullscreen)
@@ -100,6 +105,19 @@ module Gosu
         end
         
         def button_up(id)
+        end
+
+        def text_input=(input)
+            if input
+                godot_focus_text_input(input.__text_id)
+            else
+                godot_unfocus_text_input
+            end
+            @__text_input = input
+        end
+
+        def text_input
+            return @__text_input
         end
 
         def godot_callback(method, data = nil)
@@ -226,16 +244,41 @@ module Gosu
     end
 
     class TextInput
-        # TODO
-        attr_accessor :text, :caret_pos
+        attr_reader :__text_id
 
         def initialize
             @text = ""
             @caret_pos = 0
+            @__text_id = godot_create_text_input()
+            ObjectSpace.define_finalizer(self, self.class.finalize(@__text_id))
         end
 
         def text=(val)
-            @text = val.to_s
+            godot_set_text_input_text(@__text_id, val.to_s)
+        end
+        
+        def text
+            godot_get_text_input_text(@__text_id)
+        end
+
+        def caret_pos=(val)
+            godot_set_text_input_caret(@__text_id, val.to_i)
+        end
+        
+        def caret_pos
+            godot_get_text_input_caret(@__text_id)
+        end
+
+        def selection_start=(val)
+            godot_set_text_input_selection_start(@__text_id, val.to_i)
+        end
+
+        def selection_start
+            godot_get_text_input_selection_start(@__text_id)
+        end
+    
+        def self.finalize(id)
+            proc { godot_destroy_text_input(id) }
         end
     end
 
