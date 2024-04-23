@@ -403,6 +403,7 @@ public:
 	ScriptCreateDialog *get_script_create_dialog() const;
 
 	void fix_dependencies(const String &p_for_file);
+	bool rename_file(const String &p_old_path, const String &p_new_path);
 
 	int get_h_split_offset() const { return split_box_offset_h; }
 	void set_h_split_offset(int p_offset) { split_box_offset_h = p_offset; }

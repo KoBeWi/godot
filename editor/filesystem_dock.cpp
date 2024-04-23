@@ -1838,27 +1838,35 @@ void FileSystemDock::_rename_operation_confirm() {
 
 	String old_path = to_rename.path.ends_with("/") ? to_rename.path.left(-1) : to_rename.path;
 	String new_path = old_path.get_base_dir().path_join(new_name);
-	if (old_path == new_path) {
-		return;
-	}
 
-	if (EditorFileSystem::get_singleton()->is_group_file(old_path)) {
-		EditorFileSystem::get_singleton()->move_group_file(old_path, new_path);
+	if (rename_file(old_path, new_path)) {
+		if (ti) {
+			current_path = new_path;
+			current_path_line_edit->set_text(current_path);
+		}
+	} else if (ti) {
+		ti->set_text(col_index, old_name);
 	}
+}
 
+bool FileSystemDock::rename_file(const String &p_old_path, const String &p_new_path) {
+	if (p_old_path == p_new_path) {
+		return false;
+	}
 	// Present a more user friendly warning for name conflict.
 	Ref<DirAccess> da = DirAccess::create(DirAccess::ACCESS_RESOURCES);
 
-	bool new_exist = (da->file_exists(new_path) || da->dir_exists(new_path));
-	if (!da->is_case_sensitive(new_path.get_base_dir())) {
-		new_exist = new_exist && (new_path.to_lower() != old_path.to_lower());
+	bool new_exist = (da->file_exists(p_new_path) || da->dir_exists(p_new_path));
+	if (!da->is_case_sensitive(p_new_path.get_base_dir())) {
+		new_exist = new_exist && (p_new_path.to_lower() != p_old_path.to_lower());
 	}
 	if (new_exist) {
 		EditorNode::get_singleton()->show_warning(TTR("A file or folder with this name already exists."));
-		if (ti) {
-			ti->set_text(col_index, old_name);
-		}
-		return;
+		return false;
+	}
+
+	if (EditorFileSystem::get_singleton()->is_group_file(p_old_path)) {
+		EditorFileSystem::get_singleton()->move_group_file(p_old_path, p_new_path);
 	}
 
 	HashMap<String, ResourceUID::ID> uids;
@@ -1867,7 +1875,7 @@ void FileSystemDock::_rename_operation_confirm() {
 
 	HashMap<String, String> file_renames;
 	HashMap<String, String> folder_renames;
-	_try_move_item(to_rename, new_path, file_renames, folder_renames);
+	_try_move_item(to_rename, p_new_path, file_renames, folder_renames);
 
 	int current_tab = EditorSceneTabs::get_singleton()->get_current_tab();
 	_update_resource_paths_after_move(file_renames, uids);
@@ -1877,13 +1885,9 @@ void FileSystemDock::_rename_operation_confirm() {
 
 	EditorSceneTabs::get_singleton()->set_current_tab(current_tab);
 
-	if (ti) {
-		current_path = new_path;
-		current_path_line_edit->set_text(current_path);
-	}
-
 	print_verbose("FileSystem: calling rescan.");
 	_rescan();
+	return true;
 }
 
 void FileSystemDock::_duplicate_operation_confirm() {
