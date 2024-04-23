@@ -68,11 +68,11 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 void Godosu::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_READY: {
-			print_verbose("Starting...");
 			if (Engine::get_singleton()->is_editor_hint()) {
 				return;
 			}
 
+			print_verbose("Starting...");
 			data.song_player = memnew(AudioStreamPlayer);
 			add_child(data.song_player);
 
@@ -82,6 +82,8 @@ void Godosu::_notification(int p_what) {
 				mat->set_blend_mode(CanvasItemMaterial::BLEND_MODE_ADD);
 				data.additive_material = mat;
 			}
+
+			RenderingServer::get_singleton()->set_default_clear_color(Color(0, 0, 0));
 
 			// Initialize Ruby.
 
@@ -126,7 +128,7 @@ void Godosu::_notification(int p_what) {
 			DEFINE_FUNCTION(draw_texture_rotated, 10);
 			DEFINE_FUNCTION(draw_string, 11);
 
-			DEFINE_FUNCTION(play_song, 1);
+			DEFINE_FUNCTION(play_song, 2);
 			DEFINE_FUNCTION(stop_song, 0);
 			DEFINE_FUNCTION(play_sample, 1);
 

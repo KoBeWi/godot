@@ -158,9 +158,15 @@ VALUE godosu_draw_string(VALUE self, VALUE font, VALUE size, VALUE text, VALUE x
 	return OK;
 }
 
-VALUE godosu_play_song(VALUE self, VALUE instance) {
+VALUE godosu_play_song(VALUE self, VALUE instance, VALUE loop) {
 	AudioStreamPlayer *song_player = Godosu::singleton->data.song_player;
-	song_player->set_stream(Godosu::singleton->data.audio_cache[instance]);
+	Ref<AudioStream> stream = Godosu::singleton->data.audio_cache[instance];
+
+	if (stream->is_class("AudioStreamOggVorbis") || stream->is_class("AudioStreamMP3") || stream->is_class("AudioStreamWAV")) {
+		stream->set(SNAME("loop"), RTEST(loop));
+	}
+
+	song_player->set_stream(stream);
 	song_player->play();
 	return OK;
 }
