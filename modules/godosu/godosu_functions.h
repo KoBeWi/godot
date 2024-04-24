@@ -253,4 +253,27 @@ VALUE godosu_play_sample(VALUE self, VALUE instance) {
 	return OK;
 }
 
+VALUE godosu_create_shader(VALUE self, VALUE object, VALUE code) {
+	const String source = StringValueCStr(code);
+
+	Ref<Shader> shader;
+	shader.instantiate();
+	shader->set_code(source);
+
+	Ref<ShaderMaterial> mat;
+	mat.instantiate();
+	mat->set_shader(shader);
+	Godosu::singleton->data.shader_cache[object] = mat;
+	return OK;
+}
+
+VALUE godosu_set_shader(VALUE self, VALUE z, VALUE object) {
+	if (NIL_P(object)) {
+		Godosu::singleton->data.shader_map.erase(FIX2LONG(z));
+	} else {
+		Godosu::singleton->data.shader_map[FIX2LONG(z)] = Godosu::singleton->data.shader_cache[object];
+	}
+	return OK;
+}
+
 #endif
