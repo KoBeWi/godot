@@ -117,6 +117,7 @@ void Godosu::_notification(int p_what) {
 			DEFINE_FUNCTION(retrofication, 0);
 			DEFINE_FUNCTION(set_clip, 4);
 			DEFINE_FUNCTION(hsv_to_rgb, 3);
+			DEFINE_FUNCTION(button_id_to_char, 1);
 
 			DEFINE_FUNCTION(create_text_input, 0);
 			DEFINE_FUNCTION(destroy_text_input, 1);
