@@ -112,6 +112,7 @@ void Godosu::_notification(int p_what) {
 			print_verbose("Defining functions");
 
 			DEFINE_FUNCTION(print, 1);
+			DEFINE_FUNCTION(exit, 0);
 			DEFINE_FUNCTION(setup_window, 3);
 			DEFINE_FUNCTION(retrofication, 0);
 			DEFINE_FUNCTION(set_clip, 4);
@@ -133,8 +134,10 @@ void Godosu::_notification(int p_what) {
 			DEFINE_FUNCTION(load_audio, 2);
 			DEFINE_FUNCTION(load_font, 2);
 
-			DEFINE_FUNCTION(draw_rect, 7);
+			// DEFINE_FUNCTION(draw_line, 8);
 			DEFINE_FUNCTION(draw_quad, 14);
+			DEFINE_FUNCTION(draw_rect, 7);
+			// DEFINE_FUNCTION(draw_triangle, 11);
 			DEFINE_FUNCTION(draw_texture, 8);
 			DEFINE_FUNCTION(draw_texture_rotated, 10);
 			DEFINE_FUNCTION(draw_string, 11);

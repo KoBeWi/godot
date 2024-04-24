@@ -373,7 +373,7 @@ def puts(string)
 end
 
 def exit
-    # TODO
+    godot_exit
 end
 
 def _colorize(color)

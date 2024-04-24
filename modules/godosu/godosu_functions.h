@@ -19,19 +19,14 @@ Color gd_convert_color(VALUE from) {
 	return ret;
 }
 
-VALUE godosu_hsv_to_rgb(VALUE self, VALUE h, VALUE s, VALUE v) {
-	const Color c = Color::from_hsv(RFLOAT_VALUE(h), RFLOAT_VALUE(s), RFLOAT_VALUE(v));
-	VALUE *components = (VALUE *)alloca(sizeof(VALUE) * 3);
-	components[0] = INT2NUM(int(c.r * 255));
-	components[1] = INT2NUM(int(c.g * 255));
-	components[2] = INT2NUM(int(c.b * 255));
-	VALUE array = rb_ary_new4(3, components);
-	return array;
-}
-
 VALUE godosu_print(VALUE self, VALUE string) {
 	String print_string = StringValueCStr(string);
 	print_line(print_string);
+	return OK;
+}
+
+VALUE godosu_exit(VALUE self) {
+	Godosu::singleton->get_tree()->quit();
 	return OK;
 }
 
@@ -45,6 +40,21 @@ VALUE godosu_setup_window(VALUE self, VALUE window, VALUE width, VALUE height) {
 VALUE godosu_retrofication(VALUE self) {
 	Godosu::singleton->set_texture_filter(CanvasItem::TEXTURE_FILTER_NEAREST);
 	return OK;
+}
+
+VALUE godosu_set_clip(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h) {
+	Godosu::singleton->data.clip_rect = Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(w), RFLOAT_VALUE(h));
+	return OK;
+}
+
+VALUE godosu_hsv_to_rgb(VALUE self, VALUE h, VALUE s, VALUE v) {
+	const Color c = Color::from_hsv(RFLOAT_VALUE(h), RFLOAT_VALUE(s), RFLOAT_VALUE(v));
+	VALUE *components = (VALUE *)alloca(sizeof(VALUE) * 3);
+	components[0] = INT2NUM(int(c.r * 255));
+	components[1] = INT2NUM(int(c.g * 255));
+	components[2] = INT2NUM(int(c.b * 255));
+	VALUE array = rb_ary_new4(3, components);
+	return array;
 }
 
 VALUE godosu_create_text_input(VALUE self) {
@@ -108,11 +118,6 @@ VALUE godosu_get_text_input_selection_start(VALUE self, VALUE id) {
 	}
 }
 
-VALUE godosu_set_clip(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h) {
-	Godosu::singleton->data.clip_rect = Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(w), RFLOAT_VALUE(h));
-	return OK;
-}
-
 VALUE godosu_load_image(VALUE self, VALUE instance, VALUE source) {
 	String path = StringValueCStr(source);
 	Ref<Texture2D> texture = ResourceLoader::load("res://" + path, "Texture2D");
@@ -151,10 +156,12 @@ VALUE godosu_load_font(VALUE self, VALUE instance, VALUE source) {
 	return OK;
 }
 
-VALUE godosu_draw_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height, VALUE c, VALUE z, VALUE additive) {
+VALUE godosu_draw_quad(VALUE self, VALUE x1, VALUE y1, VALUE c1, VALUE x2, VALUE y2, VALUE c2, VALUE x3, VALUE y3, VALUE c3, VALUE x4, VALUE y4, VALUE c4, VALUE z, VALUE additive) {
 	Godosu::DrawCommand draw_data;
-	draw_data.type = Godosu::DrawCommand::DRAW_RECT;
-	draw_data.arguments = varray(Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(width), RFLOAT_VALUE(height)));
+	draw_data.type = Godosu::DrawCommand::DRAW_QUAD;
+	draw_data.arguments = varray(
+			PackedVector2Array{ Vector2(RFLOAT_VALUE(x1), RFLOAT_VALUE(y1)), Vector2(RFLOAT_VALUE(x2), RFLOAT_VALUE(y2)), Vector2(RFLOAT_VALUE(x3), RFLOAT_VALUE(y3)), Vector2(RFLOAT_VALUE(x4), RFLOAT_VALUE(y4)) },
+			PackedColorArray{ gd_convert_color(c1), gd_convert_color(c2), gd_convert_color(c3), gd_convert_color(c4) });
 
 	if (RTEST(additive)) {
 		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), Godosu::singleton->data.additive_material);
@@ -164,12 +171,10 @@ VALUE godosu_draw_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height, 
 	return OK;
 }
 
-VALUE godosu_draw_quad(VALUE self, VALUE x1, VALUE y1, VALUE c1, VALUE x2, VALUE y2, VALUE c2, VALUE x3, VALUE y3, VALUE c3, VALUE x4, VALUE y4, VALUE c4, VALUE z, VALUE additive) {
+VALUE godosu_draw_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height, VALUE c, VALUE z, VALUE additive) {
 	Godosu::DrawCommand draw_data;
-	draw_data.type = Godosu::DrawCommand::DRAW_QUAD;
-	draw_data.arguments = varray(
-			PackedVector2Array{ Vector2(RFLOAT_VALUE(x1), RFLOAT_VALUE(y1)), Vector2(RFLOAT_VALUE(x2), RFLOAT_VALUE(y2)), Vector2(RFLOAT_VALUE(x3), RFLOAT_VALUE(y3)), Vector2(RFLOAT_VALUE(x4), RFLOAT_VALUE(y4)) },
-			PackedColorArray{ gd_convert_color(c1), gd_convert_color(c2), gd_convert_color(c3), gd_convert_color(c4) });
+	draw_data.type = Godosu::DrawCommand::DRAW_RECT;
+	draw_data.arguments = varray(Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(width), RFLOAT_VALUE(height)));
 
 	if (RTEST(additive)) {
 		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), Godosu::singleton->data.additive_material);
