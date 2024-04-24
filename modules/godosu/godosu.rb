@@ -20,6 +20,10 @@ module Gosu
         godot_draw_quad($_translate_x + x1.to_f, $_translate_y + y1.to_f, _colorize(c1), $_translate_x + x2.to_f, $_translate_y + y2.to_f, _colorize(c2), $_translate_x + x3.to_f, $_translate_y + y3.to_f, _colorize(c3), $_translate_x + x4.to_f, $_translate_y + y4.to_f, _colorize(c4), _sanitize_z(z), mode == :additive)
     end
 
+    def draw_triangle(x1, y1, c1, x2, y2, c2, x3, y3, c3, z = 0, mode = :default)
+        # TODO
+    end
+
     def button_down?(id)
         return $__gosu_window.__keys.include?(id)
     end
@@ -66,6 +70,7 @@ module Gosu
         attr_reader :mouse_x, :mouse_y, :width, :height, :__keys
 
         def initialize(w, h, fullscreen)
+            godot_retrofication # TODO usunąć
             # TODO fullscreen
             @width, @height = w.to_i, h.to_i
             godot_setup_window(self, @width, @height)
@@ -250,7 +255,7 @@ module Gosu
             @text = ""
             @caret_pos = 0
             @__text_id = godot_create_text_input()
-            ObjectSpace.define_finalizer(self, self.class.finalize(@__text_id))
+            ObjectSpace.define_finalizer(self, proc { godot_destroy_text_input(@__text_id) })
         end
 
         def text=(val)
@@ -275,10 +280,6 @@ module Gosu
 
         def selection_start
             godot_get_text_input_selection_start(@__text_id)
-        end
-    
-        def self.finalize(id)
-            proc { godot_destroy_text_input(id) }
         end
     end
 
@@ -369,6 +370,10 @@ end
 
 def puts(string)
     godot_print(string.to_s)
+end
+
+def exit
+    # TODO
 end
 
 def _colorize(color)

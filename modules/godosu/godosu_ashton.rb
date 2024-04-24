@@ -1,5 +1,43 @@
+module Ashton
+    class Shader
+        def initialize(args = {})
+            # TODO
+        end
+
+        def enable(z)
+            # TODO
+        end
+
+        def disable(z)
+            # TODO
+        end
+
+        def image=(image)
+            # TODO
+        end
+
+        def color=(color)
+            # TODO
+        end
+    end
+end
+
 module Gosu
-    class Image
+    class Window
+        alias_method :ashton_initialize, :initialize
+        def initialize(*args, &block)
+            $__window = self
+            ashton_initialize(*args, &block)
+        end
+
+        def gl(z)
+            yield
+        end
+    end
+
+    class Image    
+        DEFAULT_DRAW_COLOR = Gosu::Color::WHITE
+        
         alias_method :draw_without_hash, :draw
         protected :draw_without_hash
         def draw(*args)
@@ -13,9 +51,9 @@ module Gosu
 
         if shader
             shader.enable z
-            $window.gl z do
-            shader.image = self
-            shader.color = args[5].is_a?(Color) ? args[5] : DEFAULT_DRAW_COLOR
+            $__window.gl z do
+                shader.image = self
+                shader.color = args[5].is_a?(Color) ? args[5] : DEFAULT_DRAW_COLOR
             end
         end
 
