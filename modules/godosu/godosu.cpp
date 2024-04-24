@@ -143,6 +143,9 @@ void Godosu::_notification(int p_what) {
 			DEFINE_FUNCTION(stop_song, 0);
 			DEFINE_FUNCTION(play_sample, 1);
 
+			DEFINE_FUNCTION(create_shader, 2);
+			DEFINE_FUNCTION(set_shader, 2);
+
 			// Input constants.
 
 			print_verbose("Defining constants");
@@ -279,7 +282,17 @@ CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const
 }
 
 void Godosu::add_to_queue(const DrawCommand &p_data, int p_z, const Ref<Material> &p_material) {
-	CanvasItem *ci = get_ci(p_z, p_material, data.clip_rect);
+	Ref<Material> target_material;
+	{
+		auto I = data.shader_map.find(p_z);
+		if (I) {
+			target_material = I->value;
+		} else {
+			target_material = p_material;
+		}
+	}
+
+	CanvasItem *ci = get_ci(p_z, target_material, data.clip_rect);
 	draw_queue[ci].append(p_data);
 }
 

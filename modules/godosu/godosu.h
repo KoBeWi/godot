@@ -51,11 +51,13 @@ public:
 		HashMap<VALUE, Ref<Texture2D>> texture_cache;
 		HashMap<VALUE, Ref<AudioStream>> audio_cache;
 		HashMap<VALUE, Ref<Font>> font_cache;
+		HashMap<VALUE, Ref<ShaderMaterial>> shader_cache;
 		Vector<LineEdit *> text_inputs;
 
 		AudioStreamPlayer *song_player = nullptr;
 		Ref<Material> additive_material;
 		Rect2 clip_rect;
+		HashMap<int, Ref<Material>> shader_map;
 
 		VALUE callback_base = 0;
 		VALUE callback_update_mouse = 0;
