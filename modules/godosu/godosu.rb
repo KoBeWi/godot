@@ -62,7 +62,7 @@ module Gosu
     end
 
     def button_id_to_char(id)
-        return "O" # TODO
+        return godot_button_id_to_char(id.to_i)
     end
 
     class Window

@@ -4,6 +4,7 @@
 #include "godosu.h"
 
 #include "core/config/project_settings.h"
+#include "core/os/keyboard.h"
 #include "scene/audio/audio_stream_player.h"
 #include "scene/gui/line_edit.h"
 #include "scene/resources/atlas_texture.h"
@@ -55,6 +56,12 @@ VALUE godosu_hsv_to_rgb(VALUE self, VALUE h, VALUE s, VALUE v) {
 	components[2] = INT2NUM(int(c.b * 255));
 	VALUE array = rb_ary_new4(3, components);
 	return array;
+}
+
+VALUE godosu_button_id_to_char(VALUE self, VALUE id){
+	Key keycode = Key(FIX2INT(id));
+	const String keycode_name = keycode_get_string(keycode);
+	return rb_str_new_cstr(keycode_name.ascii().get_data());
 }
 
 VALUE godosu_create_text_input(VALUE self) {
