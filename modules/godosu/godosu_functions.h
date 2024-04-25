@@ -253,6 +253,12 @@ VALUE godosu_draw_string(VALUE self, VALUE font, VALUE size, VALUE text, VALUE x
 	return OK;
 }
 
+VALUE godosu_get_text_width(VALUE self, VALUE font, VALUE text) {
+	const Ref<Font> &fnt = Godosu::singleton->data.font_cache[font];
+	const String string = StringValueCStr(text);
+	return DBL2NUM(fnt->get_string_size(string).x);
+}
+
 VALUE godosu_play_song(VALUE self, VALUE instance, VALUE loop) {
 	AudioStreamPlayer *song_player = Godosu::singleton->data.song_player;
 	Ref<AudioStream> stream = Godosu::singleton->data.audio_cache[instance];

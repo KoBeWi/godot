@@ -16,7 +16,7 @@ module Gosu
     end
 
     def draw_quad(x1, y1, c1, x2, y2, c2, x3, y3, c3, x4, y4, c4, z = 0, mode = :default)
-        godot_draw_quad(_gd_x(x1), _gd_y(y1), _gd_color(c1), $_translate_x + _gd_x(to_f), _gd_y(y2), _gd_color(c2), _gd_x(x3), _gd_y(y3), _gd_color(c3), _gd_x(x4), _gd_y(y4), _gd_color(c4), _gd_z(z), mode == :additive)
+        godot_draw_quad(_gd_x(x1), _gd_y(y1), _gd_color(c1), _gd_x(x2), _gd_y(y2), _gd_color(c2), _gd_x(x3), _gd_y(y3), _gd_color(c3), _gd_x(x4), _gd_y(y4), _gd_color(c4), _gd_z(z), mode == :additive)
     end
 
     def draw_triangle(x1, y1, c1, x2, y2, c2, x3, y3, c3, z = 0, mode = :default)
@@ -297,8 +297,7 @@ module Gosu
         end
 
         def text_width(text)
-            # TODO
-            return text.to_s.length * 10
+            godot_text_width(self, text)
         end
     end
 
