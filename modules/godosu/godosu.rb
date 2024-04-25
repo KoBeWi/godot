@@ -8,19 +8,19 @@ module Gosu
     end
 
     def draw_rect(x, y, width, height, c, z = 0, mode = :default)
-        godot_draw_rect($_translate_x + x.to_f, $_translate_y + y.to_f, width.to_f, height.to_f, _colorize(c), _sanitize_z(z), mode == :additive)
+        godot_draw_rect(_gd_x(x), _gd_y(y), width.to_f, height.to_f, _gd_color(c), _gd_z(z), mode == :additive)
     end
 
     def draw_line(x1, y1, c1, x2, y2, c2, z = 0, mode = :default)
-        godot_draw_line($_translate_x + x1.to_f, $_translate_y + y1.to_f, _colorize(c1), $_translate_x + x2.to_f, $_translate_y + y2.to_f, _colorize(c2), _sanitize_z(z), mode == :additive)
+        godot_draw_line(_gd_x(x1), _gd_y(y1), _gd_color(c1), _gd_x(x2), _gd_y(y2), _gd_color(c2), _gd_z(z), mode == :additive)
     end
 
     def draw_quad(x1, y1, c1, x2, y2, c2, x3, y3, c3, x4, y4, c4, z = 0, mode = :default)
-        godot_draw_quad($_translate_x + x1.to_f, $_translate_y + y1.to_f, _colorize(c1), $_translate_x + x2.to_f, $_translate_y + y2.to_f, _colorize(c2), $_translate_x + x3.to_f, $_translate_y + y3.to_f, _colorize(c3), $_translate_x + x4.to_f, $_translate_y + y4.to_f, _colorize(c4), _sanitize_z(z), mode == :additive)
+        godot_draw_quad(_gd_x(x1), _gd_y(y1), _gd_color(c1), $_translate_x + _gd_x(to_f), _gd_y(y2), _gd_color(c2), _gd_x(x3), _gd_y(y3), _gd_color(c3), _gd_x(x4), _gd_y(y4), _gd_color(c4), _gd_z(z), mode == :additive)
     end
 
     def draw_triangle(x1, y1, c1, x2, y2, c2, x3, y3, c3, z = 0, mode = :default)
-        godot_draw_triangle($_translate_x + x1.to_f, $_translate_y + y1.to_f, _colorize(c1), $_translate_x + x2.to_f, $_translate_y + y2.to_f, _colorize(c2), $_translate_x + x3.to_f, $_translate_y + y3.to_f, _colorize(c3), _sanitize_z(z), mode == :additive)
+        godot_draw_triangle(_gd_x(x1), _gd_y(y1), _gd_color(c1), _gd_x(x2), _gd_y(y2), _gd_color(c2), _gd_x(x3), _gd_y(y3), _gd_color(c3), _gd_z(z), mode == :additive)
     end
 
     def button_down?(id)
@@ -86,11 +86,11 @@ module Gosu
         end
 
         def translate(x, y)
-            $_translate_x = x
-            $_translate_y = y
+            $_translate_x = x.to_f
+            $_translate_y = y.to_f
             yield
-            $_translate_x = 0
-            $_translate_y = 0
+            $_translate_x = 0.0
+            $_translate_y = 0.0
         end
 
         def clip_to(x, y, w, h)
@@ -199,11 +199,11 @@ module Gosu
         end
 
         def draw(x, y, z = 0, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)
-            godot_draw_texture(self, $_translate_x + x.to_f, $_translate_y + y.to_f, _sanitize_z(z), scale_x.to_f, scale_y.to_f, _colorize(color), mode == :additive);
+            godot_draw_texture(self, _gd_x(x), _gd_y(y), _gd_z(z), scale_x.to_f, scale_y.to_f, _gd_color(color), mode == :additive);
         end
 
         def draw_rot(x, y, z, angle = 0, center_x = 0.5, center_y = 0.5, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)
-            godot_draw_texture_rotated(self, $_translate_x + x.to_f, $_translate_y + y.to_f, _sanitize_z(z), angle.to_f * (Math::PI / 180.0), center_x.to_f, center_y.to_f, scale_x.to_f, scale_y.to_f, _colorize(color))
+            godot_draw_texture_rotated(self, _gd_x(x), _gd_y(y), _gd_z(z), angle.to_f * (Math::PI / 180.0), center_x.to_f, center_y.to_f, scale_x.to_f, scale_y.to_f, _gd_color(color))
         end
 
         def godot_set_size(w, h)
@@ -289,11 +289,11 @@ module Gosu
         end
 
         def draw(text, x, y, z, scale_x = 1.0, scale_y = 1.0, color = 0xff_ffffff, mode = :default) # TODO mode
-            godot_draw_string(self, @size, text.to_s, x.to_f, y.to_f, _sanitize_z(z), scale_x.to_f, scale_y.to_f, 0.0, 0.0, _colorize(color))
+            godot_draw_string(self, @size, text.to_s, _gd_x(x), _gd_y(y), _gd_z(z), scale_x.to_f, scale_y.to_f, 0.0, 0.0, _gd_color(color))
         end
 
         def draw_rel(text, x, y, z, rel_x, rel_y, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default) # TODO mode
-            godot_draw_string(self, @size, text.to_s, x.to_f, y.to_f, _sanitize_z(z), scale_x.to_f, scale_y.to_f, rel_x.to_f, rel_y.to_f, _colorize(color))
+            godot_draw_string(self, @size, text.to_s, _gd_x(x), _gd_y(y), _gd_z(z), scale_x.to_f, scale_y.to_f, rel_x.to_f, rel_y.to_f, _gd_color(color))
         end
 
         def text_width(text)
@@ -375,14 +375,22 @@ def exit
     godot_exit
 end
 
-def _colorize(color)
-    color.to_i.to_s(16).rjust(8, "0")
+def _gd_x(x)
+    $_translate_x + x.to_f
 end
 
-def _sanitize_z(z)
+def _gd_y(y)
+    $_translate_y + y.to_f
+end
+
+def _gd_z(z)
     $_base_z_index + (z * 100).to_i
 end
 
+def _gd_color(color)
+    color.to_i.to_s(16).rjust(8, "0")
+end
+
 $_base_z_index = 0
-$_translate_x = 0
-$_translate_y = 0
+$_translate_x = 0.0
+$_translate_y = 0.0
