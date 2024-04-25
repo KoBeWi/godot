@@ -47,6 +47,14 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 				p_item->draw_polygon(points, colors);
 			} break;
 
+			case DrawCommand::DRAW_LINE: {
+				const Vector2 &point1 = draw_command.arguments[0];
+				const Vector2 &point2 = draw_command.arguments[1];
+				const Color &color1 = draw_command.arguments[2];
+				const Color &color2 = draw_command.arguments[3];
+				p_item->draw_line(point1, point2, color1.lerp(color2, 0.5)); // FIXME kolory
+			} break;
+
 			case DrawCommand::DRAW_STRING: {
 				const Ref<Font> &font = draw_command.arguments[0];
 				Vector2 pos = draw_command.arguments[1];
@@ -135,7 +143,7 @@ void Godosu::_notification(int p_what) {
 			DEFINE_FUNCTION(load_audio, 2);
 			DEFINE_FUNCTION(load_font, 2);
 
-			// DEFINE_FUNCTION(draw_line, 8);
+			DEFINE_FUNCTION(draw_line, 8);
 			DEFINE_FUNCTION(draw_quad, 14);
 			DEFINE_FUNCTION(draw_rect, 7);
 			DEFINE_FUNCTION(draw_triangle, 11);

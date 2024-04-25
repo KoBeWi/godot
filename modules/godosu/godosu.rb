@@ -12,8 +12,7 @@ module Gosu
     end
 
     def draw_line(x1, y1, c1, x2, y2, c2, z = 0, mode = :default)
-        # TODO
-        draw_quad(x1, y1, c1, x1 + 1, y1 - 1, c1, x2 + 1, y2 + 1, c2, x2, y2, c2, z, mode)
+        godot_draw_line($_translate_x + x1.to_f, $_translate_y + y1.to_f, _colorize(c1), $_translate_x + x2.to_f, $_translate_y + y2.to_f, _colorize(c2), _sanitize_z(z), mode == :additive)
     end
 
     def draw_quad(x1, y1, c1, x2, y2, c2, x3, y3, c3, x4, y4, c4, z = 0, mode = :default)
