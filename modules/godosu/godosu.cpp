@@ -37,7 +37,7 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 				const Vector2 &draw_scale = draw_command.arguments[4];
 				const Color &color = draw_command.arguments[5];
 				p_item->draw_set_transform(pos, angle, Vector2(1, 1));
-				p_item->draw_texture_rect(texture, Rect2(-texture->get_size() * center * draw_scale, texture->get_size() * draw_scale), false, color);
+				p_item->draw_texture_rect(texture, Rect2(-texture->get_size() * center, texture->get_size() * draw_scale), false, color);
 				p_item->draw_set_transform_matrix(Transform2D());
 			} break;
 
