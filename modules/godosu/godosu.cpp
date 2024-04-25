@@ -17,48 +17,48 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 	for (const DrawCommand &draw_command : draw_data) {
 		switch (draw_command.type) {
 			case DrawCommand::DRAW_RECT: {
-				p_item->draw_rect(draw_command.arguments[0], Color(1, 1, 1), true);
+				const Rect2 &rect = draw_command.arguments[0];
+				p_item->draw_rect(rect, Color(1, 1, 1), true); // TODO kolor?
 			} break;
 
 			case DrawCommand::DRAW_TEXTURE: {
-				Ref<Texture2D> texture = draw_command.arguments[0];
-				Vector2 pos = draw_command.arguments[1];
-				Vector2 draw_scale = draw_command.arguments[2];
-				p_item->draw_texture_rect(texture, Rect2(pos + texture->get_size() * draw_scale.min(Vector2()), texture->get_size() * draw_scale), false, draw_command.arguments[3]);
+				const Ref<Texture2D> &texture = draw_command.arguments[0];
+				const Vector2 &pos = draw_command.arguments[1];
+				const Vector2 &draw_scale = draw_command.arguments[2];
+				const Color &color = draw_command.arguments[3];
+				p_item->draw_texture_rect(texture, Rect2(pos + texture->get_size() * draw_scale.min(Vector2()), texture->get_size() * draw_scale), false, color);
 			} break;
 
 			case DrawCommand::DRAW_TEXTURE_ROTATED: {
-				Ref<Texture2D> texture = draw_command.arguments[0];
-				Vector2 pos = draw_command.arguments[1];
-				float angle = draw_command.arguments[2];
-				Vector2 center = draw_command.arguments[3];
-				Vector2 draw_scale = draw_command.arguments[4];
+				const Ref<Texture2D> &texture = draw_command.arguments[0];
+				const Vector2 &pos = draw_command.arguments[1];
+				const float angle = draw_command.arguments[2];
+				const Vector2 &center = draw_command.arguments[3];
+				const Vector2 &draw_scale = draw_command.arguments[4];
+				const Color &color = draw_command.arguments[5];
 				p_item->draw_set_transform(pos, angle, Vector2(1, 1));
-				p_item->draw_texture_rect(texture, Rect2(-texture->get_size() * center * draw_scale, texture->get_size() * draw_scale), false, draw_command.arguments[5]);
+				p_item->draw_texture_rect(texture, Rect2(-texture->get_size() * center * draw_scale, texture->get_size() * draw_scale), false, color);
 				p_item->draw_set_transform_matrix(Transform2D());
 			} break;
 
 			case DrawCommand::DRAW_QUAD: {
-				p_item->draw_polygon(draw_command.arguments[0], draw_command.arguments[1]);
+				const PackedVector2Array &points = draw_command.arguments[0];
+				const PackedColorArray &colors = draw_command.arguments[1];
+				p_item->draw_polygon(points, colors);
 			} break;
 
 			case DrawCommand::DRAW_STRING: {
+				const Ref<Font> &font = draw_command.arguments[0];
+				Vector2 pos = draw_command.arguments[1];
+				const String &text = draw_command.arguments[2];
+				const int font_size = draw_command.arguments[3];
+				const Color &color = draw_command.arguments[4];
+				const Vector2 &skale = draw_command.arguments[5]; // TODO
 				const Vector2 &rel = draw_command.arguments[6];
-
-				if (rel.is_zero_approx()) {
-					p_item->draw_string(draw_command.arguments[0], draw_command.arguments[1], draw_command.arguments[2], HORIZONTAL_ALIGNMENT_LEFT, -1, draw_command.arguments[3], draw_command.arguments[4]);
-				} else {
-					// FIXME: niedokładne to
-					const Ref<Font> &font = draw_command.arguments[0];
-					const String &text = draw_command.arguments[2];
-					int text_size = draw_command.arguments[3];
-
-					const Vector2 size(text.size() * 10 * (text_size / 16.0), font->get_height(text_size));
-					Vector2 pos = draw_command.arguments[1];
-					pos -= size * rel;
-
-					p_item->draw_string(font, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, text_size, draw_command.arguments[4]);
-				}
+				
+				const Vector2 text_size = font->get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size);
+				pos.y += text_size.y * 0.7; // FIXME
+				p_item->draw_string(font, pos - text_size * rel, text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color);
 			} break;
 		}
 	}
