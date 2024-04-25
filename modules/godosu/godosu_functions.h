@@ -20,6 +20,10 @@ Color gd_convert_color(VALUE from) {
 	return ret;
 }
 
+Ref<Material> gd_is_additive(VALUE additive) {
+	return RTEST(additive) ? Godosu::singleton->data.additive_material : Ref<Material>();
+}
+
 VALUE godosu_print(VALUE self, VALUE string) {
 	String print_string = StringValueCStr(string);
 	print_line(print_string);
@@ -58,7 +62,7 @@ VALUE godosu_hsv_to_rgb(VALUE self, VALUE h, VALUE s, VALUE v) {
 	return array;
 }
 
-VALUE godosu_button_id_to_char(VALUE self, VALUE id){
+VALUE godosu_button_id_to_char(VALUE self, VALUE id) {
 	Key keycode = Key(FIX2INT(id));
 	const String keycode_name = keycode_get_string(keycode);
 	return rb_str_new_cstr(keycode_name.ascii().get_data());
@@ -163,6 +167,19 @@ VALUE godosu_load_font(VALUE self, VALUE instance, VALUE source) {
 	return OK;
 }
 
+VALUE godosu_draw_line(VALUE self, VALUE x1, VALUE y1, VALUE c1, VALUE x2, VALUE y2, VALUE c2, VALUE z, VALUE additive) {
+	Godosu::DrawCommand draw_data;
+	draw_data.type = Godosu::DrawCommand::DRAW_LINE;
+	draw_data.arguments = varray(
+			Vector2(RFLOAT_VALUE(x1), RFLOAT_VALUE(y1)),
+			Vector2(RFLOAT_VALUE(x2), RFLOAT_VALUE(y2)),
+			gd_convert_color(c1),
+			gd_convert_color(c2));
+
+	Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), gd_is_additive(additive));
+	return OK;
+}
+
 VALUE godosu_draw_quad(VALUE self, VALUE x1, VALUE y1, VALUE c1, VALUE x2, VALUE y2, VALUE c2, VALUE x3, VALUE y3, VALUE c3, VALUE x4, VALUE y4, VALUE c4, VALUE z, VALUE additive) {
 	Godosu::DrawCommand draw_data;
 	draw_data.type = Godosu::DrawCommand::DRAW_POLYGON;
@@ -170,11 +187,7 @@ VALUE godosu_draw_quad(VALUE self, VALUE x1, VALUE y1, VALUE c1, VALUE x2, VALUE
 			PackedVector2Array{ Vector2(RFLOAT_VALUE(x1), RFLOAT_VALUE(y1)), Vector2(RFLOAT_VALUE(x2), RFLOAT_VALUE(y2)), Vector2(RFLOAT_VALUE(x3), RFLOAT_VALUE(y3)), Vector2(RFLOAT_VALUE(x4), RFLOAT_VALUE(y4)) },
 			PackedColorArray{ gd_convert_color(c1), gd_convert_color(c2), gd_convert_color(c3), gd_convert_color(c4) });
 
-	if (RTEST(additive)) {
-		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), Godosu::singleton->data.additive_material);
-	} else {
-		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z));
-	}
+	Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), gd_is_additive(additive));
 	return OK;
 }
 
@@ -183,11 +196,7 @@ VALUE godosu_draw_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height, 
 	draw_data.type = Godosu::DrawCommand::DRAW_RECT;
 	draw_data.arguments = varray(Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(width), RFLOAT_VALUE(height)));
 
-	if (RTEST(additive)) {
-		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), Godosu::singleton->data.additive_material);
-	} else {
-		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z));
-	}
+	Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), gd_is_additive(additive));
 	return OK;
 }
 
@@ -198,11 +207,7 @@ VALUE godosu_draw_triangle(VALUE self, VALUE x1, VALUE y1, VALUE c1, VALUE x2, V
 			PackedVector2Array{ Vector2(RFLOAT_VALUE(x1), RFLOAT_VALUE(y1)), Vector2(RFLOAT_VALUE(x2), RFLOAT_VALUE(y2)), Vector2(RFLOAT_VALUE(x3), RFLOAT_VALUE(y3)) },
 			PackedColorArray{ gd_convert_color(c1), gd_convert_color(c2), gd_convert_color(c3) });
 
-	if (RTEST(additive)) {
-		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), Godosu::singleton->data.additive_material);
-	} else {
-		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z));
-	}
+	Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), gd_is_additive(additive));
 	return OK;
 }
 
@@ -215,11 +220,7 @@ VALUE godosu_draw_texture(VALUE self, VALUE texture, VALUE x, VALUE y, VALUE z, 
 			Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)),
 			gd_convert_color(color));
 
-	if (RTEST(additive)) {
-		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), Godosu::singleton->data.additive_material);
-	} else {
-		Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z));
-	}
+	Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), gd_is_additive(additive));
 	return OK;
 }
 
