@@ -21,7 +21,7 @@ module Gosu
     end
 
     def draw_triangle(x1, y1, c1, x2, y2, c2, x3, y3, c3, z = 0, mode = :default)
-        # TODO
+        godot_draw_triangle($_translate_x + x1.to_f, $_translate_y + y1.to_f, _colorize(c1), $_translate_x + x2.to_f, $_translate_y + y2.to_f, _colorize(c2), $_translate_x + x3.to_f, $_translate_y + y3.to_f, _colorize(c3), _sanitize_z(z), mode == :additive)
     end
 
     def button_down?(id)
