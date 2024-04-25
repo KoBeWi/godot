@@ -41,7 +41,7 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 				p_item->draw_set_transform_matrix(Transform2D());
 			} break;
 
-			case DrawCommand::DRAW_QUAD: {
+			case DrawCommand::DRAW_POLYGON: {
 				const PackedVector2Array &points = draw_command.arguments[0];
 				const PackedColorArray &colors = draw_command.arguments[1];
 				p_item->draw_polygon(points, colors);
@@ -138,7 +138,7 @@ void Godosu::_notification(int p_what) {
 			// DEFINE_FUNCTION(draw_line, 8);
 			DEFINE_FUNCTION(draw_quad, 14);
 			DEFINE_FUNCTION(draw_rect, 7);
-			// DEFINE_FUNCTION(draw_triangle, 11);
+			DEFINE_FUNCTION(draw_triangle, 11);
 			DEFINE_FUNCTION(draw_texture, 8);
 			DEFINE_FUNCTION(draw_texture_rotated, 10);
 			DEFINE_FUNCTION(draw_string, 11);

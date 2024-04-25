@@ -78,9 +78,9 @@ module Gosu
 
             if shader
                 shader.enable z
-                $window.gl z do
-                shader.image = self
-                shader.color = args[8].is_a?(Color) ? args[8] : DEFAULT_DRAW_COLOR
+                $__window.gl z do
+                    shader.image = self
+                    shader.color = args[8].is_a?(Color) ? args[8] : DEFAULT_DRAW_COLOR
                 end
             end
 
