@@ -150,6 +150,7 @@ void Godosu::_notification(int p_what) {
 			DEFINE_FUNCTION(draw_texture, 8);
 			DEFINE_FUNCTION(draw_texture_rotated, 10);
 			DEFINE_FUNCTION(draw_string, 11);
+			DEFINE_FUNCTION(get_text_width, 2);
 
 			DEFINE_FUNCTION(play_song, 2);
 			DEFINE_FUNCTION(stop_song, 0);
