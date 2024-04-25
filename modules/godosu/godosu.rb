@@ -297,7 +297,7 @@ module Gosu
         end
 
         def text_width(text)
-            godot_text_width(self, text)
+            godot_get_text_width(self, text.to_s)
         end
     end
 
