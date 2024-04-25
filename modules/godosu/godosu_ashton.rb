@@ -7,11 +7,11 @@ module Ashton
         end
 
         def enable(z)
-            godot_set_shader(_sanitize_z(z), self)
+            godot_set_shader(_gd_z(z), self)
         end
         
         def disable(z)
-            godot_set_shader(_sanitize_z(z), nil)
+            godot_set_shader(_gd_z(z), nil)
         end
 
         def image=(image)
