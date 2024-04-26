@@ -227,12 +227,12 @@ VALUE godosu_draw_texture(VALUE self, VALUE texture, VALUE x, VALUE y, VALUE z, 
 VALUE godosu_draw_texture_rotated(VALUE self, VALUE texture, VALUE x, VALUE y, VALUE z, VALUE angle, VALUE center_x, VALUE center_y, VALUE scale_x, VALUE scale_y, VALUE color) {
 	Godosu::DrawCommand draw_data;
 	draw_data.type = Godosu::DrawCommand::DRAW_TEXTURE_ROTATED;
-	draw_data.arguments.append(Godosu::singleton->data.texture_cache[texture]);
-	draw_data.arguments.append(Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)));
-	draw_data.arguments.append(RFLOAT_VALUE(angle));
-	draw_data.arguments.append(Vector2(RFLOAT_VALUE(center_x), RFLOAT_VALUE(center_y)));
-	draw_data.arguments.append(Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)));
-	draw_data.arguments.append(gd_convert_color(color));
+	draw_data.arguments = varray(Godosu::singleton->data.texture_cache[texture],
+			Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)),
+			RFLOAT_VALUE(angle),
+			Vector2(RFLOAT_VALUE(center_x), RFLOAT_VALUE(center_y)),
+			Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)),
+			gd_convert_color(color));
 
 	Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z));
 	return OK;
@@ -241,13 +241,13 @@ VALUE godosu_draw_texture_rotated(VALUE self, VALUE texture, VALUE x, VALUE y, V
 VALUE godosu_draw_string(VALUE self, VALUE font, VALUE size, VALUE text, VALUE x, VALUE y, VALUE z, VALUE scale_x, VALUE scale_y, VALUE rel_x, VALUE rel_y, VALUE color) {
 	Godosu::DrawCommand draw_data;
 	draw_data.type = Godosu::DrawCommand::DRAW_STRING;
-	draw_data.arguments.append(Godosu::singleton->data.font_cache[font]);
-	draw_data.arguments.append(Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)));
-	draw_data.arguments.append(StringValueCStr(text));
-	draw_data.arguments.append(FIX2LONG(size));
-	draw_data.arguments.append(gd_convert_color(color));
-	draw_data.arguments.append(Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)));
-	draw_data.arguments.append(Vector2(RFLOAT_VALUE(rel_x), RFLOAT_VALUE(rel_y)));
+	draw_data.arguments = varray(Godosu::singleton->data.font_cache[font],
+			Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)),
+			StringValueCStr(text),
+			FIX2LONG(size),
+			gd_convert_color(color),
+			Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)),
+			Vector2(RFLOAT_VALUE(rel_x), RFLOAT_VALUE(rel_y)));
 
 	Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z));
 	return OK;
