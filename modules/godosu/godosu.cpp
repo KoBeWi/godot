@@ -281,11 +281,15 @@ CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const
 			parent = clipper;
 		}
 
-		CanvasItem *ci = memnew(Node2D);
+		Node2D *ci = memnew(Node2D);
 		parent->add_child(ci);
-		RenderingServer::get_singleton()->canvas_item_set_z_index(ci->get_canvas_item(), p_z_index);
+		if (p_clip_rect.has_area()) {
+			ci->set_global_transform(Transform2D());
+		}
+
+		ci->set_z_index(p_z_index);
 		if (p_material.is_valid()) {
-			RenderingServer::get_singleton()->canvas_item_set_material(ci->get_canvas_item(), p_material->get_rid());
+			ci->set_material(p_material);
 		}
 		ci->connect(SNAME("draw"), callable_mp(this, &Godosu::_draw_canvas_item).bind(ci));
 		ci_map[key] = ci;
