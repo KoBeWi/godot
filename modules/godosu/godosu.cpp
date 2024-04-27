@@ -121,11 +121,14 @@ void Godosu::_notification(int p_what) {
 
 			DEFINE_FUNCTION(print, 1);
 			DEFINE_FUNCTION(exit, 0);
-			DEFINE_FUNCTION(setup_window, 3);
 			DEFINE_FUNCTION(retrofication, 0);
 			DEFINE_FUNCTION(set_clip, 4);
 			DEFINE_FUNCTION(hsv_to_rgb, 3);
 			DEFINE_FUNCTION(button_id_to_char, 1);
+
+			DEFINE_FUNCTION(setup_window, 4);
+			DEFINE_FUNCTION(set_window_title, 1);
+			DEFINE_FUNCTION(set_window_fullscreen, 1);
 
 			DEFINE_FUNCTION(create_text_input, 0);
 			DEFINE_FUNCTION(destroy_text_input, 1);
@@ -250,14 +253,23 @@ String Godosu::get_main_script() const {
 	return main_script;
 }
 
-void Godosu::setup_window(VALUE p_window, const Vector2i &p_size) {
+void Godosu::setup_window(VALUE p_window, const Vector2i &p_size, bool p_fullscreen) {
 	data.window = p_window;
 	set_process_internal(true);
 	set_physics_process_internal(true);
 	set_process_input(true);
 
-	get_window()->set_size(p_size * GLOBAL_GET("display/window/stretch/scale").operator real_t());
-	get_window()->move_to_center();
+	float window_scale = ProjectSettings::get_singleton()->get_setting("display/window/size/window_scale", 1.0);
+
+	ProjectSettings::get_singleton()->set_setting("display/window/size/viewport_width", p_size.x);
+	ProjectSettings::get_singleton()->set_setting("display/window/size/viewport_height", p_size.x);
+	get_window()->set_size(p_size * window_scale);
+	get_window()->set_content_scale_size(p_size);
+	if (p_fullscreen) {
+		get_window()->set_mode(Window::MODE_FULLSCREEN);
+	} else {
+		get_window()->move_to_center();
+	}
 }
 
 CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const Rect2 &p_clip_rect) {

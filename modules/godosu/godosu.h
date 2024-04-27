@@ -71,7 +71,7 @@ public:
 	void set_main_script(const String &p_main);
 	String get_main_script() const;
 
-	void setup_window(VALUE p_window, const Vector2i &p_size);
+	void setup_window(VALUE p_window, const Vector2i &p_size, bool p_fullscreen);
 	CanvasItem *get_ci(int p_z_index, const Ref<Material> &p_material, const Rect2 &p_clip_rect);
 	void add_to_queue(const DrawCommand &p_data, int p_z, const Ref<Material> &p_material = Ref<Material>());
 

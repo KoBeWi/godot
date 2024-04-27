@@ -35,13 +35,6 @@ VALUE godosu_exit(VALUE self) {
 	return OK;
 }
 
-VALUE godosu_setup_window(VALUE self, VALUE window, VALUE width, VALUE height) {
-	Vector2i size(FIX2INT(width), FIX2INT(height));
-	Godosu::singleton->setup_window(window, size);
-	Input::get_singleton()->set_mouse_mode(Input::MOUSE_MODE_HIDDEN);
-	return OK;
-}
-
 VALUE godosu_retrofication(VALUE self) {
 	Godosu::singleton->set_texture_filter(CanvasItem::TEXTURE_FILTER_NEAREST);
 	return OK;
@@ -66,6 +59,28 @@ VALUE godosu_button_id_to_char(VALUE self, VALUE id) {
 	Key keycode = Key(FIX2INT(id));
 	const String keycode_name = keycode_get_string(keycode);
 	return rb_str_new_cstr(keycode_name.ascii().get_data());
+}
+
+VALUE godosu_setup_window(VALUE self, VALUE window, VALUE width, VALUE height, VALUE fullscreen) {
+	Vector2i size(FIX2INT(width), FIX2INT(height));
+	Godosu::singleton->setup_window(window, size, RTEST(fullscreen));
+	Input::get_singleton()->set_mouse_mode(Input::MOUSE_MODE_HIDDEN);
+	return OK;
+}
+
+VALUE godosu_set_window_title(VALUE self, VALUE title) {
+	Godosu::singleton->get_window()->set_title(StringValueCStr(title));
+	return OK;
+}
+
+VALUE godosu_set_window_fullscreen(VALUE self, VALUE fullscreen) {
+	if (RTEST(fullscreen)) {
+		Godosu::singleton->get_window()->set_mode(Window::MODE_FULLSCREEN);
+	} else {
+		Godosu::singleton->get_window()->set_mode(Window::MODE_WINDOWED);
+		Godosu::singleton->get_window()->move_to_center();
+	}
+	return OK;
 }
 
 VALUE godosu_create_text_input(VALUE self) {
