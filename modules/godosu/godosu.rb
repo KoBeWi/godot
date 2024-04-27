@@ -65,20 +65,18 @@ module Gosu
     end
 
     class Window
-        attr_accessor :caption # TODO
         attr_reader :mouse_x, :mouse_y, :width, :height, :__keys
 
         def initialize(w, h, fullscreen)
             godot_retrofication # TODO usunąć
             # TODO fullscreen
-            @width, @height = w.to_i, h.to_i
-            godot_setup_window(self, @width, @height)
+            @width, @height, @fullscreen = w.to_i, h.to_i, fullscreen
+            godot_setup_window(self, @width, @height, @fullscreen)
             @__keys = []
         end
 
         def show
             $__gosu_window = self
-            # TODO
         end
 
         def flush
@@ -94,7 +92,7 @@ module Gosu
         end
 
         def clip_to(x, y, w, h)
-            godot_set_clip(x.to_f, y.to_f, w.to_f, h.to_f)
+            godot_set_clip(_gd_x(x), _gd_y(y), w.to_f, h.to_f) # FIXME milion szajsu robi
             yield
             godot_set_clip(0.0, 0.0, 0.0, 0.0)
         end
@@ -155,6 +153,19 @@ module Gosu
         def godot_update_mouse(x, y)
             @mouse_x = x
             @mouse_y = y
+        end
+
+        def caption=(text)
+            @caption = text.to_s
+            godot_set_window_title(@caption)
+        end
+
+        def caption
+            @caption
+        end
+
+        def fullscreen=(full)
+            godot_set_window_fullscreen(full)
         end
     end
 
