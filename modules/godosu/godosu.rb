@@ -179,15 +179,20 @@ module Gosu
         end
 
         def fullscreen=(full)
+            @fullscreen = full
             godot_set_window_fullscreen(full)
+        end
+
+        def fullscreen?
+            @fullscreen
         end
     end
 
     class Image
         attr_reader :width, :height
 
-        def initialize(screen, source, tileable = false, x = 0, y = 0, w = 0, h = 0)
-            if screen.class == String
+        def initialize(screen, source = nil, tileable = false, x = 0, y = 0, w = 0, h = 0)
+            if screen.class == String or screen.class == Image
                 initialize_without_window(screen, source, tileable, x, y, w)
             else
                 initialize_without_window(source, tileable, x, y, w, h)
@@ -197,7 +202,7 @@ module Gosu
         def initialize_without_window(source, tileable = false, x = 0, y = 0, w = 0, h = 0)
             # TODO tileable
             if w * h == 0
-                godot_load_image(self, source)
+                godot_load_image(self, source.to_s)
             else
                 godot_load_atlas(self, source, x.to_i, y.to_i, w.to_i, h.to_i)
                 @width = w
@@ -205,10 +210,18 @@ module Gosu
             end
         end
 
-        def Image.load_tiles(screen, source, tile_width, tile_height, options = {})
+        def self.load_tiles(screen, source, tile_width, tile_height, options = {})
+            if screen.class == String or screen.class == Image
+                load_tiles_without_window(screen, source, tile_width, options)
+            else
+                load_tiles_without_window(source, tile_width, tile_height, options)
+            end
+        end
+
+        def self.load_tiles_without_window(source, tile_width, tile_height, options = {})
             base = source
             if source.class != Image
-                base = Image.new(screen, source)
+                base = Image.new(source)
             end
 
             if tile_width < 0
@@ -225,7 +238,7 @@ module Gosu
             while y < base.height
                 x = 0
                 while x < base.width
-                    ret << Image.new(screen, base, true, x, y, tile_width, tile_height)
+                    ret << Image.new(base, true, x, y, tile_width, tile_height)
                     x += tile_width
                 end
                 y += tile_height
@@ -249,7 +262,15 @@ module Gosu
     end
 
     class Song
-        def initialize(screen, filename)
+        def initialize(screen, filename = nil)
+            if screen.class == String
+                initialize_without_window(screen)
+            else
+                initialize_without_window(filename)
+            end
+        end
+        
+        def initialize_without_window(filename)
             godot_load_audio(self, filename)
         end
 
@@ -274,7 +295,15 @@ module Gosu
     end
 
     class Sample
-        def initialize(screen, filename)
+        def initialize(screen, filename = nil)
+            if screen.class == String
+                initialize_without_window(screen)
+            else
+                initialize_without_window(filename)
+            end
+        end
+        
+        def initialize_without_window(filename)
             godot_load_audio(self, filename)
         end
 
