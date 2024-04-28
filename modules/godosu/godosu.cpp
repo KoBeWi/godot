@@ -321,11 +321,7 @@ void Godosu::_notification(int p_what) {
 			// Run.
 
 			print_verbose("Configuring exec");
-#ifdef TOOLS_ENABLED
 			const String main_script_path = ProjectSettings::get_singleton()->globalize_path(main_script);
-#else
-			const String main_script_path = OS::get_singleton()->get_executable_path().get_base_dir().path_join(ProjectSettings::get_singleton()->globalize_path(main_script));
-#endif
 			const String exec = vformat(R"(-e require "%s" )", main_script_path);
 
 			char *options[] = { "-v", const_cast<char *>(exec.ascii().get_data()) };
