@@ -61,7 +61,12 @@ module Gosu
     end
 
     def button_id_to_char(id)
-        return godot_button_id_to_char(id.to_i)
+        godot_button_id_to_char(id.to_i)
+    end
+
+    def milliseconds
+        # TODO
+        0
     end
 
     def flush
@@ -182,6 +187,14 @@ module Gosu
         attr_reader :width, :height
 
         def initialize(screen, source, tileable = false, x = 0, y = 0, w = 0, h = 0)
+            if screen.class == String
+                initialize_without_window(screen, source, tileable, x, y, w)
+            else
+                initialize_without_window(source, tileable, x, y, w, h)
+            end
+        end
+
+        def initialize_without_window(source, tileable = false, x = 0, y = 0, w = 0, h = 0)
             # TODO tileable
             if w * h == 0
                 godot_load_image(self, source)

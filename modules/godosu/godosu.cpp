@@ -174,17 +174,65 @@ void Godosu::_notification(int p_what) {
 			DEFINE_FUNCTION(create_shader, 2);
 			DEFINE_FUNCTION(set_shader, 2);
 
+#undef DEFINE_FUNCTION
+
 			// Input constants.
 
 			print_verbose("Defining constants");
 			VALUE GosuModule = rb_define_module("Gosu");
-			rb_define_const(GosuModule, "KbLeft", LONG2NUM(int(Key::LEFT)));
-			rb_define_const(GosuModule, "KbRight", LONG2NUM(int(Key::RIGHT)));
-			rb_define_const(GosuModule, "KbUp", LONG2NUM(int(Key::UP)));
+
+			rb_define_const(GosuModule, "Kb0", LONG2NUM(int(Key::KEY_0)));
+			rb_define_const(GosuModule, "Kb1", LONG2NUM(int(Key::KEY_1)));
+			rb_define_const(GosuModule, "Kb2", LONG2NUM(int(Key::KEY_2)));
+			rb_define_const(GosuModule, "Kb3", LONG2NUM(int(Key::KEY_3)));
+			rb_define_const(GosuModule, "Kb4", LONG2NUM(int(Key::KEY_4)));
+			rb_define_const(GosuModule, "Kb5", LONG2NUM(int(Key::KEY_5)));
+			rb_define_const(GosuModule, "Kb6", LONG2NUM(int(Key::KEY_6)));
+			rb_define_const(GosuModule, "Kb7", LONG2NUM(int(Key::KEY_7)));
+			rb_define_const(GosuModule, "Kb8", LONG2NUM(int(Key::KEY_8)));
+			rb_define_const(GosuModule, "Kb9", LONG2NUM(int(Key::KEY_9)));
+
+			rb_define_const(GosuModule, "KbA", LONG2NUM(int(Key::A)));
+			rb_define_const(GosuModule, "KbB", LONG2NUM(int(Key::B)));
+			rb_define_const(GosuModule, "KbC", LONG2NUM(int(Key::C)));
+			rb_define_const(GosuModule, "KbD", LONG2NUM(int(Key::D)));
+			rb_define_const(GosuModule, "KbE", LONG2NUM(int(Key::E)));
+			rb_define_const(GosuModule, "KbF", LONG2NUM(int(Key::F)));
+			rb_define_const(GosuModule, "KbG", LONG2NUM(int(Key::G)));
+			rb_define_const(GosuModule, "KbH", LONG2NUM(int(Key::H)));
+			rb_define_const(GosuModule, "KbI", LONG2NUM(int(Key::I)));
+			rb_define_const(GosuModule, "KbJ", LONG2NUM(int(Key::J)));
+			rb_define_const(GosuModule, "KbK", LONG2NUM(int(Key::K)));
+			rb_define_const(GosuModule, "KbL", LONG2NUM(int(Key::L)));
+			rb_define_const(GosuModule, "KbM", LONG2NUM(int(Key::M)));
+			rb_define_const(GosuModule, "KbN", LONG2NUM(int(Key::N)));
+			rb_define_const(GosuModule, "KbO", LONG2NUM(int(Key::O)));
+			rb_define_const(GosuModule, "KbP", LONG2NUM(int(Key::P)));
+			rb_define_const(GosuModule, "KbQ", LONG2NUM(int(Key::Q)));
+			rb_define_const(GosuModule, "KbR", LONG2NUM(int(Key::R)));
+			rb_define_const(GosuModule, "KbS", LONG2NUM(int(Key::S)));
+			rb_define_const(GosuModule, "KbT", LONG2NUM(int(Key::T)));
+			rb_define_const(GosuModule, "KbU", LONG2NUM(int(Key::U)));
+			rb_define_const(GosuModule, "KbV", LONG2NUM(int(Key::V)));
+			rb_define_const(GosuModule, "KbW", LONG2NUM(int(Key::W)));
+			rb_define_const(GosuModule, "KbX", LONG2NUM(int(Key::X)));
+			rb_define_const(GosuModule, "KbY", LONG2NUM(int(Key::Y)));
+			rb_define_const(GosuModule, "KbZ", LONG2NUM(int(Key::Z)));
+
+			rb_define_const(GosuModule, "KbApostrophe", LONG2NUM(int(Key::APOSTROPHE)));
+			rb_define_const(GosuModule, "KbBackslash", LONG2NUM(int(Key::BACKSLASH)));
+			rb_define_const(GosuModule, "KbBackspace", LONG2NUM(int(Key::BACKSPACE)));
+			rb_define_const(GosuModule, "KbBacktick", LONG2NUM(int(Key::QUOTELEFT)));
+			rb_define_const(GosuModule, "KbComma", LONG2NUM(int(Key::COMMA)));
+			rb_define_const(GosuModule, "KbDelete", LONG2NUM(int(Key::KEY_DELETE)));
 			rb_define_const(GosuModule, "KbDown", LONG2NUM(int(Key::DOWN)));
-			rb_define_const(GosuModule, "KbSpace", LONG2NUM(int(Key::SPACE)));
+			rb_define_const(GosuModule, "KbEnd", LONG2NUM(int(Key::END)));
+			rb_define_const(GosuModule, "KbPrintScreen", LONG2NUM(int(Key::PRINT)));
+			rb_define_const(GosuModule, "KbScrollLock", LONG2NUM(int(Key::SCROLLLOCK)));
+			rb_define_const(GosuModule, "KbPause", LONG2NUM(int(Key::PAUSE)));
+			rb_define_const(GosuModule, "KbEnter", LONG2NUM(int(Key::KP_ENTER)));
+			rb_define_const(GosuModule, "KbEquals", LONG2NUM(int(Key::EQUAL)));
 			rb_define_const(GosuModule, "KbEscape", LONG2NUM(int(Key::ESCAPE)));
-			rb_define_const(GosuModule, "KbReturn", LONG2NUM(int(Key::ENTER)));
 
 			rb_define_const(GosuModule, "KbF1", LONG2NUM(int(Key::F1)));
 			rb_define_const(GosuModule, "KbF2", LONG2NUM(int(Key::F2)));
@@ -199,11 +247,76 @@ void Godosu::_notification(int p_what) {
 			rb_define_const(GosuModule, "KbF11", LONG2NUM(int(Key::F11)));
 			rb_define_const(GosuModule, "KbF12", LONG2NUM(int(Key::F12)));
 
+			rb_define_const(GosuModule, "KbHome", LONG2NUM(int(Key::HOME)));
+			rb_define_const(GosuModule, "KbInsert", LONG2NUM(int(Key::INSERT)));
+			rb_define_const(GosuModule, "KbLeft", LONG2NUM(int(Key::LEFT)));
+			rb_define_const(GosuModule, "KbLeftAlt", LONG2NUM(int(Key::ALT)));
+			rb_define_const(GosuModule, "KbLeftBracket", LONG2NUM(int(Key::BRACKETLEFT)));
+			rb_define_const(GosuModule, "KbLeftControl", LONG2NUM(int(Key::CTRL)));
+			rb_define_const(GosuModule, "KbLeftMeta", LONG2NUM(int(Key::META)));
+			rb_define_const(GosuModule, "KbLeftShift", LONG2NUM(int(Key::SHIFT)));
+			rb_define_const(GosuModule, "KbMinus", LONG2NUM(int(Key::MINUS)));
+
+			rb_define_const(GosuModule, "KbNumpad0", LONG2NUM(int(Key::KP_0)));
+			rb_define_const(GosuModule, "KbNumpad1", LONG2NUM(int(Key::KP_1)));
+			rb_define_const(GosuModule, "KbNumpad2", LONG2NUM(int(Key::KP_2)));
+			rb_define_const(GosuModule, "KbNumpad3", LONG2NUM(int(Key::KP_3)));
+			rb_define_const(GosuModule, "KbNumpad4", LONG2NUM(int(Key::KP_4)));
+			rb_define_const(GosuModule, "KbNumpad5", LONG2NUM(int(Key::KP_5)));
+			rb_define_const(GosuModule, "KbNumpad6", LONG2NUM(int(Key::KP_6)));
+			rb_define_const(GosuModule, "KbNumpad7", LONG2NUM(int(Key::KP_7)));
+			rb_define_const(GosuModule, "KbNumpad8", LONG2NUM(int(Key::KP_8)));
+			rb_define_const(GosuModule, "KbNumpad9", LONG2NUM(int(Key::KP_9)));
+			rb_define_const(GosuModule, "KbNumpadDelete", LONG2NUM(int(Key::KP_PERIOD)));
+			rb_define_const(GosuModule, "KbNumpadDivide", LONG2NUM(int(Key::KP_DIVIDE)));
+			rb_define_const(GosuModule, "KbNumpadMinus", LONG2NUM(int(Key::KP_SUBTRACT)));
+			rb_define_const(GosuModule, "KbNumpadMultiply", LONG2NUM(int(Key::KP_MULTIPLY)));
+			rb_define_const(GosuModule, "KbNumpadPlus", LONG2NUM(int(Key::KP_ADD)));
+
+			rb_define_const(GosuModule, "KbPageDown", LONG2NUM(int(Key::PAGEDOWN)));
+			rb_define_const(GosuModule, "KbPageUp", LONG2NUM(int(Key::PAGEUP)));
+			rb_define_const(GosuModule, "KbPeriod", LONG2NUM(int(Key::PERIOD)));
+			rb_define_const(GosuModule, "KbReturn", LONG2NUM(int(Key::ENTER)));
+			rb_define_const(GosuModule, "KbRight", LONG2NUM(int(Key::RIGHT)));
+			rb_define_const(GosuModule, "KbRightAlt", LONG2NUM(int(Key::ALT)));
+			rb_define_const(GosuModule, "KbRightBracket", LONG2NUM(int(Key::BRACERIGHT)));
+			rb_define_const(GosuModule, "KbRightControl", LONG2NUM(int(Key::CTRL)));
+			rb_define_const(GosuModule, "KbRightMeta", LONG2NUM(int(Key::META)));
+			rb_define_const(GosuModule, "KbRightShift", LONG2NUM(int(Key::SHIFT)));
+			rb_define_const(GosuModule, "KbSemicolon", LONG2NUM(int(Key::SEMICOLON)));
+			rb_define_const(GosuModule, "KbSlash", LONG2NUM(int(Key::SLASH)));
+			rb_define_const(GosuModule, "KbCapsLock", LONG2NUM(int(Key::CAPSLOCK)));
+			rb_define_const(GosuModule, "KbSpace", LONG2NUM(int(Key::SPACE)));
+			rb_define_const(GosuModule, "KbTab", LONG2NUM(int(Key::TAB)));
+			rb_define_const(GosuModule, "KbUp", LONG2NUM(int(Key::UP)));
+
 			rb_define_const(GosuModule, "MsLeft", LONG2NUM(int(MouseButton::LEFT)));
 			rb_define_const(GosuModule, "MsMiddle", LONG2NUM(int(MouseButton::MIDDLE)));
 			rb_define_const(GosuModule, "MsRight", LONG2NUM(int(MouseButton::RIGHT)));
+			rb_define_const(GosuModule, "MsWheelDown", LONG2NUM(int(MouseButton::WHEEL_DOWN)));
+			rb_define_const(GosuModule, "MsWheelUp", LONG2NUM(int(MouseButton::WHEEL_UP)));
 
-#undef DEFINE_FUNCTION
+			rb_define_const(GosuModule, "GpButton0", LONG2NUM(int(JoyButton::A)));
+			rb_define_const(GosuModule, "GpButton1", LONG2NUM(int(JoyButton::B)));
+			rb_define_const(GosuModule, "GpButton2", LONG2NUM(int(JoyButton::X)));
+			rb_define_const(GosuModule, "GpButton3", LONG2NUM(int(JoyButton::Y)));
+			rb_define_const(GosuModule, "GpButton4", LONG2NUM(int(JoyButton::BACK)));
+			rb_define_const(GosuModule, "GpButton5", LONG2NUM(int(JoyButton::GUIDE)));
+			rb_define_const(GosuModule, "GpButton6", LONG2NUM(int(JoyButton::START)));
+			rb_define_const(GosuModule, "GpButton7", LONG2NUM(int(JoyButton::LEFT_STICK)));
+			rb_define_const(GosuModule, "GpButton8", LONG2NUM(int(JoyButton::RIGHT_STICK)));
+			rb_define_const(GosuModule, "GpButton9", LONG2NUM(int(JoyButton::LEFT_SHOULDER)));
+			rb_define_const(GosuModule, "GpButton10", LONG2NUM(int(JoyButton::RIGHT_SHOULDER)));
+			rb_define_const(GosuModule, "GpButton11", LONG2NUM(int(JoyButton::DPAD_UP)));
+			rb_define_const(GosuModule, "GpButton12", LONG2NUM(int(JoyButton::DPAD_DOWN)));
+			rb_define_const(GosuModule, "GpButton13", LONG2NUM(int(JoyButton::DPAD_LEFT)));
+			rb_define_const(GosuModule, "GpButton14", LONG2NUM(int(JoyButton::DPAD_RIGHT)));
+			rb_define_const(GosuModule, "GpButton15", LONG2NUM(int(JoyButton::MISC1)));
+
+			rb_define_const(GosuModule, "GpLeft", LONG2NUM(int(JoyAxis::LEFT_X))); // FIXME
+			rb_define_const(GosuModule, "GpRight", LONG2NUM(int(JoyAxis::LEFT_X)));
+			rb_define_const(GosuModule, "GpUp", LONG2NUM(int(JoyAxis::LEFT_Y)));
+			rb_define_const(GosuModule, "GpDown", LONG2NUM(int(JoyAxis::LEFT_Y)));
 
 			// Run.
 
