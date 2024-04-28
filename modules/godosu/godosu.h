@@ -32,6 +32,7 @@ private:
 	int ruby_state = -1;
 
 	HashMap<uint32_t, CanvasItem *> ci_map;
+	LocalVector<CanvasItem *> to_remove;
 	HashMap<CanvasItem *, Vector<DrawCommand>> draw_queue;
 
 	String main_script;

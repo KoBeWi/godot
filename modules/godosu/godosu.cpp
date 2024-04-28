@@ -8,13 +8,25 @@
 #include "scene/resources/texture.h"
 
 void Godosu::_draw_canvas_item(CanvasItem *p_item) {
-	if (!draw_queue.has(p_item)) {
-		return; // TODO: czyścić nieużywane
+	const auto I = draw_queue.find(p_item);
+	{
+		const double current_time = OS::get_singleton()->get_unix_time();
+		if (!I) {
+			const double last_used = p_item->get_meta(SNAME("last_use"), current_time);
+			if (last_used < current_time - 5.0) {
+				if (p_item->get_meta(SNAME("clipped"), false)) {
+					p_item->get_parent()->queue_free();
+				} else {
+					p_item->queue_free();
+				}
+				to_remove.push_back(p_item);
+			}
+			return;
+		}
+		p_item->set_meta(SNAME("last_use"), current_time);
 	}
 
-	const Vector<DrawCommand> &draw_data = draw_queue[p_item];
-
-	for (const DrawCommand &draw_command : draw_data) {
+	for (const DrawCommand &draw_command : I->value) {
 		switch (draw_command.type) {
 			case DrawCommand::DRAW_RECT: {
 				const Rect2 &rect = draw_command.arguments[0];
@@ -63,7 +75,7 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 				const Color &color = draw_command.arguments[4];
 				const Vector2 &skale = draw_command.arguments[5]; // TODO
 				const Vector2 &rel = draw_command.arguments[6];
-				
+
 				const Vector2 text_size = font->get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size);
 				pos.y += text_size.y * 0.7; // FIXME
 				p_item->draw_string(font, pos - text_size * rel, text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color);
@@ -212,6 +224,15 @@ void Godosu::_notification(int p_what) {
 
 		case NOTIFICATION_INTERNAL_PROCESS: {
 			draw_queue.clear();
+			if (!to_remove.is_empty()) {
+				for (const auto kv : ci_map) {
+					if (to_remove.find(kv.value) > -1) {
+						ci_map.erase(kv.key);
+					}
+				}
+				to_remove.clear();
+			}
+
 			godosu_window_callback(1, data.callback_draw);
 
 			for (const auto &kv : ci_map) {
@@ -278,7 +299,7 @@ CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const
 		Array arr;
 		arr.append(p_z_index);
 		arr.append(p_material);
-		arr.append(p_clip_rect);
+		arr.append(p_clip_rect.size);
 		key = arr.hash();
 	}
 
@@ -296,6 +317,7 @@ CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const
 		Node2D *ci = memnew(Node2D);
 		parent->add_child(ci);
 		if (p_clip_rect.has_area()) {
+			ci->set_meta(SNAME("clipped"), true);
 			ci->set_global_transform(Transform2D());
 		}
 
@@ -306,6 +328,11 @@ CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const
 		ci->connect(SNAME("draw"), callable_mp(this, &Godosu::_draw_canvas_item).bind(ci));
 		ci_map[key] = ci;
 		return ci;
+	} else if (p_clip_rect.has_area()) {
+		Node2D *ci = Object::cast_to<Node2D>(I->value);
+		Control *clipper = Object::cast_to<Control>(ci->get_parent_item());
+		clipper->set_position(p_clip_rect.position);
+		ci->set_global_transform(Transform2D());
 	}
 	return I->value;
 }
