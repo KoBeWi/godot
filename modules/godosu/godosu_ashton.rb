@@ -22,6 +22,16 @@ module Ashton
             # TODO
         end
     end
+
+    class WindowBuffer
+        def render
+            # TODO
+        end
+
+        def [](x, y)
+            # TODO
+        end
+    end
 end
 
 module Gosu

@@ -64,6 +64,33 @@ module Gosu
         return godot_button_id_to_char(id.to_i)
     end
 
+    def flush
+        $_base_z_index += 1000
+    end
+
+    def translate(x, y)
+        $_translate_x = x.to_f
+        $_translate_y = y.to_f
+        yield
+        $_translate_x = 0.0
+        $_translate_y = 0.0
+    end
+
+    def scale(scale_x, scale_y, around_x, around_y)
+        yield # TODO
+    end
+
+    def clip_to(x, y, w, h)
+        godot_set_clip(_gd_x(x), _gd_y(y), w.to_f, h.to_f)
+        yield
+        godot_set_clip(0.0, 0.0, 0.0, 0.0)
+    end
+
+    def record(width, height)
+        yield # TODO
+        Image.new(self, "Icon.png")
+    end
+
     class Window
         attr_reader :mouse_x, :mouse_y, :width, :height, :__keys
 
@@ -77,24 +104,6 @@ module Gosu
 
         def show
             $__gosu_window = self
-        end
-
-        def flush
-            $_base_z_index += 1000
-        end
-
-        def translate(x, y)
-            $_translate_x = x.to_f
-            $_translate_y = y.to_f
-            yield
-            $_translate_x = 0.0
-            $_translate_y = 0.0
-        end
-
-        def clip_to(x, y, w, h)
-            godot_set_clip(_gd_x(x), _gd_y(y), w.to_f, h.to_f) # FIXME milion szajsu robi
-            yield
-            godot_set_clip(0.0, 0.0, 0.0, 0.0)
         end
 
         def update
@@ -184,7 +193,10 @@ module Gosu
         end
 
         def Image.load_tiles(screen, source, tile_width, tile_height, options = {})
-            base = Image.new(screen, source)
+            base = source
+            if source.class != Image
+                base = Image.new(screen, source)
+            end
 
             if tile_width < 0
                 tile_width = base.width / -tile_width
