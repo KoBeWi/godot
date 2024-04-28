@@ -187,6 +187,17 @@ void Godosu::_notification(int p_what) {
 			rb_define_const(GosuModule, "KbReturn", LONG2NUM(int(Key::ENTER)));
 
 			rb_define_const(GosuModule, "KbF1", LONG2NUM(int(Key::F1)));
+			rb_define_const(GosuModule, "KbF2", LONG2NUM(int(Key::F2)));
+			rb_define_const(GosuModule, "KbF3", LONG2NUM(int(Key::F3)));
+			rb_define_const(GosuModule, "KbF4", LONG2NUM(int(Key::F4)));
+			rb_define_const(GosuModule, "KbF5", LONG2NUM(int(Key::F5)));
+			rb_define_const(GosuModule, "KbF6", LONG2NUM(int(Key::F6)));
+			rb_define_const(GosuModule, "KbF7", LONG2NUM(int(Key::F7)));
+			rb_define_const(GosuModule, "KbF8", LONG2NUM(int(Key::F8)));
+			rb_define_const(GosuModule, "KbF9", LONG2NUM(int(Key::F9)));
+			rb_define_const(GosuModule, "KbF10", LONG2NUM(int(Key::F10)));
+			rb_define_const(GosuModule, "KbF11", LONG2NUM(int(Key::F11)));
+			rb_define_const(GosuModule, "KbF12", LONG2NUM(int(Key::F12)));
 
 			rb_define_const(GosuModule, "MsLeft", LONG2NUM(int(MouseButton::LEFT)));
 			rb_define_const(GosuModule, "MsMiddle", LONG2NUM(int(MouseButton::MIDDLE)));
