@@ -378,14 +378,17 @@ module Gosu
         alias_method :blue, :b
         alias_method :blue=, :b=
 
-        def initialize(a, r = nil, g = nil, b = nil)
-            if not r
-                r = a >> 16 & 255
-                g = a >> 8 & 255
-                b = a & 255
-                a = a >> 24 & 255
+        def initialize(*args)
+            if args.size == 4
+                @a, @r, @g, @b = args
+            elsif args.size == 3
+                @a, @r, @g, @b = 255, args
+            elsif args.size == 1
+                @r = a >> 16 & 255
+                @g = a >> 8 & 255
+                @b = a & 255
+                @a = a >> 24 & 255
             end
-            @a, @r, @g, @b = a, r, g, b
         end
 
         def Color.argb(a, r, g, b)
