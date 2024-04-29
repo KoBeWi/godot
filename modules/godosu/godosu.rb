@@ -382,12 +382,13 @@ module Gosu
             if args.size == 4
                 @a, @r, @g, @b = args
             elsif args.size == 3
-                @a, @r, @g, @b = 255, args
+                @a, @r, @g, @b = 255, *args
             elsif args.size == 1
-                @r = a >> 16 & 255
-                @g = a >> 8 & 255
-                @b = a & 255
-                @a = a >> 24 & 255
+                v = args[0]
+                @r = v >> 16 & 255
+                @g = v >> 8 & 255
+                @b = v & 255
+                @a = v >> 24 & 255
             end
         end
 
