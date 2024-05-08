@@ -42,15 +42,57 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 			} break;
 
 			case DrawCommand::DRAW_TEXTURE_ROTATED: {
-				const Ref<Texture2D> &texture = draw_command.arguments[0];
+				Ref<Texture2D> texture = draw_command.arguments[0];
 				const Vector2 &pos = draw_command.arguments[1];
 				const float angle = draw_command.arguments[2];
 				const Vector2 &center = draw_command.arguments[3];
 				const Vector2 &draw_scale = draw_command.arguments[4];
 				const Color &color = draw_command.arguments[5];
-				p_item->draw_set_transform(pos, angle, Vector2(1, 1));
-				p_item->draw_texture_rect(texture, Rect2(-texture->get_size() * center, texture->get_size() * draw_scale), false, color);
-				p_item->draw_set_transform_matrix(Transform2D());
+
+				Vector2 uv_begin = Vector2(0, 0);
+				Vector2 uv_end = Vector2(1, 1);
+				Vector2 size;
+
+				const Ref<AtlasTexture> atlas = texture;
+				if (atlas.is_valid()) {
+					texture = atlas->get_atlas();
+					const Vector2 atlas_size = texture->get_size();
+
+					const Vector2 remap_min = atlas->get_region().position / atlas_size;
+					const Vector2 remap_max = atlas->get_region().get_end() / atlas_size;
+					size = atlas->get_region().get_size() * draw_scale;
+
+					uv_begin.x = Math::remap(uv_begin.x, 0, 1, remap_min.x, remap_max.x);
+					uv_end.x = Math::remap(uv_end.x, 0, 1, remap_min.x, remap_max.x);
+					uv_begin.y = Math::remap(uv_begin.y, 0, 1, remap_min.y, remap_max.y);
+					uv_end.y = Math::remap(uv_end.y, 0, 1, remap_min.y, remap_max.y);
+				} else {
+					size = texture->get_size() * draw_scale;
+				}
+
+				const Vector2 draw_offset(Math::sin(angle), -Math::cos(angle));
+
+				const Vector2 dist_to_left(
+						draw_offset.y * size.x * center.x,
+						-draw_offset.x * size.x * center.x);
+				const Vector2 dist_to_right(
+						-draw_offset.y * size.x * (1 - center.x),
+						draw_offset.x * size.x * (1 - center.x));
+				const Vector2 dist_to_top(
+						draw_offset.x * size.y * center.y,
+						draw_offset.y * size.y * center.y);
+				const Vector2 dist_to_bottom(
+						-draw_offset.x * size.y * (1 - center.y),
+						-draw_offset.y * size.y * (1 - center.y));
+
+				PackedVector2Array points{
+					Vector2(pos.x + dist_to_left.x + dist_to_top.x, pos.y + dist_to_left.y + dist_to_top.y),
+					Vector2(pos.x + dist_to_right.x + dist_to_top.x, pos.y + dist_to_right.y + dist_to_top.y),
+					Vector2(pos.x + dist_to_right.x + dist_to_bottom.x, pos.y + dist_to_right.y + dist_to_bottom.y),
+					Vector2(pos.x + dist_to_left.x + dist_to_bottom.x, pos.y + dist_to_left.y + dist_to_bottom.y),
+				};
+
+				p_item->draw_colored_polygon(points, color, { uv_begin, Vector2(uv_end.x, uv_begin.y), uv_end, Vector2(uv_begin.x, uv_end.y) }, texture);
 			} break;
 
 			case DrawCommand::DRAW_POLYGON: {

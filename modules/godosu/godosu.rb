@@ -456,7 +456,7 @@ def _gd_z(z)
 end
 
 def _gd_color(color)
-    color.to_i.to_s(16).rjust(8, "0")
+    color.to_i.to_s(16).rjust(8, "0") # TODO: można wysyłać jako int
 end
 
 $_base_z_index = 0
