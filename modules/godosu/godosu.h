@@ -54,7 +54,9 @@ public:
 		HashMap<VALUE, Ref<AudioStream>> audio_cache;
 		HashMap<VALUE, Ref<Font>> font_cache;
 		HashMap<VALUE, Ref<ShaderMaterial>> shader_cache;
+
 		Vector<LineEdit *> text_inputs;
+		HashMap<VALUE, Ref<AudioStreamPlayback>> channels;
 
 		AudioStreamPlayer *song_player = nullptr;
 		Ref<Material> additive_material;

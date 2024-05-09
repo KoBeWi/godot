@@ -211,7 +211,9 @@ void Godosu::_notification(int p_what) {
 
 			DEFINE_FUNCTION(play_song, 2);
 			DEFINE_FUNCTION(stop_song, 0);
-			DEFINE_FUNCTION(play_sample, 1);
+			DEFINE_FUNCTION(play_sample, 3);
+			DEFINE_FUNCTION(is_channel_playing, 1);
+			DEFINE_FUNCTION(destroy_channel, 1);
 
 			DEFINE_FUNCTION(create_shader, 2);
 			DEFINE_FUNCTION(set_shader, 2);

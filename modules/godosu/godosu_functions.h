@@ -292,13 +292,33 @@ VALUE godosu_stop_song(VALUE self) {
 	return OK;
 }
 
-VALUE godosu_play_sample(VALUE self, VALUE instance) {
+static inline int channel_counter = 0;
+
+VALUE godosu_play_sample(VALUE self, VALUE instance, VALUE volume, VALUE speed) {
 	// TODO: tu można jakiś pool albo polifonia dla tego samego dźwięku itp.
 	AudioStreamPlayer *sample_player = memnew(AudioStreamPlayer);
 	sample_player->set_stream(Godosu::singleton->data.audio_cache[instance]);
+	sample_player->set_volume_db(Math::linear_to_db(RFLOAT_VALUE(volume)));
+	sample_player->set_pitch_scale(RFLOAT_VALUE(speed));
 	sample_player->set_autoplay(true);
 	sample_player->connect(SNAME("finished"), callable_mp((Node *)sample_player, &Node::queue_free));
 	Godosu::singleton->add_child(sample_player);
+
+	Ref<AudioStreamPlayback> channel = sample_player->get_stream_playback();
+	VALUE id = INT2NUM(channel_counter);
+	channel_counter++;
+
+	Godosu::singleton->data.channels[id] = channel;
+	return id;
+}
+
+VALUE godosu_is_channel_playing(VALUE self, VALUE id) {
+	const Ref<AudioStreamPlayback> &channel = Godosu::singleton->data.channels[id];
+	return channel->is_playing() ? Qtrue : Qfalse;
+}
+
+VALUE godosu_destroy_channel(VALUE self, VALUE id) {
+	Godosu::singleton->data.channels.erase(id);
 	return OK;
 }
 
