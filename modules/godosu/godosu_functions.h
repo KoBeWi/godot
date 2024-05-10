@@ -36,7 +36,7 @@ VALUE godosu_exit(VALUE self) {
 }
 
 VALUE godosu_retrofication(VALUE self) {
-	Godosu::singleton->set_texture_filter(CanvasItem::TEXTURE_FILTER_NEAREST);
+	Godosu::singleton->get_viewport()->set_default_canvas_item_texture_filter(Viewport::DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST);
 	return OK;
 }
 

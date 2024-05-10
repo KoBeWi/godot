@@ -469,7 +469,7 @@ CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const
 
 	auto I = ci_map.find(key);
 	if (!I) {
-		CanvasItem *parent = this;
+		Node *parent = this;
 		if (p_clip_rect.has_area()) {
 			Control *clipper = memnew(Control);
 			clipper->set_clip_contents(true);
