@@ -10,8 +10,8 @@ class AudioStreamPlayer;
 class LineEdit;
 class Texture2D;
 
-class Godosu : public Node2D {
-	GDCLASS(Godosu, Node2D);
+class Godosu : public Node {
+	GDCLASS(Godosu, Node);
 
 public:
 	struct DrawCommand {
