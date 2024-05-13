@@ -40,11 +40,6 @@ VALUE godosu_retrofication(VALUE self) {
 	return OK;
 }
 
-VALUE godosu_set_clip(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h) {
-	Godosu::singleton->data.clip_rect = Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(w), RFLOAT_VALUE(h));
-	return OK;
-}
-
 VALUE godosu_hsv_to_rgb(VALUE self, VALUE h, VALUE s, VALUE v) {
 	const Color c = Color::from_hsv(RFLOAT_VALUE(h), RFLOAT_VALUE(s), RFLOAT_VALUE(v));
 	VALUE *components = (VALUE *)alloca(sizeof(VALUE) * 3);
@@ -59,6 +54,33 @@ VALUE godosu_button_id_to_char(VALUE self, VALUE id) {
 	Key keycode = Key(FIX2INT(id));
 	const String keycode_name = keycode_get_string(keycode);
 	return rb_str_new_cstr(keycode_name.ascii().get_data());
+}
+
+VALUE godosu_set_clip(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h) {
+	Godosu::singleton->data.clip_rect = Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(w), RFLOAT_VALUE(h));
+	return OK;
+}
+
+static inline int macro_counter = 0;
+
+VALUE godosu_create_macro(VALUE self, VALUE width, VALUE height) {
+	Control *macro = Godosu::singleton->create_macro(Vector2(FIX2INT(width), FIX2INT(height)));
+	VALUE id = INT2NUM(macro_counter);
+	macro_counter++;
+	Godosu::singleton->data.macros[id] = macro;
+	return id;
+}
+
+VALUE godosu_end_macro(VALUE self) {
+	Godosu::singleton->data.active_macro = nullptr;
+	return OK;
+}
+
+VALUE godosu_draw_macro(VALUE self, VALUE id, VALUE x, VALUE y, VALUE z) {
+	Control *macro = Godosu::singleton->data.macros[id];
+	macro->set_position(Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)));
+	macro->set_z_index(FIX2INT(z));
+	return OK;
 }
 
 VALUE godosu_setup_window(VALUE self, VALUE window, VALUE width, VALUE height, VALUE fullscreen) {
@@ -343,6 +365,49 @@ VALUE godosu_set_shader(VALUE self, VALUE z, VALUE object) {
 		Godosu::singleton->data.shader_map[FIX2LONG(z)] = Godosu::singleton->data.shader_cache[object];
 	}
 	return OK;
+}
+
+static inline int framebuffer_counter = 0;
+
+VALUE godosu_create_framebuffer(VALUE self, VALUE width, VALUE height) {
+	SubViewport *framebuffer = memnew(SubViewport);
+	framebuffer->set_size(Vector2i(FIX2LONG(width), FIX2LONG(height)));
+	framebuffer->set_update_mode(SubViewport::UPDATE_DISABLED);
+	framebuffer->set_clear_mode(SubViewport::CLEAR_MODE_NEVER);
+	Godosu::singleton->add_child(framebuffer);
+
+	VALUE id = INT2NUM(framebuffer_counter);
+	framebuffer_counter++;
+	Godosu::singleton->data.framebuffers[id] = framebuffer;
+	return id;
+}
+
+VALUE godosu_set_framebuffer(VALUE self, VALUE id) {
+	if (NIL_P(id)) {
+		SubViewport *active_framebuffer = Godosu::singleton->data.active_framebuffer;
+		if (active_framebuffer) {
+			active_framebuffer->set_meta(SNAME("image"), active_framebuffer->get_texture()->get_image());
+		}
+		Godosu::singleton->data.active_framebuffer = nullptr;
+	} else {
+		SubViewport *framebuffer = Godosu::singleton->data.framebuffers[id];
+		Godosu::singleton->data.active_framebuffer = framebuffer;
+	}
+	return OK;
+}
+
+VALUE godosu_get_pixel(VALUE self, VALUE framebuffer_id, VALUE x, VALUE y) {
+	Ref<Image> pixel_data;
+	{
+		SubViewport *framebuffer = Godosu::singleton->data.framebuffers[framebuffer_id];
+		pixel_data = framebuffer->get_meta(SNAME("image"), false);
+		if (pixel_data.is_null()) {
+			pixel_data = framebuffer->get_texture()->get_image();
+			framebuffer->set_meta(SNAME("image"), pixel_data);
+		}
+	}
+	const Color color = pixel_data->get_pixel(FIX2LONG(x), FIX2LONG(y));
+	return INT2NUM(color.to_rgba32());
 }
 
 #endif
