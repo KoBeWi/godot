@@ -36,10 +36,7 @@ module Ashton
         end
 
         def [](x, y)
-            # Color.new(godot_get_pixel(@id, x.to_i, y.to_i))
-            c=Color.new(godot_get_pixel(@id, x.to_i, y.to_i))
-            # puts c.to_i.to_s(16).rjust(8, "0")
-            Color.new(0xffffffff)
+            Color.new(godot_get_pixel(@id, x.to_i, y.to_i))
         end
     end
 

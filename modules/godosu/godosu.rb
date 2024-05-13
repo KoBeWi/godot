@@ -257,6 +257,10 @@ module Gosu
             godot_draw_texture_rotated(self, _gd_x(x), _gd_y(y), _gd_z(z), angle.to_f * (Math::PI / 180.0), center_x.to_f, center_y.to_f, scale_x.to_f, scale_y.to_f, _gd_color(color))
         end
 
+        def subimage(x, y, w, h)
+            # TODO
+        end
+
         def godot_set_size(w, h)
             @width = w
             @height = h
@@ -459,6 +463,10 @@ module Gosu
 
         def to_i
             gl
+        end
+
+        def ==(other)
+            other.class == Color and other.r == r and other.g == g and other.b == b and other.a == a
         end
     end
 end

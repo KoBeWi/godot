@@ -403,7 +403,7 @@ VALUE godosu_get_pixel(VALUE self, VALUE framebuffer_id, VALUE x, VALUE y) {
 		return INT2NUM(0);
 	}
 	const Color color = pixel_data->get_pixel(FIX2LONG(x), FIX2LONG(y));
-	return INT2NUM(color.to_rgba32());
+	return INT2NUM(color.to_argb32());
 }
 
 #endif
