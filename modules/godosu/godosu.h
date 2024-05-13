@@ -43,6 +43,7 @@ private:
 	String main_script;
 
 	void _draw_canvas_item(CanvasItem *p_item);
+	void _update_pending_framebuffers();
 
 protected:
 	void _notification(int p_what);
@@ -71,6 +72,7 @@ public:
 		HashMap<int, Ref<Material>> shader_map;
 		SubViewport *active_framebuffer = nullptr;
 		Control *active_macro = nullptr;
+		Vector<SubViewport *> pending_frame_buffers;
 
 		VALUE callback_base = 0;
 		VALUE callback_update_mouse = 0;
@@ -90,6 +92,7 @@ public:
 	VALUE create_line_edit();
 	LineEdit *get_line_edit(VALUE id);
 	Control *create_macro(const Vector2 &p_size);
+	void set_active_framebuffer(SubViewport *p_framebuffer);
 
 	Godosu();
 	~Godosu();
