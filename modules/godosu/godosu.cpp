@@ -3,7 +3,9 @@
 
 #include "core/config/project_settings.h"
 #include "core/io/file_access.h"
+#include "scene/2d/node_2d.h"
 #include "scene/audio/audio_stream_player.h"
+#include "scene/main/viewport.h"
 #include "scene/main/window.h"
 #include "scene/resources/texture.h"
 
@@ -176,9 +178,13 @@ void Godosu::_notification(int p_what) {
 			DEFINE_FUNCTION(print, 1);
 			DEFINE_FUNCTION(exit, 0);
 			DEFINE_FUNCTION(retrofication, 0);
-			DEFINE_FUNCTION(set_clip, 4);
 			DEFINE_FUNCTION(hsv_to_rgb, 3);
 			DEFINE_FUNCTION(button_id_to_char, 1);
+
+			DEFINE_FUNCTION(set_clip, 4);
+			DEFINE_FUNCTION(create_macro, 2);
+			DEFINE_FUNCTION(end_macro, 0);
+			DEFINE_FUNCTION(draw_macro, 4);
 
 			DEFINE_FUNCTION(setup_window, 4);
 			DEFINE_FUNCTION(set_window_title, 1);
@@ -217,6 +223,10 @@ void Godosu::_notification(int p_what) {
 
 			DEFINE_FUNCTION(create_shader, 2);
 			DEFINE_FUNCTION(set_shader, 2);
+
+			DEFINE_FUNCTION(create_framebuffer, 2);
+			DEFINE_FUNCTION(set_framebuffer, 1);
+			DEFINE_FUNCTION(get_pixel, 3);
 
 #undef DEFINE_FUNCTION
 
@@ -457,13 +467,18 @@ void Godosu::setup_window(VALUE p_window, const Vector2i &p_size, bool p_fullscr
 	}
 }
 
-CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const Rect2 &p_clip_rect) {
+CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const Rect2 &p_clip_rect, SubViewport *p_framebuffer) {
+	if (data.active_macro) {
+		return data.active_macro;
+	}
+
 	uint32_t key;
 	{
 		Array arr;
 		arr.append(p_z_index);
 		arr.append(p_material);
 		arr.append(p_clip_rect.size);
+		arr.append(p_framebuffer);
 		key = arr.hash();
 	}
 
@@ -476,6 +491,15 @@ CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const
 			clipper->set_rect(p_clip_rect);
 			add_child(clipper);
 			parent = clipper;
+		}
+
+		if (p_framebuffer) {
+#ifdef DEBUG_ENABLED
+			if (p_clip_rect.has_area()) {
+				ERR_PRINT("Clipping inside framebuffer is not supported.");
+			}
+#endif
+			parent = p_framebuffer; // TODO: obsługa clip?
 		}
 
 		Node2D *ci = memnew(Node2D);
@@ -512,7 +536,7 @@ void Godosu::add_to_queue(const DrawCommand &p_data, int p_z, const Ref<Material
 		}
 	}
 
-	CanvasItem *ci = get_ci(p_z, target_material, data.clip_rect);
+	CanvasItem *ci = get_ci(p_z, target_material, data.clip_rect, data.active_framebuffer);
 	draw_queue[ci].append(p_data);
 }
 
@@ -528,6 +552,16 @@ VALUE Godosu::create_line_edit() {
 LineEdit *Godosu::get_line_edit(VALUE id) {
 	int index = FIX2INT(id);
 	return data.text_inputs[index];
+}
+
+Control *Godosu::create_macro(const Vector2 &p_size) {
+	Control *macro = memnew(Control);
+	macro->set_clip_contents(true);
+	macro->set_size(p_size);
+	macro->connect(SNAME("draw"), callable_mp(this, &Godosu::_draw_canvas_item).bind(macro), CONNECT_ONE_SHOT);
+	add_child(macro);
+	data.active_macro = macro;
+	return macro;
 }
 
 Godosu::Godosu() {

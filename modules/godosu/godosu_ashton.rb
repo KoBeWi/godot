@@ -23,13 +23,29 @@ module Ashton
         end
     end
 
-    class WindowBuffer
+    class Texture
+        def initialize(width, height)
+            # TODO: finalizer
+            @id = godot_create_framebuffer(width.to_i, height.to_i)
+        end
+
         def render
-            # TODO
+            godot_set_framebuffer(@id)
+            yield
+            godot_set_framebuffer(nil)
         end
 
         def [](x, y)
-            # TODO
+            # Color.new(godot_get_pixel(@id, x.to_i, y.to_i))
+            c=Color.new(godot_get_pixel(@id, x.to_i, y.to_i))
+            # puts c.to_i.to_s(16).rjust(8, "0")
+            Color.new(0xffffffff)
+        end
+    end
+
+    class WindowBuffer < Texture
+        def initialize
+            super $__window.width, $__window.height
         end
     end
 end

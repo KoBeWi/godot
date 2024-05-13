@@ -1,13 +1,18 @@
 #ifndef GOSU_H
 #define GOSU_H
 
-#include "scene/2d/node_2d.h"
+#include "scene/main/node.h"
 #include "servers/audio/audio_stream.h"
 
 #include <ruby.h>
 
 class AudioStreamPlayer;
+class CanvasItem;
+class Control;
+class Font;
 class LineEdit;
+class Node2D;
+class SubViewport;
 class Texture2D;
 
 class Godosu : public Node {
@@ -55,13 +60,17 @@ public:
 		HashMap<VALUE, Ref<Font>> font_cache;
 		HashMap<VALUE, Ref<ShaderMaterial>> shader_cache;
 
-		Vector<LineEdit *> text_inputs;
+		Vector<LineEdit *> text_inputs; // TODO tu też HashMapa?
 		HashMap<VALUE, Ref<AudioStreamPlayback>> channels;
+		HashMap<VALUE, SubViewport *> framebuffers;
+		HashMap<VALUE, Control *> macros;
 
 		AudioStreamPlayer *song_player = nullptr;
 		Ref<Material> additive_material;
 		Rect2 clip_rect;
 		HashMap<int, Ref<Material>> shader_map;
+		SubViewport *active_framebuffer = nullptr;
+		Control *active_macro = nullptr;
 
 		VALUE callback_base = 0;
 		VALUE callback_update_mouse = 0;
@@ -75,11 +84,12 @@ public:
 	String get_main_script() const;
 
 	void setup_window(VALUE p_window, const Vector2i &p_size, bool p_fullscreen);
-	CanvasItem *get_ci(int p_z_index, const Ref<Material> &p_material, const Rect2 &p_clip_rect);
+	CanvasItem *get_ci(int p_z_index, const Ref<Material> &p_material, const Rect2 &p_clip_rect, SubViewport *p_framebuffer);
 	void add_to_queue(const DrawCommand &p_data, int p_z, const Ref<Material> &p_material = Ref<Material>());
 
 	VALUE create_line_edit();
 	LineEdit *get_line_edit(VALUE id);
+	Control *create_macro(const Vector2 &p_size);
 
 	Godosu();
 	~Godosu();

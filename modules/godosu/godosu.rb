@@ -92,8 +92,10 @@ module Gosu
     end
 
     def record(width, height)
-        yield # TODO
-        Image.new(self, "Icon.png")
+        macro = Macro.new(width, height)
+        yield
+        godot_end_macro
+        macro
     end
 
     class Window
@@ -258,6 +260,17 @@ module Gosu
         def godot_set_size(w, h)
             @width = w
             @height = h
+        end
+    end
+
+    class Macro
+        def initialize(width, height)
+            # TODO: finalizer
+            @id = godot_create_macro(width.to_i, height.to_i)
+        end
+
+        def draw(x, y, z)
+            godot_draw_macro(@id, x.to_f, y.to_f, _gd_z(z))
         end
     end
 
