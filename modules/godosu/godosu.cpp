@@ -35,18 +35,18 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 
 			case DrawCommand::DRAW_TEXTURE: {
 				const Ref<Texture2D> &texture = draw_command.arguments[0];
-				const Vector2 &pos = draw_command.arguments[1];
-				const Vector2 &draw_scale = draw_command.arguments[2];
+				const Vector2 &position = draw_command.arguments[1];
+				const Vector2 &scale = draw_command.arguments[2];
 				const Color &color = draw_command.arguments[3];
-				p_item->draw_texture_rect(texture, Rect2(pos + texture->get_size() * draw_scale.min(Vector2()), texture->get_size() * draw_scale), false, color);
+				p_item->draw_texture_rect(texture, Rect2(position + texture->get_size() * scale.min(Vector2()), texture->get_size() * scale), false, color);
 			} break;
 
 			case DrawCommand::DRAW_TEXTURE_ROTATED: {
 				Ref<Texture2D> texture = draw_command.arguments[0];
-				const Vector2 &pos = draw_command.arguments[1];
+				const Vector2 &position = draw_command.arguments[1];
 				const float angle = draw_command.arguments[2];
 				const Vector2 &center = draw_command.arguments[3];
-				const Vector2 &draw_scale = draw_command.arguments[4];
+				const Vector2 &scale = draw_command.arguments[4];
 				const Color &color = draw_command.arguments[5];
 
 				Vector2 uv_begin = Vector2(0, 0);
@@ -60,36 +60,36 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 
 					const Vector2 remap_min = atlas->get_region().position / atlas_size;
 					const Vector2 remap_max = atlas->get_region().get_end() / atlas_size;
-					size = atlas->get_region().get_size() * draw_scale;
+					size = atlas->get_region().get_size() * scale;
 
 					uv_begin.x = Math::remap(uv_begin.x, 0, 1, remap_min.x, remap_max.x);
 					uv_end.x = Math::remap(uv_end.x, 0, 1, remap_min.x, remap_max.x);
 					uv_begin.y = Math::remap(uv_begin.y, 0, 1, remap_min.y, remap_max.y);
 					uv_end.y = Math::remap(uv_end.y, 0, 1, remap_min.y, remap_max.y);
 				} else {
-					size = texture->get_size() * draw_scale;
+					size = texture->get_size() * scale;
 				}
 
-				const Vector2 draw_offset(Math::sin(angle), -Math::cos(angle));
+				const Vector2 offset(Math::sin(angle), -Math::cos(angle));
 
 				const Vector2 dist_to_left(
-						draw_offset.y * size.x * center.x,
-						-draw_offset.x * size.x * center.x);
+						offset.y * size.x * center.x,
+						-offset.x * size.x * center.x);
 				const Vector2 dist_to_right(
-						-draw_offset.y * size.x * (1 - center.x),
-						draw_offset.x * size.x * (1 - center.x));
+						-offset.y * size.x * (1 - center.x),
+						offset.x * size.x * (1 - center.x));
 				const Vector2 dist_to_top(
-						draw_offset.x * size.y * center.y,
-						draw_offset.y * size.y * center.y);
+						offset.x * size.y * center.y,
+						offset.y * size.y * center.y);
 				const Vector2 dist_to_bottom(
-						-draw_offset.x * size.y * (1 - center.y),
-						-draw_offset.y * size.y * (1 - center.y));
+						-offset.x * size.y * (1 - center.y),
+						-offset.y * size.y * (1 - center.y));
 
 				PackedVector2Array points{
-					Vector2(pos.x + dist_to_left.x + dist_to_top.x, pos.y + dist_to_left.y + dist_to_top.y),
-					Vector2(pos.x + dist_to_right.x + dist_to_top.x, pos.y + dist_to_right.y + dist_to_top.y),
-					Vector2(pos.x + dist_to_right.x + dist_to_bottom.x, pos.y + dist_to_right.y + dist_to_bottom.y),
-					Vector2(pos.x + dist_to_left.x + dist_to_bottom.x, pos.y + dist_to_left.y + dist_to_bottom.y),
+					Vector2(position.x + dist_to_left.x + dist_to_top.x, position.y + dist_to_left.y + dist_to_top.y),
+					Vector2(position.x + dist_to_right.x + dist_to_top.x, position.y + dist_to_right.y + dist_to_top.y),
+					Vector2(position.x + dist_to_right.x + dist_to_bottom.x, position.y + dist_to_right.y + dist_to_bottom.y),
+					Vector2(position.x + dist_to_left.x + dist_to_bottom.x, position.y + dist_to_left.y + dist_to_bottom.y),
 				};
 
 				p_item->draw_colored_polygon(points, color, { uv_begin, Vector2(uv_end.x, uv_begin.y), uv_end, Vector2(uv_begin.x, uv_end.y) }, texture);
@@ -111,16 +111,16 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 
 			case DrawCommand::DRAW_STRING: {
 				const Ref<Font> &font = draw_command.arguments[0];
-				Vector2 pos = draw_command.arguments[1];
+				Vector2 position = draw_command.arguments[1];
 				const String &text = draw_command.arguments[2];
 				const int font_size = draw_command.arguments[3];
 				const Color &color = draw_command.arguments[4];
-				const Vector2 &skale = draw_command.arguments[5]; // TODO
+				const Vector2 &scale = draw_command.arguments[5]; // TODO
 				const Vector2 &rel = draw_command.arguments[6];
 
 				const Vector2 text_size = font->get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size);
-				pos.y += text_size.y * 0.7; // FIXME
-				p_item->draw_string(font, pos - text_size * rel, text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color);
+				position.y += text_size.y * 0.7; // FIXME
+				p_item->draw_string(font, position - text_size * rel, text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color);
 			} break;
 		}
 	}
