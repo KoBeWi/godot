@@ -128,6 +128,13 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 	}
 }
 
+void Godosu::_update_pending_framebuffers() {
+	for (SubViewport *framebuffer : data.pending_frame_buffers) {
+		framebuffer->set_meta(SNAME("image"), framebuffer->get_texture()->get_image());
+	}
+	data.pending_frame_buffers.clear();
+}
+
 void Godosu::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_READY: {
@@ -496,10 +503,10 @@ CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const
 		if (p_framebuffer) {
 #ifdef DEBUG_ENABLED
 			if (p_clip_rect.has_area()) {
-				ERR_PRINT("Clipping inside framebuffer is not supported.");
+				ERR_PRINT("Clipping inside framebuffer is not supported."); // TODO?
 			}
 #endif
-			parent = p_framebuffer; // TODO: obsługa clip?
+			parent = p_framebuffer;
 		}
 
 		Node2D *ci = memnew(Node2D);
@@ -558,10 +565,20 @@ Control *Godosu::create_macro(const Vector2 &p_size) {
 	Control *macro = memnew(Control);
 	macro->set_clip_contents(true);
 	macro->set_size(p_size);
-	macro->connect(SNAME("draw"), callable_mp(this, &Godosu::_draw_canvas_item).bind(macro), CONNECT_ONE_SHOT);
+	macro->connect(SNAME("draw"), callable_mp(this, &Godosu::_draw_canvas_item).bind(macro));
 	add_child(macro);
 	data.active_macro = macro;
 	return macro;
+}
+
+void Godosu::set_active_framebuffer(SubViewport *p_framebuffer) {
+	data.active_framebuffer = p_framebuffer;
+	p_framebuffer->set_update_mode(SubViewport::UPDATE_ONCE);
+
+	if (data.pending_frame_buffers.is_empty()) {
+		RenderingServer::get_singleton()->connect(SNAME("frame_post_draw"), callable_mp(this, &Godosu::_update_pending_framebuffers), CONNECT_ONE_SHOT);
+	}
+	data.pending_frame_buffers.append(p_framebuffer);
 }
 
 Godosu::Godosu() {

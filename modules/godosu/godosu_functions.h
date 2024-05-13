@@ -374,6 +374,7 @@ VALUE godosu_create_framebuffer(VALUE self, VALUE width, VALUE height) {
 	framebuffer->set_size(Vector2i(FIX2LONG(width), FIX2LONG(height)));
 	framebuffer->set_update_mode(SubViewport::UPDATE_DISABLED);
 	framebuffer->set_clear_mode(SubViewport::CLEAR_MODE_NEVER);
+	framebuffer->set_transparent_background(true);
 	Godosu::singleton->add_child(framebuffer);
 
 	VALUE id = INT2NUM(framebuffer_counter);
@@ -384,14 +385,10 @@ VALUE godosu_create_framebuffer(VALUE self, VALUE width, VALUE height) {
 
 VALUE godosu_set_framebuffer(VALUE self, VALUE id) {
 	if (NIL_P(id)) {
-		SubViewport *active_framebuffer = Godosu::singleton->data.active_framebuffer;
-		if (active_framebuffer) {
-			active_framebuffer->set_meta(SNAME("image"), active_framebuffer->get_texture()->get_image());
-		}
 		Godosu::singleton->data.active_framebuffer = nullptr;
 	} else {
 		SubViewport *framebuffer = Godosu::singleton->data.framebuffers[id];
-		Godosu::singleton->data.active_framebuffer = framebuffer;
+		Godosu::singleton->set_active_framebuffer(framebuffer);
 	}
 	return OK;
 }
@@ -401,10 +398,9 @@ VALUE godosu_get_pixel(VALUE self, VALUE framebuffer_id, VALUE x, VALUE y) {
 	{
 		SubViewport *framebuffer = Godosu::singleton->data.framebuffers[framebuffer_id];
 		pixel_data = framebuffer->get_meta(SNAME("image"), false);
-		if (pixel_data.is_null()) {
-			pixel_data = framebuffer->get_texture()->get_image();
-			framebuffer->set_meta(SNAME("image"), pixel_data);
-		}
+	}
+	if (pixel_data.is_null()) {
+		return INT2NUM(0);
 	}
 	const Color color = pixel_data->get_pixel(FIX2LONG(x), FIX2LONG(y));
 	return INT2NUM(color.to_rgba32());
