@@ -1,6 +1,6 @@
 module Gosu
     def default_font_name
-        "Fonot"
+        "Arial"
     end
 
     def enable_undocumented_retrofication

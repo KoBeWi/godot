@@ -200,11 +200,17 @@ VALUE godosu_load_audio(VALUE self, VALUE instance, VALUE source) {
 }
 
 VALUE godosu_load_font(VALUE self, VALUE instance, VALUE source) {
-	String path = StringValueCStr(source);
-	// Ref<Font> font = ResourceLoader::load(path, "Font");
-	Ref<SystemFont> font;
-	font.instantiate();
-	font->set_font_names({ "Monospace" }); // TODO: szukać pliku jak nie ma to fallback
+	const String path = StringValueCStr(source);
+	
+	Ref<Font> font;
+	if (ResourceLoader::exists(path)) {
+		font = ResourceLoader::load(path);
+	} else {
+		Ref<SystemFont> sysfnt;
+		sysfnt.instantiate();
+		sysfnt->set_font_names({ path });
+		font = sysfnt;
+	}
 
 	Godosu::singleton->data.font_cache[instance] = font;
 	return OK;
