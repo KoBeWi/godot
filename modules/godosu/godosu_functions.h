@@ -89,6 +89,16 @@ VALUE godosu_draw_macro(VALUE self, VALUE id, VALUE x, VALUE y, VALUE z) {
 	return OK;
 }
 
+VALUE godosu_destroy_macro(VALUE self, VALUE id) {
+	if (!Godosu::singleton->is_cleanup) {
+		print_verbose("Destroying macro: " + itos(id));
+		const auto I = Godosu::singleton->data.macros.find(id);
+		I->value->queue_free();
+		Godosu::singleton->data.macros.remove(I);
+	}
+	return OK;
+}
+
 VALUE godosu_setup_window(VALUE self, VALUE window, VALUE width, VALUE height, VALUE fullscreen) {
 	Vector2i size(FIX2INT(width), FIX2INT(height));
 	Godosu::singleton->setup_window(window, size, RTEST(fullscreen));
@@ -116,8 +126,11 @@ VALUE godosu_create_text_input(VALUE self) {
 }
 
 VALUE godosu_destroy_text_input(VALUE self, VALUE id) {
-	LineEdit *edit = Godosu::singleton->get_line_edit(id);
-	memdelete(edit);
+	if (!Godosu::singleton->is_cleanup) {
+		print_verbose("Destroying text input: " + itos(id));
+		LineEdit *edit = Godosu::singleton->get_line_edit(id);
+		memdelete(edit);
+	}
 	return OK;
 }
 
@@ -201,7 +214,7 @@ VALUE godosu_load_audio(VALUE self, VALUE instance, VALUE source) {
 
 VALUE godosu_load_font(VALUE self, VALUE instance, VALUE source) {
 	const String path = StringValueCStr(source);
-	
+
 	Ref<Font> font;
 	if (ResourceLoader::exists(path)) {
 		font = ResourceLoader::load(path);
@@ -352,7 +365,10 @@ VALUE godosu_is_channel_playing(VALUE self, VALUE id) {
 }
 
 VALUE godosu_destroy_channel(VALUE self, VALUE id) {
-	Godosu::singleton->data.channels.erase(id);
+	if (!Godosu::singleton->is_cleanup) {
+		print_verbose("Destroying channel: " + itos(id));
+		Godosu::singleton->data.channels.erase(id);
+	}
 	return OK;
 }
 
@@ -401,6 +417,16 @@ VALUE godosu_set_framebuffer(VALUE self, VALUE id) {
 	} else {
 		SubViewport *framebuffer = Godosu::singleton->data.framebuffers[id];
 		Godosu::singleton->set_active_framebuffer(framebuffer);
+	}
+	return OK;
+}
+
+VALUE godosu_destroy_framebuffer(VALUE self, VALUE id) {
+	if (!Godosu::singleton->is_cleanup) {
+		print_verbose("Destroying framebuffer: " + itos(id));
+		const auto I = Godosu::singleton->data.framebuffers.find(id);
+		Godosu::singleton->data.framebuffers.remove(I);
+		I->value->queue_free();
 	}
 	return OK;
 }

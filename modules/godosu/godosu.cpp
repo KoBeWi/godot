@@ -199,6 +199,7 @@ void Godosu::_notification(int p_what) {
 			DEFINE_FUNCTION(create_macro, 2);
 			DEFINE_FUNCTION(end_macro, 0);
 			DEFINE_FUNCTION(draw_macro, 4);
+			DEFINE_FUNCTION(destroy_macro, 1);
 
 			DEFINE_FUNCTION(setup_window, 4);
 			DEFINE_FUNCTION(set_window_title, 1);
@@ -240,6 +241,7 @@ void Godosu::_notification(int p_what) {
 
 			DEFINE_FUNCTION(create_framebuffer, 2);
 			DEFINE_FUNCTION(set_framebuffer, 1);
+			DEFINE_FUNCTION(destroy_framebuffer, 1);
 			DEFINE_FUNCTION(get_pixel, 3);
 
 #undef DEFINE_FUNCTION
@@ -435,6 +437,19 @@ void Godosu::_notification(int p_what) {
 				}
 			}
 		} break;
+
+		case NOTIFICATION_EXIT_TREE: {
+			if (ruby_state == -1) {
+				return;
+			}
+
+			if (ruby_state) {
+				/* handle exception, perhaps */
+			}
+
+			is_cleanup = true;
+			ruby_cleanup(ruby_state);
+		} break;
 	}
 }
 
@@ -599,16 +614,4 @@ void Godosu::set_active_framebuffer(SubViewport *p_framebuffer) {
 
 Godosu::Godosu() {
 	singleton = this;
-}
-
-Godosu::~Godosu() {
-	if (ruby_state == -1) {
-		return;
-	}
-
-	if (ruby_state) {
-		/* handle exception, perhaps */
-	}
-
-	ruby_cleanup(ruby_state);
 }

@@ -15,18 +15,19 @@ module Ashton
         end
 
         def image=(image)
-            # TODO
+            # TODO?
         end
 
         def color=(color)
-            # TODO
+            # TODO?
         end
     end
 
     class Texture
         def initialize(width, height)
-            # TODO: finalizer
             @id = godot_create_framebuffer(width.to_i, height.to_i)
+            @height = height
+            ObjectSpace.define_finalizer(self, Gosu.__finalize(:godot_destroy_framebuffer, @id))
         end
 
         def render
@@ -36,7 +37,7 @@ module Ashton
         end
 
         def [](x, y)
-            Color.new(godot_get_pixel(@id, x.to_i, y.to_i))
+            Color.new(godot_get_pixel(@id, x.to_i, @height - y.to_i - 1))
         end
     end
 
