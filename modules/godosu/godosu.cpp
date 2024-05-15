@@ -22,7 +22,8 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 			}
 
 			if (last_used < current_time - 5.0) {
-				if (p_item->get_meta(SNAME("clipped"), false)) {
+				const Node *parent = p_item->get_parent();
+				if (parent != this && parent->get_child_count() == 1 && !Object::cast_to<SubViewport>(parent)) {
 					p_item->get_parent()->queue_free();
 				} else {
 					p_item->queue_free();
@@ -195,7 +196,7 @@ void Godosu::_notification(int p_what) {
 			DEFINE_FUNCTION(button_id_to_char, 1);
 			DEFINE_FUNCTION(milliseconds, 0);
 
-			DEFINE_FUNCTION(set_clip, 4);
+			DEFINE_FUNCTION(set_clip, 5);
 			DEFINE_FUNCTION(create_macro, 2);
 			DEFINE_FUNCTION(end_macro, 0);
 			DEFINE_FUNCTION(draw_macro, 4);
@@ -504,7 +505,7 @@ void Godosu::setup_window(VALUE p_window, const Vector2i &p_size, bool p_fullscr
 	}
 }
 
-CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const Rect2 &p_clip_rect, SubViewport *p_framebuffer) {
+CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, int p_clip_id, SubViewport *p_framebuffer) {
 	if (data.active_macro) {
 		return data.active_macro;
 	}
@@ -514,7 +515,7 @@ CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const
 		Array arr;
 		arr.append(p_z_index);
 		arr.append(p_material);
-		arr.append(p_clip_rect.size);
+		arr.append(p_clip_id);
 		arr.append(p_framebuffer);
 		key = arr.hash();
 	}
@@ -522,17 +523,17 @@ CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const
 	auto I = ci_map.find(key);
 	if (!I) {
 		Node *parent = this;
-		if (p_clip_rect.has_area()) {
+		if (p_clip_id > 0) {
 			Control *clipper = memnew(Control);
 			clipper->set_clip_contents(true);
-			clipper->set_rect(p_clip_rect);
+			clipper->set_rect(data.clip_rect);
 			add_child(clipper);
 			parent = clipper;
 		}
 
 		if (p_framebuffer) {
 #ifdef DEBUG_ENABLED
-			if (p_clip_rect.has_area()) {
+			if (p_clip_id > 0) {
 				ERR_PRINT("Clipping inside framebuffer is not supported."); // TODO?
 			}
 #endif
@@ -541,8 +542,7 @@ CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const
 
 		Node2D *ci = memnew(Node2D);
 		parent->add_child(ci);
-		if (p_clip_rect.has_area()) {
-			ci->set_meta(SNAME("clipped"), true);
+		if (p_clip_id > 0) {
 			ci->set_global_transform(Transform2D());
 		}
 
@@ -553,10 +553,10 @@ CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, const
 		ci->connect(SNAME("draw"), callable_mp(this, &Godosu::_draw_canvas_item).bind(ci));
 		ci_map[key] = ci;
 		return ci;
-	} else if (p_clip_rect.has_area()) {
+	} else if (p_clip_id > 0) {
 		Node2D *ci = Object::cast_to<Node2D>(I->value);
 		Control *clipper = Object::cast_to<Control>(ci->get_parent_item());
-		clipper->set_position(p_clip_rect.position);
+		clipper->set_rect(data.clip_rect);
 		ci->set_global_transform(Transform2D());
 	}
 	return I->value;
@@ -573,7 +573,7 @@ void Godosu::add_to_queue(const DrawCommand &p_data, int p_z, const Ref<Material
 		}
 	}
 
-	CanvasItem *ci = get_ci(p_z, target_material, data.clip_rect, data.active_framebuffer);
+	CanvasItem *ci = get_ci(p_z, target_material, data.clip_id, data.active_framebuffer);
 	draw_queue[ci].append(p_data);
 }
 

@@ -70,6 +70,7 @@ public:
 
 		AudioStreamPlayer *song_player = nullptr;
 		Ref<Material> additive_material;
+		int clip_id = 0;
 		Rect2 clip_rect;
 		HashMap<int, Ref<Material>> shader_map;
 		SubViewport *active_framebuffer = nullptr;
@@ -88,7 +89,7 @@ public:
 	String get_main_script() const;
 
 	void setup_window(VALUE p_window, const Vector2i &p_size, bool p_fullscreen);
-	CanvasItem *get_ci(int p_z_index, const Ref<Material> &p_material, const Rect2 &p_clip_rect, SubViewport *p_framebuffer);
+	CanvasItem *get_ci(int p_z_index, const Ref<Material> &p_material, int p_clip_id, SubViewport *p_framebuffer);
 	void add_to_queue(const DrawCommand &p_data, int p_z, const Ref<Material> &p_material = Ref<Material>());
 
 	VALUE create_line_edit();
