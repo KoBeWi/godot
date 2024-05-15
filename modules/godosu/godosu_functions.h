@@ -61,7 +61,8 @@ VALUE godosu_milliseconds(VALUE self) {
 	return INT2NUM(Time::get_singleton()->get_ticks_msec());
 }
 
-VALUE godosu_set_clip(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h) {
+VALUE godosu_set_clip(VALUE self, VALUE id, VALUE x, VALUE y, VALUE w, VALUE h) {
+	Godosu::singleton->data.clip_id = FIX2INT(id);
 	Godosu::singleton->data.clip_rect = Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(w), RFLOAT_VALUE(h));
 	return OK;
 }

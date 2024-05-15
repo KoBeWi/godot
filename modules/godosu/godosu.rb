@@ -80,14 +80,26 @@ module Gosu
         $_translate_y = 0.0
     end
 
-    def scale(scale_x, scale_y, around_x, around_y)
+    def scale(scale_x, scale_y, around_x, around_y, owner = nil)
+        if owner
+            owner = owner.object_id
+        else
+            owner = Kernel.caller.first.hash
+        end
+        
         yield # TODO
     end
 
-    def clip_to(x, y, w, h)
-        godot_set_clip(_gd_x(x), _gd_y(y), w.to_f, h.to_f)
+    def clip_to(x, y, w, h, owner = nil)
+        if owner
+            owner = owner.object_id
+        else
+            owner = Kernel.caller.first.hash
+        end
+
+        godot_set_clip(owner, _gd_x(x), _gd_y(y), w.to_f, h.to_f)
         yield
-        godot_set_clip(0.0, 0.0, 0.0, 0.0)
+        godot_set_clip(0, 0.0, 0.0, 0.0, 0.0)
     end
 
     def record(width, height)
