@@ -14,7 +14,13 @@ void Godosu::_draw_canvas_item(CanvasItem *p_item) {
 	{
 		const double current_time = OS::get_singleton()->get_unix_time();
 		if (!I) {
-			const double last_used = p_item->get_meta(SNAME("last_use"), current_time);
+			double last_used;
+			if (p_item->get_meta(SNAME("is_macro"), false)) {
+				last_used = current_time;
+			} else {
+				last_used = p_item->get_meta(SNAME("last_use"), current_time);
+			}
+
 			if (last_used < current_time - 5.0) {
 				if (p_item->get_meta(SNAME("clipped"), false)) {
 					p_item->get_parent()->queue_free();
@@ -187,6 +193,7 @@ void Godosu::_notification(int p_what) {
 			DEFINE_FUNCTION(retrofication, 0);
 			DEFINE_FUNCTION(hsv_to_rgb, 3);
 			DEFINE_FUNCTION(button_id_to_char, 1);
+			DEFINE_FUNCTION(milliseconds, 0);
 
 			DEFINE_FUNCTION(set_clip, 4);
 			DEFINE_FUNCTION(create_macro, 2);
@@ -419,6 +426,14 @@ void Godosu::_notification(int p_what) {
 			for (const auto &kv : ci_map) {
 				kv.value->queue_redraw();
 			}
+			for (auto &kv : data.macros) {
+				Control *macro = kv.value;
+				if (macro->get_meta(SNAME("used"), false)) {
+					macro->set_meta(SNAME("used"), false);
+				} else {
+					macro->set_position(Vector2(INFINITY, INFINITY));
+				}
+			}
 		} break;
 	}
 }
@@ -566,6 +581,7 @@ Control *Godosu::create_macro(const Vector2 &p_size) {
 	macro->set_clip_contents(true);
 	macro->set_size(p_size);
 	macro->connect(SNAME("draw"), callable_mp(this, &Godosu::_draw_canvas_item).bind(macro));
+	macro->set_meta(SNAME("is_macro"), true);
 	add_child(macro);
 	data.active_macro = macro;
 	return macro;

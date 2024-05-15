@@ -5,6 +5,7 @@
 
 #include "core/config/project_settings.h"
 #include "core/os/keyboard.h"
+#include "core/os/time.h"
 #include "scene/audio/audio_stream_player.h"
 #include "scene/gui/line_edit.h"
 #include "scene/resources/atlas_texture.h"
@@ -56,6 +57,10 @@ VALUE godosu_button_id_to_char(VALUE self, VALUE id) {
 	return rb_str_new_cstr(keycode_name.ascii().get_data());
 }
 
+VALUE godosu_milliseconds(VALUE self) {
+	return INT2NUM(Time::get_singleton()->get_ticks_msec());
+}
+
 VALUE godosu_set_clip(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h) {
 	Godosu::singleton->data.clip_rect = Rect2(RFLOAT_VALUE(x), RFLOAT_VALUE(y), RFLOAT_VALUE(w), RFLOAT_VALUE(h));
 	return OK;
@@ -80,6 +85,7 @@ VALUE godosu_draw_macro(VALUE self, VALUE id, VALUE x, VALUE y, VALUE z) {
 	Control *macro = Godosu::singleton->data.macros[id];
 	macro->set_position(Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)));
 	macro->set_z_index(FIX2INT(z));
+	macro->set_meta(SNAME("used"), true);
 	return OK;
 }
 

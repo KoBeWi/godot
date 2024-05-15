@@ -65,8 +65,7 @@ module Gosu
     end
 
     def milliseconds
-        # TODO
-        0
+        godot_milliseconds
     end
 
     def flush
@@ -258,7 +257,7 @@ module Gosu
         end
 
         def subimage(x, y, w, h)
-            # TODO
+            Image.new(self, true, x, y, w, h)
         end
 
         def godot_set_size(w, h)
