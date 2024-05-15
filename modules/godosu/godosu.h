@@ -53,6 +53,8 @@ protected:
 public:
 	inline static Godosu *singleton = nullptr;
 
+	bool is_cleanup = false;
+
 	struct {
 		VALUE window = 0;
 
@@ -95,7 +97,6 @@ public:
 	void set_active_framebuffer(SubViewport *p_framebuffer);
 
 	Godosu();
-	~Godosu();
 };
 
 #define godosu_window_callback(m_argc, ...) rb_funcall(data.window, data.callback_base, m_argc, __VA_ARGS__);

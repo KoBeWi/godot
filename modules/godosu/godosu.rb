@@ -97,6 +97,18 @@ module Gosu
         macro
     end
 
+    def screen_width
+        # TODO
+    end
+
+    def screen_height
+        # TODO
+    end
+
+    def __finalize(method, id)
+        proc { send(method, id) }
+    end
+
     class Window
         attr_reader :mouse_x, :mouse_y, :width, :height, :__keys
 
@@ -268,8 +280,8 @@ module Gosu
 
     class Macro
         def initialize(width, height)
-            # TODO: finalizer
             @id = godot_create_macro(width.to_i, height.to_i)
+            ObjectSpace.define_finalizer(self, Gosu.__finalize(:godot_destroy_macro, @id))
         end
 
         def draw(x, y, z)
@@ -332,49 +344,48 @@ module Gosu
     class Channel
         def initialize(id)
             @id = id
+            ObjectSpace.define_finalizer(self, Gosu.__finalize(:godot_destroy_channel, @id))
         end
 
         def playing?
             godot_is_channel_playing(@id)
         end
-
-        ObjectSpace.define_finalizer(self, proc { godot_destroy_channel(@id) })
     end
 
     class TextInput
         def initialize
             @text = ""
             @caret_pos = 0
-            @text_id = godot_create_text_input()
-            ObjectSpace.define_finalizer(self, proc { godot_destroy_text_input(@text_id) })
+            @id = godot_create_text_input()
+            ObjectSpace.define_finalizer(self, Gosu.__finalize(:godot_destroy_text_input, @id))
         end
 
         def text=(val)
-            godot_set_text_input_text(@text_id, val.to_s)
+            godot_set_text_input_text(@id, val.to_s)
         end
         
         def text
-            godot_get_text_input_text(@text_id)
+            godot_get_text_input_text(@id)
         end
 
         def caret_pos=(val)
-            godot_set_text_input_caret(@text_id, val.to_i)
+            godot_set_text_input_caret(@id, val.to_i)
         end
         
         def caret_pos
-            godot_get_text_input_caret(@text_id)
+            godot_get_text_input_caret(@id)
         end
 
         def selection_start=(val)
-            godot_set_text_input_selection_start(@text_id, val.to_i)
+            godot_set_text_input_selection_start(@id, val.to_i)
         end
 
         def selection_start
-            godot_get_text_input_selection_start(@text_id)
+            godot_get_text_input_selection_start(@id)
         end
 
         def __focus
-            godot_focus_text_input(@text_id)
+            godot_focus_text_input(@id)
         end
     end
 
