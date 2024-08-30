@@ -2,10 +2,11 @@
 #define GOSU_H
 
 #include "scene/main/node.h"
-#include "servers/audio/audio_stream.h"
 
 #include <ruby.h>
 
+class AudioStream;
+class AudioStreamPlayback;
 class AudioStreamPlayer;
 class CanvasItem;
 class Control;

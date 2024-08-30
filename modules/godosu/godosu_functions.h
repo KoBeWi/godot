@@ -9,6 +9,7 @@
 #include "scene/audio/audio_stream_player.h"
 #include "scene/gui/line_edit.h"
 #include "scene/resources/atlas_texture.h"
+#include "servers/audio/audio_stream.h"
 
 Color gd_convert_color(VALUE from) {
 	const String color_string = StringValueCStr(from);
