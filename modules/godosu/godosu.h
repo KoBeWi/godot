@@ -5,6 +5,8 @@
 
 #include <ruby.h>
 
+#undef IGNORE
+
 class AudioStream;
 class AudioStreamPlayback;
 class AudioStreamPlayer;

@@ -167,9 +167,9 @@ void Godosu::_notification(int p_what) {
 #ifdef WINDOWS_ENABLED
 			{
 				int argc = 0;
-				char *argv0 = "";
-				char **argv1 = &argv0;
-				rb_w32_sysinit(&argc, &argv1);
+				const char *argv0 = "";
+				const char **argv1 = &argv0;
+				rb_w32_sysinit(&argc, const_cast<char ***>(&argv1));
 			}
 #endif
 			print_verbose("Initializing Ruby");
@@ -395,8 +395,8 @@ void Godosu::_notification(int p_what) {
 			const String main_script_path = ProjectSettings::get_singleton()->globalize_path(main_script);
 			const String exec = vformat(R"(-e require "%s" )", main_script_path);
 
-			char *options[] = { "-v", const_cast<char *>(exec.ascii().get_data()) };
-			void *node = ruby_options(2, options);
+			const char *options[] = { "-v", exec.ascii().get_data() };
+			void *node = ruby_options(2, const_cast<char **>(options));
 
 			print_verbose("Starting application");
 			if (ruby_executable_node(node, &ruby_state)) {

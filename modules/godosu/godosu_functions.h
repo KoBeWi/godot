@@ -308,7 +308,7 @@ VALUE godosu_draw_string(VALUE self, VALUE font, VALUE size, VALUE text, VALUE x
 	draw_data.arguments = varray(Godosu::singleton->data.font_cache[font],
 			Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)),
 			StringValueCStr(text),
-			FIX2LONG(size),
+			(int64_t)FIX2LONG(size),
 			gd_convert_color(color),
 			Vector2(RFLOAT_VALUE(scale_x), RFLOAT_VALUE(scale_y)),
 			Vector2(RFLOAT_VALUE(rel_x), RFLOAT_VALUE(rel_y)));
