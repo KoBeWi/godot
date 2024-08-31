@@ -302,6 +302,8 @@ module Gosu
     end
 
     class Song
+        @@current_song = nil
+        
         def initialize(screen, filename = nil)
             if screen.class == String
                 initialize_without_window(screen)
@@ -315,22 +317,22 @@ module Gosu
         end
 
         def play(lp = false)
-            return if Song.current_song == self
+            return if playing?
             godot_play_song(self, lp)
             @@current_song = self
         end
 
         def stop
             godot_stop_song
-            @@curent_song = nil
+            @@current_song = nil
         end
 
         def playing?
-            return Song.current_song == self
+            return @@current_song == self
         end
 
-        def Song.current_song
-            @@current_song if defined? @@current_song
+        def self.current_song
+            @@current_song
         end
     end
 
