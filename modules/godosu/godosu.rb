@@ -194,6 +194,14 @@ module Gosu
             @mouse_y = y
         end
 
+        def mouse_x=(x)
+            # TODO
+        end
+        
+        def mouse_y=(x)
+            # TODO
+        end
+
         def caption=(text)
             @caption = text.to_s
             godot_set_window_title(@caption)
@@ -270,6 +278,11 @@ module Gosu
             end
 
             ret
+        end
+
+        def self.from_text(window, text, font_name, line_height, line_spacing, width, align)
+            # TODO
+            return Image.new()
         end
 
         def draw(x, y, z = 0, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)

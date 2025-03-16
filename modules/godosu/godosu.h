@@ -73,6 +73,7 @@ public:
 
 		AudioStreamPlayer *song_player = nullptr;
 		Ref<Material> additive_material;
+		Ref<Material> multiply_material;
 		int clip_id = 0;
 		Rect2 clip_rect;
 		HashMap<int, Ref<Material>> shader_map;

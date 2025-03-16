@@ -161,6 +161,13 @@ void Godosu::_notification(int p_what) {
 				data.additive_material = mat;
 			}
 
+			{
+				Ref<CanvasItemMaterial> mat;
+				mat.instantiate();
+				mat->set_blend_mode(CanvasItemMaterial::BLEND_MODE_MUL);
+				data.multiply_material = mat;
+			}
+
 			RenderingServer::get_singleton()->set_default_clear_color(Color(0, 0, 0));
 
 			// Initialize Ruby.
@@ -245,6 +252,7 @@ void Godosu::_notification(int p_what) {
 			DEFINE_FUNCTION(set_framebuffer, 1);
 			DEFINE_FUNCTION(destroy_framebuffer, 1);
 			DEFINE_FUNCTION(get_pixel, 3);
+			DEFINE_FUNCTION(draw_framebuffer, 5);
 
 #undef DEFINE_FUNCTION
 

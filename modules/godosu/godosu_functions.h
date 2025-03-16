@@ -26,6 +26,10 @@ Ref<Material> gd_is_additive(VALUE additive) {
 	return RTEST(additive) ? Godosu::singleton->data.additive_material : Ref<Material>();
 }
 
+Ref<Material> gd_is_multiply(VALUE multiply) {
+	return RTEST(multiply) ? Godosu::singleton->data.multiply_material : Ref<Material>();
+}
+
 VALUE godosu_print(VALUE self, VALUE string) {
 	String print_string = StringValueCStr(string);
 	print_line(print_string);
@@ -444,6 +448,21 @@ VALUE godosu_get_pixel(VALUE self, VALUE framebuffer_id, VALUE x, VALUE y) {
 	}
 	const Color color = pixel_data->get_pixel(FIX2LONG(x), FIX2LONG(y));
 	return INT2NUM(color.to_argb32());
+}
+
+VALUE godosu_draw_framebuffer(VALUE self, VALUE framebuffer_id, VALUE x, VALUE y, VALUE z, VALUE multiply) {
+	SubViewport *framebuffer = Godosu::singleton->data.framebuffers[framebuffer_id];
+
+	Godosu::DrawCommand draw_data;
+	draw_data.type = Godosu::DrawCommand::DRAW_TEXTURE;
+	draw_data.arguments = varray(
+			framebuffer->get_texture(),
+			Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)),
+			Vector2(1.1, 1.0),
+			Color(1, 1, 1, 1));
+
+	Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), gd_is_multiply(multiply));
+	return OK;
 }
 
 #endif

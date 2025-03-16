@@ -39,6 +39,11 @@ module Ashton
         def [](x, y)
             Color.new(godot_get_pixel(@id, x.to_i, @height - y.to_i - 1))
         end
+
+        def draw(x, y, z, mode = nil)
+            multiply = mode.class == Hash and mode[:mode] == :multiply # TODO: inne mode?
+            godot_draw_framebuffer(@id, _gd_x(x), _gd_y(y), _gd_z(z), multiply)
+        end
     end
 
     class WindowBuffer < Texture
