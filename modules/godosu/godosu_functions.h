@@ -4,11 +4,14 @@
 #include "godosu.h"
 
 #include "core/config/project_settings.h"
+#include "core/io/resource_loader.h"
 #include "core/os/keyboard.h"
 #include "core/os/time.h"
 #include "scene/audio/audio_stream_player.h"
 #include "scene/gui/line_edit.h"
 #include "scene/resources/atlas_texture.h"
+#include "scene/resources/material.h"
+#include "scene/resources/shader.h"
 #include "servers/audio/audio_stream.h"
 
 Color gd_convert_color(VALUE from) {

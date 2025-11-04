@@ -15,6 +15,7 @@ class Control;
 class Font;
 class LineEdit;
 class Node2D;
+class ShaderMaterial;
 class SubViewport;
 class Texture2D;
 

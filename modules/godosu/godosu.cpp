@@ -8,6 +8,7 @@
 #include "scene/main/viewport.h"
 #include "scene/main/window.h"
 #include "scene/resources/canvas_item_material.h"
+#include "scene/resources/material.h"
 #include "scene/resources/texture.h"
 
 void Godosu::_draw_canvas_item(CanvasItem *p_item) {
