@@ -461,7 +461,7 @@ VALUE godosu_draw_framebuffer(VALUE self, VALUE framebuffer_id, VALUE x, VALUE y
 	draw_data.arguments = varray(
 			framebuffer->get_texture(),
 			Vector2(RFLOAT_VALUE(x), RFLOAT_VALUE(y)),
-			Vector2(1.1, 1.0),
+			Vector2(1.0, 1.0),
 			Color(1, 1, 1, 1));
 
 	Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), gd_is_multiply(multiply));

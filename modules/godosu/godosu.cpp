@@ -520,16 +520,7 @@ CanvasItem *Godosu::get_ci(int p_z_index, const Ref<Material> &p_material, int p
 		return data.active_macro;
 	}
 
-	uint32_t key;
-	{
-		Array arr;
-		arr.append(p_z_index);
-		arr.append(p_material);
-		arr.append(p_clip_id);
-		arr.append(p_framebuffer);
-		key = arr.hash();
-	}
-
+	uint32_t key = Array{ p_z_index, p_material, p_clip_id, p_framebuffer }.hash();
 	auto I = ci_map.find(key);
 	if (!I) {
 		Node *parent = this;
