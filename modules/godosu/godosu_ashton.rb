@@ -37,7 +37,7 @@ module Ashton
         end
 
         def [](x, y)
-            Color.new(godot_get_pixel(@id, x.to_i, @height - y.to_i - 1))
+            Color.new(godot_get_pixel(@id, x.to_i, @height - y.to_i))
         end
 
         def draw(x, y, z, mode = nil)

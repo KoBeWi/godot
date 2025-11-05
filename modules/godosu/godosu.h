@@ -13,11 +13,13 @@ class AudioStreamPlayer;
 class CanvasItem;
 class Control;
 class Font;
+class ImageTexture;
 class LineEdit;
 class Node2D;
 class ShaderMaterial;
 class SubViewport;
 class Texture2D;
+class TextParagraph;
 
 class Godosu : public Node {
 	GDCLASS(Godosu, Node);
@@ -37,6 +39,15 @@ public:
 		Vector<Variant> arguments;
 	};
 
+	struct TextGenerator {
+		Ref<Font> font;
+		Ref<TextParagraph> parapgrah;
+		Ref<ImageTexture> texture;
+		RID canvas;
+		RID canvas_item;
+		RID viewport;
+	};
+
 private:
 	int ruby_state = -1;
 
@@ -48,6 +59,7 @@ private:
 
 	void _draw_canvas_item(CanvasItem *p_item);
 	void _update_pending_framebuffers();
+	void _finalize_text_generators();
 
 protected:
 	void _notification(int p_what);
@@ -80,7 +92,8 @@ public:
 		HashMap<int, Ref<Material>> shader_map;
 		SubViewport *active_framebuffer = nullptr;
 		Control *active_macro = nullptr;
-		Vector<SubViewport *> pending_frame_buffers;
+		LocalVector<SubViewport *> pending_frame_buffers;
+		LocalVector<TextGenerator> working_text_generators;
 
 		VALUE callback_base = 0;
 		VALUE callback_update_mouse = 0;
@@ -101,6 +114,7 @@ public:
 	LineEdit *get_line_edit(VALUE id);
 	Control *create_macro(const Vector2 &p_size);
 	void set_active_framebuffer(SubViewport *p_framebuffer);
+	void await_text_generation(TextGenerator &p_generator);
 
 	Godosu();
 };

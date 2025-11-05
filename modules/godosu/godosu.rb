@@ -126,7 +126,6 @@ module Gosu
 
         def initialize(w, h, fullscreen)
             godot_retrofication # TODO usunąć
-            # TODO fullscreen
             @width, @height, @fullscreen = w.to_i, h.to_i, fullscreen
             godot_setup_window(self, @width, @height, @fullscreen)
             @__keys = []
@@ -225,6 +224,8 @@ module Gosu
         attr_reader :width, :height
 
         def initialize(screen, source = nil, tileable = false, x = 0, y = 0, w = 0, h = 0)
+            return if screen == :empty
+
             if screen.class == String or screen.class == Image
                 initialize_without_window(screen, source, tileable, x, y, w)
             else
@@ -281,8 +282,10 @@ module Gosu
         end
 
         def self.from_text(window, text, font_name, line_height, line_spacing, width, align)
-            # TODO
-            return Image.new()
+            align = [:left, :right, :center, :justify].index(align)
+            image = Image.new(:empty)
+            godot_texture_from_text(image, font_name, text.to_s, line_height.to_i, line_spacing.to_i, width.to_i, align || 0)
+            image
         end
 
         def draw(x, y, z = 0, scale_x = 1, scale_y = 1, color = 0xff_ffffff, mode = :default)

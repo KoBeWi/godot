@@ -10,8 +10,10 @@
 #include "scene/audio/audio_stream_player.h"
 #include "scene/gui/line_edit.h"
 #include "scene/resources/atlas_texture.h"
+#include "scene/resources/image_texture.h"
 #include "scene/resources/material.h"
 #include "scene/resources/shader.h"
+#include "scene/resources/text_paragraph.h"
 #include "servers/audio/audio_stream.h"
 
 Color gd_convert_color(VALUE from) {
@@ -210,6 +212,65 @@ VALUE godosu_load_atlas(VALUE self, VALUE instance, VALUE base, VALUE x, VALUE y
 	atlas->set_atlas(texture);
 	atlas->set_region(Rect2(FIX2LONG(x), FIX2LONG(y), FIX2LONG(w), FIX2LONG(h)));
 	Godosu::singleton->data.texture_cache[instance] = atlas;
+	return OK;
+}
+
+VALUE godosu_texture_from_text(VALUE self, VALUE instance, VALUE font_name, VALUE text, VALUE line_height, VALUE line_spacing, VALUE width, VALUE align) {
+	const String font_path = StringValueCStr(font_name);
+
+	// TODO: Cache?
+	Ref<Font> font;
+	if (ResourceLoader::exists(font_path)) {
+		font = ResourceLoader::load(font_path);
+	} else {
+		Ref<SystemFont> sysfnt;
+		sysfnt.instantiate();
+		sysfnt->set_font_names({ font_path });
+		font = sysfnt;
+	}
+
+	int text_width = FIX2INT(width);
+	int spacing = FIX2INT(line_spacing);
+	int font_height = FIX2INT(line_height);
+
+	Ref<TextParagraph> paragraph;
+	paragraph.instantiate();
+	paragraph->set_line_spacing(spacing);
+	paragraph->set_width(text_width);
+	paragraph->set_alignment((HorizontalAlignment)FIX2INT(align));
+	paragraph->add_string(StringValueCStr(text), font, font_height);
+
+	RID canvas = RS::get_singleton()->canvas_create();
+
+	RID canvas_item = RS::get_singleton()->canvas_item_create();
+	RS::get_singleton()->canvas_item_set_parent(canvas_item, canvas);
+	paragraph->draw(canvas_item, Vector2());
+
+	int line_count = paragraph->get_line_count();
+	Vector2i size(text_width, line_count * font->get_height(font_height) + (line_count - 1) * spacing);
+
+	rb_funcall(instance, rb_intern("godot_set_size"), 2, INT2NUM(size.x), INT2NUM(size.y));
+
+	RID viewport = RS::get_singleton()->viewport_create();
+	RS::get_singleton()->viewport_attach_canvas(viewport, canvas);
+	RS::get_singleton()->viewport_set_size(viewport, size.x, size.y);
+	RS::get_singleton()->viewport_set_transparent_background(viewport, true);
+	RS::get_singleton()->viewport_set_active(viewport, true);
+	RS::get_singleton()->viewport_set_update_mode(viewport, RenderingServer::VIEWPORT_UPDATE_ONCE);
+	RS::get_singleton()->viewport_set_parent_viewport(viewport, Godosu::singleton->get_viewport()->get_viewport_rid());
+
+	Ref<ImageTexture> texture = ImageTexture::create_from_image(Image::create_empty(size.x, size.y, false, Image::FORMAT_RGBA8));
+	Godosu::singleton->data.texture_cache[instance] = texture;
+
+	Godosu::TextGenerator gen;
+	gen.font = font;
+	gen.parapgrah = paragraph;
+	gen.texture = texture;
+	gen.canvas = canvas;
+	gen.canvas_item = canvas_item;
+	gen.viewport = viewport;
+	Godosu::singleton->await_text_generation(gen);
+
 	return OK;
 }
 

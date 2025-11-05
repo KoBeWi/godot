@@ -8,7 +8,6 @@
 #include "scene/main/viewport.h"
 #include "scene/main/window.h"
 #include "scene/resources/canvas_item_material.h"
-#include "scene/resources/material.h"
 #include "scene/resources/texture.h"
 
 void Godosu::_draw_canvas_item(CanvasItem *p_item) {
@@ -144,6 +143,17 @@ void Godosu::_update_pending_framebuffers() {
 	data.pending_frame_buffers.clear();
 }
 
+void Godosu::_finalize_text_generators() {
+	for (TextGenerator &generator : data.working_text_generators) {
+		generator.texture->set_image(RS::get_singleton()->texture_2d_get(RS::get_singleton()->viewport_get_texture(generator.viewport)));
+
+		RS::get_singleton()->free_rid(generator.canvas_item);
+		RS::get_singleton()->free_rid(generator.canvas);
+		RS::get_singleton()->free_rid(generator.viewport);
+	}
+	data.working_text_generators.clear();
+}
+
 void Godosu::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_READY: {
@@ -228,6 +238,7 @@ void Godosu::_notification(int p_what) {
 
 			DEFINE_FUNCTION(load_image, 2);
 			DEFINE_FUNCTION(load_atlas, 6);
+			DEFINE_FUNCTION(texture_from_text, 7);
 			DEFINE_FUNCTION(load_audio, 2);
 			DEFINE_FUNCTION(load_font, 2);
 
@@ -610,7 +621,14 @@ void Godosu::set_active_framebuffer(SubViewport *p_framebuffer) {
 	if (data.pending_frame_buffers.is_empty()) {
 		RenderingServer::get_singleton()->connect(SNAME("frame_post_draw"), callable_mp(this, &Godosu::_update_pending_framebuffers), CONNECT_ONE_SHOT);
 	}
-	data.pending_frame_buffers.append(p_framebuffer);
+	data.pending_frame_buffers.push_back(p_framebuffer);
+}
+
+void Godosu::await_text_generation(TextGenerator &p_generator) {
+	if (data.working_text_generators.is_empty()) {
+		RenderingServer::get_singleton()->connect(SNAME("frame_post_draw"), callable_mp(this, &Godosu::_finalize_text_generators), CONNECT_ONE_SHOT);
+	}
+	data.working_text_generators.push_back(p_generator);
 }
 
 Godosu::Godosu() {
