@@ -954,6 +954,14 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_constant("scrollbar_h_separation", "Tree", Math::round(4 * scale));
 	theme->set_constant("scrollbar_v_separation", "Tree", Math::round(4 * scale));
 
+	// TreeView
+
+	theme->set_stylebox(SceneStringName(panel), "TreeView", make_flat_stylebox(style_normal_color, 4, 4, 4, 5));
+
+	theme->set_color("guide_color", "TreeView", Color(0.7, 0.7, 0.7, 0.25));
+
+	theme->set_constant("draw_guides", "TreeView", 1);
+
 	// ItemList
 
 	theme->set_stylebox(SceneStringName(panel), "ItemList", make_flat_stylebox(style_normal_color));
