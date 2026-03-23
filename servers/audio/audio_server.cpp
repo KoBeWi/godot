@@ -1755,6 +1755,12 @@ void AudioServer::set_bus_layout(const Ref<AudioBusLayout> &p_bus_layout) {
 	ERR_FAIL_COND(p_bus_layout.is_null() || p_bus_layout->buses.is_empty());
 
 	lock();
+
+	if (active_layout.is_valid()) {
+		active_layout->set_sync_with_server(false);
+		active_layout.unref();
+	}
+
 	for (int i = 0; i < buses.size(); i++) {
 		memdelete(buses[i]);
 	}
@@ -1808,7 +1814,11 @@ void AudioServer::set_bus_layout(const Ref<AudioBusLayout> &p_bus_layout) {
 #ifdef TOOLS_ENABLED
 	set_edited(false);
 #endif
+	active_layout = p_bus_layout;
+
 	unlock();
+
+	p_bus_layout->set_sync_with_server(true);
 
 	// Samples bus sync.
 }
@@ -2149,6 +2159,11 @@ AudioServer::~AudioServer() {
 
 /////////////////////////////////
 
+void AudioBusLayout::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("_add_bus_effect", "bus_idx", "effect", "at_position"), &AudioBusLayout::add_bus_effect, DEFVAL(-1));
+	ClassDB::bind_method(D_METHOD("_remove_bus_effect", "bus_idx", "effect_idx"), &AudioBusLayout::remove_bus_effect);
+}
+
 bool AudioBusLayout::_set(const StringName &p_name, const Variant &p_value) {
 	String s = p_name;
 	if (s.begins_with("bus/")) {
@@ -2163,16 +2178,34 @@ bool AudioBusLayout::_set(const StringName &p_name, const Variant &p_value) {
 
 		if (what == "name") {
 			bus.name = p_value;
+			if (sync_with_server) {
+				AudioServer::get_singleton()->set_bus_name(index, p_value);
+			}
 		} else if (what == "solo") {
 			bus.solo = p_value;
+			if (sync_with_server) {
+				AudioServer::get_singleton()->set_bus_solo(index, p_value);
+			}
 		} else if (what == "mute") {
 			bus.mute = p_value;
+			if (sync_with_server) {
+				AudioServer::get_singleton()->set_bus_mute(index, p_value);
+			}
 		} else if (what == "bypass_fx") {
 			bus.bypass = p_value;
+			if (sync_with_server) {
+				AudioServer::get_singleton()->set_bus_bypass_effects(index, p_value);
+			}
 		} else if (what == "volume_db") {
 			bus.volume_db = p_value;
+			if (sync_with_server) {
+				AudioServer::get_singleton()->set_bus_volume_db(index, p_value);
+			}
 		} else if (what == "send") {
 			bus.send = p_value;
+			if (sync_with_server) {
+				AudioServer::get_singleton()->set_bus_send(index, p_value);
+			}
 		} else if (what == "effect") {
 			int which = s.get_slicec('/', 3).to_int();
 			if (bus.effects.size() <= which) {
@@ -2266,6 +2299,31 @@ void AudioBusLayout::_get_property_list(List<PropertyInfo> *p_list) const {
 			p_list->push_back(PropertyInfo(Variant::OBJECT, "bus/" + itos(i) + "/effect/" + itos(j) + "/effect", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL));
 			p_list->push_back(PropertyInfo(Variant::BOOL, "bus/" + itos(i) + "/effect/" + itos(j) + "/enabled", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL));
 		}
+	}
+}
+
+void AudioBusLayout::add_bus_effect(int p_bus, const Ref<AudioEffect> &p_effect, int p_at_pos) {
+	print_line(this, sync_with_server);
+
+	Bus::Effect fx;
+	fx.effect = p_effect;
+	fx.enabled = true;
+
+	if (p_at_pos >= buses[p_bus].effects.size() || p_at_pos < 0) {
+		buses.write[p_bus].effects.push_back(fx);
+	} else {
+		buses.write[p_bus].effects.insert(p_at_pos, fx);
+	}
+
+	if (sync_with_server) {
+		AudioServer::get_singleton()->add_bus_effect(p_bus, p_effect, p_at_pos);
+	}
+}
+
+void AudioBusLayout::remove_bus_effect(int p_bus, int p_effect) {
+	buses.write[p_bus].effects.remove_at(p_effect);
+	if (sync_with_server) {
+		AudioServer::get_singleton()->remove_bus_effect(p_bus, p_effect);
 	}
 }
 

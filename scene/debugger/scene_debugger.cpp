@@ -332,6 +332,7 @@ Error SceneDebugger::_msg_live_res_call(const Array &p_args) {
 		args[i] = p_args[i + 2];
 		argptrs[i] = &args[i];
 	}
+	print_line("c", p_args);
 	LiveEditor::get_singleton()->_res_call_func(p_args[0], p_args[1], argptrs.size() ? (const Variant **)argptrs.ptr() : nullptr, argptrs.size());
 	return OK;
 }

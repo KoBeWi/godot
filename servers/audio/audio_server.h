@@ -349,6 +349,8 @@ private:
 
 	LocalVector<Ref<AudioSamplePlayback>> sample_playback_list;
 
+	Ref<AudioBusLayout> active_layout;
+
 protected:
 	static void _bind_methods();
 
@@ -532,6 +534,8 @@ class AudioBusLayout : public Resource {
 
 	friend class AudioServer;
 
+	bool sync_with_server = false;
+
 	struct Bus {
 		StringName name;
 		bool solo = false;
@@ -554,10 +558,18 @@ class AudioBusLayout : public Resource {
 	Vector<Bus> buses;
 
 protected:
+	static void _bind_methods();
+
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
 	void _get_property_list(List<PropertyInfo> *p_list) const;
 
 public:
+	void set_sync_with_server(bool p_sync) { sync_with_server = true; }
+
+	void add_bus_effect(int p_bus, const Ref<AudioEffect> &p_effect, int p_at_pos = -1);
+	void remove_bus_effect(int p_bus, int p_effect);
+	int get_bus_effect_count(int p_bus) const { return buses[p_bus].effects.size(); }
+
 	AudioBusLayout();
 };

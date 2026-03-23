@@ -172,6 +172,8 @@ class EditorAudioBuses : public EditorDock {
 
 	bool floating = false;
 
+	Ref<AudioBusLayout> current_bus_layout;
+
 	void _update_file_label();
 	void _update_file_label_size();
 
@@ -208,6 +210,7 @@ protected:
 	virtual void update_layout(EditorDock::DockLayout p_layout) override;
 
 public:
+	Ref<AudioBusLayout> get_edited_layout() const;
 	void open_layout(const String &p_path);
 
 	static EditorAudioBuses *register_editor();

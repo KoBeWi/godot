@@ -571,10 +571,12 @@ void EditorAudioBus::_effect_add(int p_which) {
 
 	afxr->set_name(effect_options->get_item_text(p_which));
 
+	AudioBusLayout *current_layout = buses->get_edited_layout().ptr();
+
 	EditorUndoRedoManager *ur = EditorUndoRedoManager::get_singleton();
 	ur->create_action(TTR("Add Audio Bus Effect"));
-	ur->add_do_method(AudioServer::get_singleton(), "add_bus_effect", get_index(), afxr, -1);
-	ur->add_undo_method(AudioServer::get_singleton(), "remove_bus_effect", get_index(), AudioServer::get_singleton()->get_bus_effect_count(get_index()));
+	ur->add_do_method(current_layout, "_add_bus_effect", get_index(), afxr, -1);
+	ur->add_undo_method(current_layout, "_remove_bus_effect", get_index(), current_layout->get_bus_effect_count(get_index()));
 	ur->add_do_method(buses, "_update_bus", get_index());
 	ur->add_undo_method(buses, "_update_bus", get_index());
 	ur->commit_action();
@@ -777,11 +779,12 @@ void EditorAudioBus::_delete_effect_pressed(int p_option) {
 	}
 
 	int index = item->get_metadata(0);
+	AudioBusLayout *current_layout = buses->get_edited_layout().ptr();
 
 	EditorUndoRedoManager *ur = EditorUndoRedoManager::get_singleton();
 	ur->create_action(TTR("Delete Bus Effect"));
-	ur->add_do_method(AudioServer::get_singleton(), "remove_bus_effect", get_index(), index);
-	ur->add_undo_method(AudioServer::get_singleton(), "add_bus_effect", get_index(), AudioServer::get_singleton()->get_bus_effect(get_index(), index), index);
+	ur->add_do_method(current_layout, "_remove_bus_effect", get_index(), index);
+	ur->add_undo_method(current_layout, "_add_bus_effect", get_index(), AudioServer::get_singleton()->get_bus_effect(get_index(), index), index);
 	ur->add_undo_method(AudioServer::get_singleton(), "set_bus_effect_enabled", get_index(), index, AudioServer::get_singleton()->is_bus_effect_enabled(get_index(), index));
 	ur->add_do_method(buses, "_update_bus", get_index());
 	ur->add_undo_method(buses, "_update_bus", get_index());
@@ -1457,6 +1460,15 @@ EditorAudioBuses::EditorAudioBuses() {
 	FileSystemDock::get_singleton()->connect("files_moved", callable_mp(this, &EditorAudioBuses::_file_moved));
 
 	set_process(true);
+
+	const String default_layout_path = GLOBAL_GET("audio/buses/default_bus_layout");
+	if (ResourceLoader::exists(default_layout_path)) {
+		current_bus_layout = ResourceLoader::load(default_layout_path);
+	}
+}
+
+Ref<AudioBusLayout> EditorAudioBuses::get_edited_layout() const {
+	return current_bus_layout;
 }
 
 void EditorAudioBuses::open_layout(const String &p_path) {
