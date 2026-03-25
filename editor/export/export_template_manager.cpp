@@ -34,6 +34,7 @@
 #include "core/error/error_list.h"
 #include "core/io/dir_access.h"
 #include "core/io/json.h"
+#include "core/io/marshalls.h"
 #include "core/io/zip_io.h"
 #include "core/object/callable_mp.h"
 #include "core/os/os.h"
@@ -55,10 +56,11 @@
 #include "scene/gui/option_button.h"
 #include "scene/gui/split_container.h"
 #include "scene/gui/tree.h"
-#include "scene/main/http_request.h"
 #include "scene/resources/style_box.h"
 #include "scene/resources/texture.h"
 #include "servers/display/display_server.h"
+
+#include "modules/zip/zip_reader.h"
 
 void ExportTemplateManager::_request_mirrors() {
 	mirrors_list->clear();
@@ -82,7 +84,7 @@ void ExportTemplateManager::_request_mirrors() {
 	} else {
 		mirrors_list->set_tooltip_text(String());
 	}
-	const String mirrors_metadata_url = vformat("https://godotengine.org/mirrorlist/%s.json", "4.6.stable" /*GODOT_VERSION_FULL_CONFIG*/); // TODO: debug-adjusted, uncomment before merging xd
+	const String mirrors_metadata_url = vformat("https://godotengine.org/mirrorlist/%s.json", "4.6.1.stable" /*GODOT_VERSION_FULL_CONFIG*/); // TODO: debug-adjusted, uncomment before merging xd
 	mirrors_requester->request(mirrors_metadata_url);
 }
 
@@ -117,7 +119,7 @@ void ExportTemplateManager::_mirrors_request_completed(int p_result, int p_respo
 	Dictionary mirror_data = json.get_data();
 	if (mirror_data.has("mirrors")) {
 		Array mirrors = mirror_data["mirrors"];
-		mirrors.push_front(Dictionary({ { "name", "localhost8k" }, { "url", "http://127.0.0.1:8000" } })); // TODO: debug-only, remove before merging xd
+		// mirrors.push_front(Dictionary({ { "name", "localhost8k" }, { "url", "http://127.0.0.1:8000" } })); // TODO: debug-only, remove before merging xd
 		for (const Variant &mirror : mirrors) {
 			Dictionary m = mirror;
 			ERR_CONTINUE(!m.has("url") || !m.has("name"));
@@ -799,16 +801,13 @@ void ExportTemplateManager::_process_download_queue() {
 			continue;
 		}
 
-		HTTPRequest *downloader = _get_available_downloader(&downloader_index);
+		TemplateDownloader *downloader = _get_available_downloader(&downloader_index);
 		if (!downloader) {
 			break;
 		}
 		downloader_index++;
 
-		const String filename = item->get_text(0);
-		downloader->set_download_file(EditorPaths::get_singleton()->get_cache_dir().path_join(filename));
-
-		Error err = downloader->request(_get_current_mirror_url() + "/" + filename);
+		Error err = downloader->download_template(item->get_text(0), _get_current_mirror_url());
 		if (err == OK) {
 			meta->download_status = DownloadStatus::IN_PROGRESS;
 			meta->downloader = downloader;
@@ -839,9 +838,9 @@ void ExportTemplateManager::_queue_process_download_queue() {
 	queue_update_pending = true;
 }
 
-HTTPRequest *ExportTemplateManager::_get_available_downloader(int *r_from_index) {
+TemplateDownloader *ExportTemplateManager::_get_available_downloader(int *r_from_index) {
 	int counter = -1;
-	for (HTTPRequest *downloader : downloaders) {
+	for (TemplateDownloader *downloader : downloaders) {
 		counter++;
 		if (counter < *r_from_index) {
 			continue;
@@ -854,29 +853,63 @@ HTTPRequest *ExportTemplateManager::_get_available_downloader(int *r_from_index)
 	return nullptr;
 }
 
-void ExportTemplateManager::_download_request_completed(int p_result, int p_response_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, HTTPRequest *p_downloader) {
-	const String filename = p_downloader->get_download_file().get_file();
+// void ExportTemplateManager::_download_request_completed(int p_result, int p_response_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, HTTPRequest *p_downloader) {
+// 	const String filename = p_downloader->get_download_file().get_file();
+// 	bool found = false;
+// 	bool template_finished = false;
+
+// 	queued_files.erase(filename);
+// 	for (TreeItem *item : downloading_items) {
+// 		if (item->get_text(0) != filename) {
+// 			continue;
+// 		}
+
+// 		FileMetadata *meta = _get_file_metadata(filename);
+// 		meta->downloader = nullptr;
+
+// 		if (p_result == HTTPRequest::RESULT_SUCCESS && p_response_code == HTTPClient::RESPONSE_OK) {
+// 			DirAccess::rename_absolute(p_downloader->get_download_file(), _get_template_folder_path(VERSION_FULL_CONFIG).path_join(filename));
+
+// 			item->clear_buttons();
+// 			meta->download_status = DownloadStatus::COMPLETED;
+// 			meta->is_missing = false;
+// 		} else {
+// 			_item_download_failed(item, _get_download_error(p_result, p_response_code));
+// 		}
+
+// 		found = true;
+// 		template_finished = _is_template_download_finished(item->get_parent());
+// 		if (template_finished) {
+// 			queued_templates.erase(item->get_parent()->get_text(0));
+// 		}
+
+// 		break;
+// 	}
+// 	if (!found) {
+// 		ERR_FAIL_COND(!found);
+// 	}
+// 	_queue_process_download_queue();
+
+// 	if (template_finished) {
+// 		_update_template_tree();
+// 	}
+// }
+
+void ExportTemplateManager::_download_request_completed(const String &p_filename) {
 	bool found = false;
 	bool template_finished = false;
 
-	queued_files.erase(filename);
+	queued_files.erase(p_filename);
 	for (TreeItem *item : downloading_items) {
-		if (item->get_text(0) != filename) {
+		if (item->get_text(0) != p_filename) {
 			continue;
 		}
+		item->clear_buttons();
 
-		FileMetadata *meta = _get_file_metadata(filename);
+		FileMetadata *meta = _get_file_metadata(p_filename);
 		meta->downloader = nullptr;
-
-		if (p_result == HTTPRequest::RESULT_SUCCESS && p_response_code == HTTPClient::RESPONSE_OK) {
-			DirAccess::rename_absolute(p_downloader->get_download_file(), _get_template_folder_path(VERSION_FULL_CONFIG).path_join(filename));
-
-			item->clear_buttons();
-			meta->download_status = DownloadStatus::COMPLETED;
-			meta->is_missing = false;
-		} else {
-			_item_download_failed(item, _get_download_error(p_result, p_response_code));
-		}
+		meta->download_status = DownloadStatus::COMPLETED;
+		meta->is_missing = false;
 
 		found = true;
 		template_finished = _is_template_download_finished(item->get_parent());
@@ -1460,11 +1493,197 @@ ExportTemplateManager::ExportTemplateManager() {
 	mirrors_requester->connect("request_completed", callable_mp(this, &ExportTemplateManager::_mirrors_request_completed));
 	add_child(mirrors_requester);
 
+	const String template_directory = _get_template_folder_path(GODOT_VERSION_FULL_CONFIG);
 	for (int i = 0; i < 5; i++) {
-		HTTPRequest *downloader = memnew(HTTPRequest);
+		TemplateDownloader *downloader = memnew(TemplateDownloader(template_directory));
 		downloader->set_use_threads(true);
 		add_child(downloader);
 		downloaders.push_back(downloader);
-		downloader->connect("request_completed", callable_mp(this, &ExportTemplateManager::_download_request_completed).bind(downloader), CONNECT_DEFERRED);
+		downloader->connect("download_completed", callable_mp(this, &ExportTemplateManager::_download_request_completed), CONNECT_DEFERRED);
 	}
+}
+
+int TemplateDownloader::_find_sequence_backwards(const PackedByteArray &p_source, const PackedByteArray &p_target) const {
+	const int64_t source_size = p_source.size();
+	const int64_t target_size = p_target.size();
+
+	if (target_size == 0) {
+		return -1;
+	}
+	if (target_size > source_size) {
+		return -1;
+	}
+	const uint8_t *src_ptr = p_source.ptr();
+	const uint8_t *tgt_ptr = p_target.ptr();
+
+	for (int64_t i = source_size - target_size; i >= 0; i--) {
+		if (memcmp(&src_ptr[i], tgt_ptr, target_size) == 0) {
+			return (int)i;
+		}
+	}
+	return -1;
+}
+
+void TemplateDownloader::_request_completed(int p_result, int p_response_code, const PackedStringArray &p_headers, const PackedByteArray &p_body) {
+	switch (current_step) {
+		case Step::WAITING: {
+			ERR_FAIL_MSG("Request completed on wrong step.");
+		} break;
+
+		case Step::QUERYING: {
+			for (const String &header : p_headers) {
+				if (header.to_lower().begins_with("content-length:")) {
+					file_size = header.split(":")[1].to_int();
+				}
+			}
+
+			current_step = Step::SCANNING;
+			const String tail_range = vformat("Range: bytes=%d-%d", MAX(0, file_size - 4 * 1024), file_size - 1);
+			request(url, PackedStringArray{ "User-Agent: Mozilla/5.0", tail_range }, HTTPClient::METHOD_GET);
+		} break;
+
+		case Step::SCANNING: {
+			PackedByteArray eocd_sig = { 0x50, 0x4b, 0x05, 0x06 };
+			int eocd_pos = _find_sequence_backwards(p_body, eocd_sig);
+			if (eocd_pos == -1) {
+				return;
+			}
+			const uint8_t *tail_data = p_body.ptr();
+
+			int total_entries = decode_uint16(tail_data + eocd_pos + 10);
+			int cd_start_offset = decode_uint32(tail_data + eocd_pos + 16);
+			int buffer_start_abs = file_size - p_body.size();
+			int current_pos = cd_start_offset - buffer_start_abs;
+			const String target_path = "templates/" + filename;
+
+			file_info = FileInfo();
+			for (int i = 0; i < total_entries; i++) {
+				if (decode_uint32(tail_data + current_pos) != 0x02014b50) {
+					break;
+				}
+
+				int comp_method = decode_uint16(tail_data + current_pos + 10); // 0 = Stored, 8 = Deflated
+				int comp_size = decode_uint32(tail_data + current_pos + 20);
+				int uncomp_size = decode_uint32(tail_data + current_pos + 24);
+				int name_len = decode_uint16(tail_data + current_pos + 28);
+				int extra_len = decode_uint16(tail_data + current_pos + 30);
+				int comm_len = decode_uint16(tail_data + current_pos + 32);
+				int local_offset = decode_uint32(tail_data + current_pos + 42);
+
+				int full_record_len = 46 + name_len + extra_len + comm_len;
+				const PackedByteArray raw_record = p_body.slice(current_pos, current_pos + full_record_len);
+				const String file_name = String::utf8((const char *)p_body.slice(current_pos + 46, current_pos + 46 + name_len).ptr(), name_len);
+
+				if (file_name == target_path) {
+					file_info.offset = local_offset;
+					file_info.compressed_size = comp_size;
+					file_info.uncompressed_size = uncomp_size;
+					file_info.raw_record = raw_record;
+					file_info.method = comp_method;
+					file_info.name = file_name;
+					break;
+				}
+				current_pos += full_record_len;
+			}
+
+			if (file_info.name.is_empty()) {
+				print_line("File not found in ZIP index.");
+				return;
+			}
+
+			int start_byte = file_info.offset;
+			int end_byte = file_info.offset + file_info.compressed_size + file_info.raw_record.size();
+
+			current_step = Step::DOWNLOADING;
+			const String data_range = vformat("Range: bytes=%d-%d", start_byte, end_byte);
+			request(url, PackedStringArray{ "User-Agent: Mozilla/5.0", data_range }, HTTPClient::METHOD_GET);
+		} break;
+
+		case Step::DOWNLOADING: {
+			const String mini_zip_path = EditorPaths::get_singleton()->get_temp_dir().path_join(filename + ".zip");
+			const uint8_t *fragment = p_body.ptr();
+
+			int local_name_len = decode_uint16(fragment + 26);
+			int local_extra_len = decode_uint16(fragment + 28);
+			int full_file_chunk_size = 30 + local_name_len + local_extra_len + file_info.compressed_size;
+
+			if (p_body.size() < full_file_chunk_size) {
+				print_line(vformat("[ERROR] Fragment too small! Loaded: %d, Required: %d", p_body.size(), full_file_chunk_size));
+				return;
+			}
+
+			const PackedByteArray clean_fragment = p_body.slice(0, full_file_chunk_size);
+
+			PackedByteArray cd_record = file_info.raw_record.duplicate();
+			uint8_t *record_write = cd_record.ptrw();
+			encode_uint32(0, record_write + 42); // IMPORTANT: Set the offset to 0, as the file is at the very beginning of the mini-ZIP.
+
+			// EOCD (End of Central Directory)
+			PackedByteArray eocd;
+			eocd.resize_initialized(22);
+
+			uint8_t *eocd_write = eocd.ptrw();
+			encode_uint32(0x06054b50, eocd_write); // Signature (4 bytes).
+			// Offsets 4-7 remain 0 (disk numbers).
+			encode_uint16(1, eocd_write + 8); // Number of entries on this disk (2 bytes).
+			encode_uint16(1, eocd_write + 10); // Total number of entries (2 bytes).
+			encode_uint32(cd_record.size(), eocd_write + 12); // Central Directory size (4 bytes).
+			encode_uint32(clean_fragment.size(), eocd_write + 16); // CD start offset (after file data) (4 bytes).
+
+			// Write Mini-Zip to a file.
+			Ref<FileAccess> f = FileAccess::open(mini_zip_path, FileAccess::WRITE);
+			if (f.is_null()) {
+				return;
+			}
+			f->store_buffer(clean_fragment);
+			f->store_buffer(cd_record);
+			f->store_buffer(eocd);
+			f.unref();
+
+			// Read back the Mini-Zip with ZIPReader.
+			Ref<ZIPReader> reader;
+			reader.instantiate();
+
+			Error err = reader->open(mini_zip_path);
+			if (err != OK) {
+				print_line(vformat("[ERROR] ZIP Reader could not open Mini-ZIP. Code: ", err));
+				return;
+			}
+
+			// IMPORTANT: The path in the ZIP reader must exactly match the one in the CD.
+			const PackedByteArray extracted_data = reader->read_file(file_info.name, true);
+			reader.unref();
+
+			DirAccess::remove_absolute(mini_zip_path);
+
+			if (!extracted_data.is_empty()) {
+				f = FileAccess::open(target_directory.path_join(filename), FileAccess::WRITE);
+				f->store_buffer(extracted_data);
+				f.unref();
+
+				emit_signal(SNAME("download_completed"), filename);
+			}
+		} break;
+	}
+}
+
+void TemplateDownloader::_notification(int p_what) {
+	switch (p_what) {
+		case NOTIFICATION_POSTINITIALIZE: {
+			connect(SNAME("request_completed"), callable_mp(this, &TemplateDownloader::_request_completed));
+		} break;
+	}
+}
+
+void TemplateDownloader::_bind_methods() {
+	ADD_SIGNAL(MethodInfo("download_completed"));
+	ADD_SIGNAL(MethodInfo("download_failed"));
+}
+
+Error TemplateDownloader::download_template(const String &p_file_name, const String &p_source) {
+	url = p_source;
+	filename = p_file_name;
+
+	current_step = Step::QUERYING;
+	return request(p_source, PackedStringArray{ "User-Agent: Mozilla/5.0" }, HTTPClient::METHOD_HEAD);
 }
