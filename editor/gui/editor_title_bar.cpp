@@ -114,6 +114,7 @@ void EditorTitleBar::_notification(int p_what) {
 			if (!center_control) {
 				break;
 			}
+			break;
 			Control *prev = nullptr;
 			Control *base = nullptr;
 			Control *next = nullptr;
@@ -149,21 +150,12 @@ void EditorTitleBar::_notification(int p_what) {
 				base = c;
 			}
 			if (base && prev && next) {
-				Size2i title_size = get_size();
-				Size2i c_size = base->get_combined_minimum_size();
-
 				int min_offset = prev->get_position().x + prev->get_combined_minimum_size().x;
-				int max_offset = next->get_position().x + next->get_size().x - next->get_combined_minimum_size().x - c_size.x;
+				int max_offset = next->get_position().x;
+				int center = get_size().x / 2;
 
-				int offset = (title_size.width - c_size.width) / 2;
-				offset = CLAMP(offset, min_offset, max_offset);
-
-				fit_child_in_rect(prev, Rect2i(prev->get_position().x, 0, offset - prev->get_position().x, title_size.height));
-				fit_child_in_rect(next, Rect2i(offset + c_size.width, 0, next->get_position().x + next->get_size().x - (offset + c_size.width), title_size.height));
-
-				int center = title_size.x / 2;
-				int width = MIN(center - prev->get_position().x, next->get_end().x - center) * 1.9;
-				fit_child_in_rect(base, Rect2i(center - width / 2, 0, width, title_size.height));
+				int width = MIN(center - prev->get_position().x, next->get_end().x - center) * 2.0;
+				base->set_custom_maximum_size(Vector2(width, -1));
 			}
 		} break;
 	}
