@@ -455,9 +455,9 @@ Point2i SplitContainer::_get_valid_range(int p_dragger_index) const {
 		Control *child = valid_children[i];
 		ERR_FAIL_NULL_V(child, Point2i());
 		if (i <= p_dragger_index) {
-			position_range.x += (int)child->get_combined_minimum_size()[axis];
+			position_range.x += (int)child->get_bound_minimum_size()[axis];
 		} else if (i > p_dragger_index) {
-			position_range.y -= (int)child->get_combined_minimum_size()[axis];
+			position_range.y -= (int)child->get_bound_minimum_size()[axis];
 		}
 	}
 	return position_range;
@@ -506,7 +506,7 @@ void SplitContainer::_set_desired_sizes(const PackedInt32Array &p_desired_sizes,
 	for (int i = 0; i < (int)valid_children.size(); i++) {
 		Control *child = valid_children[i];
 		StretchData sdata;
-		sdata.min_size = child->get_combined_minimum_size()[axis];
+		sdata.min_size = child->get_bound_minimum_size()[axis];
 		sdata.final_size = MAX(sdata.min_size, p_desired_sizes.is_empty() ? 0 : p_desired_sizes[i]);
 		total_desired_size += sdata.final_size;
 		sdata.priority = i == p_priority_index;
@@ -666,7 +666,7 @@ void SplitContainer::_update_default_dragger_positions() {
 	LocalVector<StretchData> stretch_data;
 	for (const Control *child : valid_children) {
 		StretchData sdata;
-		sdata.min_size = (int)child->get_combined_minimum_size()[axis];
+		sdata.min_size = (int)child->get_bound_minimum_size()[axis];
 		sdata.final_size = sdata.min_size;
 		if ((vertical ? child->get_v_size_flags() : child->get_h_size_flags()).has_flag(SIZE_EXPAND) && child->get_stretch_ratio() > 0) {
 			sdata.stretch_ratio = child->get_stretch_ratio();
@@ -785,7 +785,7 @@ void SplitContainer::_update_dragger_positions(int p_clamp_index) {
 	if (p_clamp_index == -1) {
 		// Check each dragger with the one to the right of it.
 		for (int i = 0; i < (int)dragger_positions.size() - 1; i++) {
-			const int check_min_size = (int)valid_children[i + 1]->get_combined_minimum_size()[axis];
+			const int check_min_size = (int)valid_children[i + 1]->get_bound_minimum_size()[axis];
 			const int push_pos = dragger_positions[i] + sep + check_min_size;
 			if (dragger_positions[i + 1] < push_pos) {
 				dragger_positions[i + 1] = push_pos;
@@ -798,19 +798,19 @@ void SplitContainer::_update_dragger_positions(int p_clamp_index) {
 		const int dragging_position = dragger_positions[p_clamp_index];
 
 		// Push overlapping draggers to the left.
-		int accumulated_min_size = (int)valid_children[p_clamp_index]->get_combined_minimum_size()[axis];
+		int accumulated_min_size = (int)valid_children[p_clamp_index]->get_bound_minimum_size()[axis];
 		for (int i = p_clamp_index - 1; i >= 0; i--) {
 			const int push_pos = dragging_position - sep * (p_clamp_index - i) - accumulated_min_size;
 			if (dragger_positions[i] > push_pos) {
 				dragger_positions[i] = push_pos;
 			}
-			accumulated_min_size += (int)valid_children[i]->get_combined_minimum_size()[axis];
+			accumulated_min_size += (int)valid_children[i]->get_bound_minimum_size()[axis];
 		}
 
 		// Push overlapping draggers to the right.
 		accumulated_min_size = 0;
 		for (int i = p_clamp_index + 1; i < (int)dragger_positions.size(); i++) {
-			accumulated_min_size += (int)valid_children[i]->get_combined_minimum_size()[axis];
+			accumulated_min_size += (int)valid_children[i]->get_bound_minimum_size()[axis];
 			const int push_pos = dragging_position + sep * (i - p_clamp_index) + accumulated_min_size;
 			if (dragger_positions[i] < push_pos) {
 				dragger_positions[i] = push_pos;
@@ -989,7 +989,7 @@ Size2 SplitContainer::get_minimum_size() const {
 	}
 
 	for (const Control *child : valid_children) {
-		const Size2 min_size = child->get_combined_minimum_size();
+		const Size2 min_size = child->get_bound_minimum_size();
 		minimum[axis] += (int)min_size[axis];
 		minimum[other_axis] = (int)MAX(minimum[other_axis], min_size[other_axis]);
 	}
