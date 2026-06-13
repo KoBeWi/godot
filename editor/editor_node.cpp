@@ -4252,26 +4252,19 @@ void EditorNode::_discard_changes(const String &p_str) {
 			_restart_editor();
 		} break;
 		case TOOLS_CLEAR_PROJECT_CACHE: {
-			static LocalVector<String> files_to_delete = {
-				"res://.godot/imported",
-				"res://.godot/exported",
-				"res://.godot/mono",
-				"res://.godot/shader_cache",
-				"res://.godot/extension_list.cfg",
-				"res://.godot/global_script_class_cache.cfg",
-				"res://.godot/scene_groups_cache.cfg",
-				"res://.godot/uid_cache.bin",
-				"res://.godot/editor/editor_script_doc_cache.res",
-				"res://.godot/editor/filesystem_cache" + EditorFileSystem::CACHE_FILE_NAME,
-				"res://.godot/editor/filesystem_update4",
-			};
-
-			Ref<DirAccess> da = DirAccess::create(DirAccess::ACCESS_RESOURCES);
-			for (const String &path : files_to_delete) {
-				if (da->file_exists(path) || da->dir_exists(path)) {
-					OS::get_singleton()->move_to_trash(ProjectSettings::get_singleton()->globalize_path(path));
-				}
-			}
+			Main::set_files_to_delete(Vector<String>{
+					"res://.godot/imported",
+					"res://.godot/exported",
+					"res://.godot/mono",
+					"res://.godot/shader_cache",
+					"res://.godot/extension_list.cfg",
+					"res://.godot/global_script_class_cache.cfg",
+					"res://.godot/scene_groups_cache.cfg",
+					"res://.godot/uid_cache.bin",
+					"res://.godot/editor/editor_script_doc_cache.res",
+					"res://.godot/editor/filesystem_cache" + EditorFileSystem::CACHE_FILE_NAME,
+					"res://.godot/editor/filesystem_update4",
+			});
 			_restart_editor(false);
 		} break;
 	}

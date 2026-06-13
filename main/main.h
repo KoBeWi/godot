@@ -65,7 +65,11 @@ public:
 		CLI_SCOPE_TOOL, // Editor and project manager.
 		CLI_SCOPE_PROJECT,
 	};
+	static Vector<String> files_to_delete;
+
 	static const Vector<String> &get_forwardable_cli_arguments(CLIScope p_scope);
+	// For clearing editor cache.
+	static void set_files_to_delete(const Vector<String> &p_files);
 #endif
 
 	static int test_entrypoint(int argc, char *argv[], bool &tests_need_run);

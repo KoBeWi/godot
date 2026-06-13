@@ -316,6 +316,15 @@ bool Main::is_cmdline_tool() {
 const Vector<String> &Main::get_forwardable_cli_arguments(Main::CLIScope p_scope) {
 	return forwardable_cli_arguments[p_scope];
 }
+
+Vector<String> Main::files_to_delete;
+
+void Main::set_files_to_delete(const Vector<String> &p_files) {
+	files_to_delete.reserve_exact(p_files.size());
+	for (const String &path : p_files) {
+		files_to_delete.append(ProjectSettings::get_singleton()->globalize_path(path));
+	}
+}
 #endif
 
 static String unescape_cmdline(const String &p_str) {
@@ -5369,6 +5378,18 @@ void Main::cleanup(bool p_force) {
 		List<String> args = OS::get_singleton()->get_restart_on_exit_arguments();
 		OS::get_singleton()->create_instance(args);
 		OS::get_singleton()->set_restart_on_exit(false, List<String>()); //clear list (uses memory)
+
+#ifdef TOOLS_ENABLED
+		// Remove files queued to delete from editor (needs to be done at the very end of the program).
+		if (!files_to_delete.is_empty()) {
+			Ref<DirAccess> da = DirAccess::create(DirAccess::ACCESS_FILESYSTEM);
+			for (const String &path : files_to_delete) {
+				if (da->file_exists(path) || da->dir_exists(path)) {
+					OS::get_singleton()->move_to_trash(path);
+				}
+			}
+		}
+#endif
 	}
 
 	// Now should be safe to delete MessageQueue (famous last words).
