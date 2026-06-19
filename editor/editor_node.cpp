@@ -2654,6 +2654,22 @@ void EditorNode::_mark_unsaved_scenes() {
 	scene_tabs->update_scene_tabs();
 }
 
+void EditorNode::_sync_node_ids(Node *p_original, Node *p_new) {
+	if (p_original->is_internal()) {
+		return;
+	}
+	p_new->set_unique_scene_id(p_original->get_unique_scene_id());
+
+	if (p_original->is_instance() && !p_original->is_self_editable_instance()) {
+		return;
+	}
+
+	int child_count = MIN(p_original->get_child_count(), p_new->get_child_count());
+	for (int i = 0; i < child_count; i++) {
+		_sync_node_ids(p_original->get_child(i), p_new->get_child(i));
+	}
+}
+
 bool EditorNode::is_scene_unsaved(int p_idx) {
 	const Node *scene = editor_data.get_edited_scene_root(p_idx);
 	if (!scene) {
@@ -7478,12 +7494,13 @@ void EditorNode::reload_instances_with_path_in_edited_scenes() {
 
 			bool original_node_scene_instance_load_placeholder = original_node->get_scene_instance_load_placeholder();
 
-			// Delete all the remaining node children.
+			// Remove all the remaining node children.
+			LocalVector<Node *> former_children;
 			while (original_node->get_child_count()) {
 				Node *child = original_node->get_child(0);
 
 				original_node->remove_child(child);
-				child->queue_free();
+				former_children.push_back(child);
 			}
 
 			// Update the name to match
@@ -7512,7 +7529,13 @@ void EditorNode::reload_instances_with_path_in_edited_scenes() {
 
 			// Replace the original node with the instantiated version.
 			original_node->replace_by(instantiated_node, false);
-			instantiated_node->set_unique_scene_id(original_node->get_unique_scene_id());
+			_sync_node_ids(original_node, instantiated_node);
+
+			int child_count = MIN((int)former_children.size(), instantiated_node->get_child_count());
+			for (int i = 0; i < child_count; i++) {
+				_sync_node_ids(former_children[i], instantiated_node->get_child(i));
+				former_children[i]->queue_free();
+			}
 
 			// Mark the old node for deletion.
 			original_node->queue_free();

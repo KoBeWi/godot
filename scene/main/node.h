@@ -633,6 +633,7 @@ public:
 
 	void set_editable_instance(RequiredParam<Node> rp_node, bool p_editable);
 	bool is_editable_instance(const Node *p_node) const;
+	bool is_self_editable_instance() const { return data.editable_instance; }
 	Node *get_deepest_editable_node(Node *p_start_node) const;
 
 #ifdef TOOLS_ENABLED
