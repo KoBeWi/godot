@@ -7,12 +7,15 @@ Import("env_modules")
 
 env_godosu = env_modules.Clone()
 
-ruby_root = os.environ["RUBY_LIB"]
+# ruby_root = os.environ["RUBY_LIB"]
+ruby_root = "/dysk2/Ruby/ruby-master"
 
-includes = [".", ruby_root + "/include", ruby_root + "/.ext/include/x64-mswin64_140"]
+# includes = [".", ruby_root + "/include", ruby_root + "/.ext/include/x64-mswin64_140"]
+includes = [".", "/dysk2/Ruby/ruby-master/include/", "/usr/include/ruby-4.0.0/x86_64-linux-gnu/"]
 
 env_godosu.Append(CPPPATH=includes)
 env_godosu.add_source_files(env.modules_sources, "*.cpp")
 
-env.Append(LINKFLAGS=["x64-vcruntime140-ruby320.lib"])
-env.Append(LIBPATH=[ruby_root])
+# env.Append(LINKFLAGS=["x64-vcruntime140-ruby320.lib"])
+# env.Append(LIBPATH=[ruby_root])
+env.Append(LIBS=["ruby"])
