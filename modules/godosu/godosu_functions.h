@@ -1,20 +1,23 @@
-#ifndef GODOSU_FUNCTIONS_H
-#define GODOSU_FUNCTIONS_H
+#pragma once
 
 #include "godosu.h"
 
 #include "core/config/project_settings.h"
+#include "core/input/input.h"
 #include "core/io/resource_loader.h"
+#include "core/object/callable_mp.h"
 #include "core/os/keyboard.h"
 #include "core/os/time.h"
 #include "scene/audio/audio_stream_player.h"
 #include "scene/gui/line_edit.h"
+#include "scene/main/scene_tree.h"
 #include "scene/resources/atlas_texture.h"
 #include "scene/resources/image_texture.h"
 #include "scene/resources/material.h"
 #include "scene/resources/shader.h"
 #include "scene/resources/text_paragraph.h"
 #include "servers/audio/audio_stream.h"
+#include "servers/rendering/rendering_server.h"
 
 Color gd_convert_color(VALUE from) {
 	const String color_string = StringValueCStr(from);
@@ -113,7 +116,7 @@ VALUE godosu_destroy_macro(VALUE self, VALUE id) {
 VALUE godosu_setup_window(VALUE self, VALUE window, VALUE width, VALUE height, VALUE fullscreen) {
 	Vector2i size(FIX2INT(width), FIX2INT(height));
 	Godosu::singleton->setup_window(window, size, RTEST(fullscreen));
-	Input::get_singleton()->set_mouse_mode(Input::MOUSE_MODE_HIDDEN);
+	Input::get_singleton()->set_mouse_mode(InputClassEnums::MOUSE_MODE_HIDDEN);
 	return OK;
 }
 
@@ -183,7 +186,7 @@ VALUE godosu_get_text_input_caret(VALUE self, VALUE id) {
 VALUE godosu_set_text_input_selection_start(VALUE self, VALUE id, VALUE start) {
 	const int start_pos = FIX2INT(start);
 	LineEdit *edit = Godosu::singleton->get_line_edit(id);
-	edit->select(start, edit->get_caret_column());
+	edit->select(start_pos, edit->get_caret_column());
 	return OK;
 }
 
@@ -256,7 +259,7 @@ VALUE godosu_texture_from_text(VALUE self, VALUE instance, VALUE font_name, VALU
 	RS::get_singleton()->viewport_set_size(viewport, size.x, size.y);
 	RS::get_singleton()->viewport_set_transparent_background(viewport, true);
 	RS::get_singleton()->viewport_set_active(viewport, true);
-	RS::get_singleton()->viewport_set_update_mode(viewport, RenderingServer::VIEWPORT_UPDATE_ONCE);
+	RS::get_singleton()->viewport_set_update_mode(viewport, RSE::VIEWPORT_UPDATE_ONCE);
 	RS::get_singleton()->viewport_set_parent_viewport(viewport, Godosu::singleton->get_viewport()->get_viewport_rid());
 
 	Ref<ImageTexture> texture = ImageTexture::create_from_image(Image::create_empty(size.x, size.y, false, Image::FORMAT_RGBA8));
@@ -528,5 +531,3 @@ VALUE godosu_draw_framebuffer(VALUE self, VALUE framebuffer_id, VALUE x, VALUE y
 	Godosu::singleton->add_to_queue(draw_data, FIX2LONG(z), gd_is_multiply(multiply));
 	return OK;
 }
-
-#endif

@@ -1,8 +1,11 @@
 #include "godosu.h"
+
 #include "godosu_functions.h"
 
 #include "core/config/project_settings.h"
 #include "core/io/file_access.h"
+#include "core/object/class_db.h"
+#include "core/os/os.h"
 #include "scene/2d/node_2d.h"
 #include "scene/audio/audio_stream_player.h"
 #include "scene/main/viewport.h"

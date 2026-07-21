@@ -1,5 +1,4 @@
-#ifndef GOSU_H
-#define GOSU_H
+#pragma once
 
 #include "scene/main/node.h"
 
@@ -15,6 +14,7 @@ class Control;
 class Font;
 class ImageTexture;
 class LineEdit;
+class Material;
 class Node2D;
 class ShaderMaterial;
 class SubViewport;
@@ -120,5 +120,3 @@ public:
 };
 
 #define godosu_window_callback(m_argc, ...) rb_funcall(data.window, data.callback_base, m_argc, __VA_ARGS__);
-
-#endif // GOSU_H
